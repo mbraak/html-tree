@@ -20,6 +20,9 @@
     "lint": "eslint src playwright test",
     "production": "./config/production",
     "devserver": "SERVE=true rollup --config config/rollup.config.mjs --watch",
+    "docs-dev": "vitepress dev docs",
+    "docs-build": "vitepress build docs",
+    "docs-preview": "vitepress preview docs",
     "devserver-with-coverage": "COVERAGE=true SERVE=true rollup --config config/rollup.config.mjs",
     "build-with-coverage": "COVERAGE=true rollup --config config/rollup.config.mjs",
     "prettier": "prettier src/*.ts --write --tab-width 4",
@@ -74,6 +77,7 @@
     "tslib": "^2.8.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.65.0",
+    "vitepress": "^1.6.4",
     "vitest": "^4.1.10"
   }
 }

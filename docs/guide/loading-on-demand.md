@@ -1,0 +1,117 @@
+# Loading on demand
+
+Instead of sending the whole tree to the browser, you can send only the top level and fetch each
+subtree when the user opens it.
+
+## Server side
+
+Mark the nodes that have children on the server with `load_on_demand`:
+
+```json
+[
+  { "name": "node1", "id": 1, "load_on_demand": true },
+  { "name": "node2", "id": 2 }
+]
+```
+
+A node with `load_on_demand: true` is rendered as a closed folder even though it has no children
+yet. When the user opens it, the tree fetches its children from `dataUrl` with the node's id in a
+`node` query parameter:
+
+```
+GET /my-tree/?node=1
+```
+
+The response is a json array of the children of that node — the same format as the top level, and
+children may be marked `load_on_demand` again:
+
+```json
+[
+  { "name": "child1", "id": 3 },
+  { "name": "child2", "id": 4, "load_on_demand": true }
+]
+```
+
+After the children arrive, `load_on_demand` is cleared on the node and the folder opens.
+
+## Client side
+
+Set `dataUrl` and let the tree do the requests:
+
+```js
+new HtmlTree({
+  dataUrl: "/my-tree/",
+  htmlElement,
+});
+```
+
+Use a function when the url depends on the node — it is called with the node that is being
+loaded, and with no argument for the initial load:
+
+```js
+new HtmlTree({
+  dataUrl: (node) => (node ? `/my-tree/${node.id}/children/` : "/my-tree/"),
+  htmlElement,
+});
+```
+
+## Loading indicator
+
+While a request is in flight, the node gets the `html-tree-loading` class and its
+`is_loading` property is `true`. The default stylesheet does not draw a spinner, so add one
+yourself:
+
+```css
+.html-tree-loading > .html-tree-element .html-tree-title {
+  background: url(spinner.gif) right center no-repeat;
+  padding-right: 20px;
+}
+```
+
+You can also react in javascript, with the `tree.loading_data` event:
+
+```js
+element.addEventListener("tree.loading_data", (e) => {
+  const { isLoading, node } = e.detail;
+  console.log(node ? node.name : "the tree", isLoading ? "is loading" : "is done");
+});
+```
+
+Or with the `onLoading` option, which is called with the same information plus the element that is
+loading:
+
+```js
+new HtmlTree({
+  dataUrl: "/my-tree/",
+  htmlElement,
+  onLoading: (isLoading, node, element) => {
+    element.classList.toggle("my-spinner", isLoading);
+  },
+});
+```
+
+## Loading a subtree yourself
+
+`loadDataFromUrl` fetches into a node on demand, and takes a callback that runs when the data has
+arrived:
+
+```js
+const node = tree.getNodeById(1);
+
+tree.loadDataFromUrl("/my-tree/?node=1", node, () => {
+  tree.openNode(node);
+});
+```
+
+`loadData` does the same with data you already have:
+
+```js
+tree.loadData([{ name: "child1", id: 3 }], node);
+```
+
+## Saving state
+
+[Saving state](./saving-state) works with load-on-demand: nodes that were open in the saved state
+but not yet loaded are fetched, and the selected node is passed to the server as a
+`selected_node` query parameter on the initial request, so it can send back the branches needed to
+reveal it.
