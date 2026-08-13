@@ -89,9 +89,11 @@ new HtmlTree({
   closedIcon: "+",
   data,
   htmlElement,
-  openedIcon: "-",
+  openedIcon: "−",
 });
 ```
+
+<TreeDemo demo="icons" />
 
 An element works too, which is how you use an svg or an icon font:
 
@@ -106,11 +108,14 @@ new HtmlTree({
 });
 ```
 
-Put the toggler after the title instead of before it with `buttonLeft: false`.
+Put the toggler after the title instead of before it with `buttonLeft: false`:
+
+<TreeDemo demo="buttonRight" />
 
 ## Right to left
 
-`rtl: true` mirrors the tree, and flips the default closed icon to `◄`:
+`rtl: true` mirrors the tree — the indentation, the togglers and the drag-and-drop hints all move to
+the other side — and flips the default closed icon to `◀`:
 
 ```js
 new HtmlTree({
@@ -120,11 +125,16 @@ new HtmlTree({
 });
 ```
 
+<TreeDemo demo="rtl" />
+
 You can also set it on the element:
 
 ```html
 <div id="tree1" data-rtl="true"></div>
 ```
+
+The mirroring comes from the `html-tree-rtl` class that the option adds to the root `ul`, so it is
+all in `html_tree.css`: if you replace the stylesheet, carry those rules over.
 
 ## Customizing the markup
 
@@ -158,11 +168,16 @@ folder that can be opened and closed:
 
 ```js
 new HtmlTree({
-  data: [{ name: "empty", id: 1, children: [] }],
+  data: [
+    { name: "empty folder", id: 1, children: [] },
+    { name: "leaf", id: 2 },
+  ],
   htmlElement,
   showEmptyFolder: true,
 });
 ```
+
+<TreeDemo demo="showEmptyFolder" />
 
 ## Animation
 
@@ -176,3 +191,7 @@ new HtmlTree({
   htmlElement,
 });
 ```
+
+This tree has `slide: false`, so folders open and close instantly:
+
+<TreeDemo demo="withoutSlide" />

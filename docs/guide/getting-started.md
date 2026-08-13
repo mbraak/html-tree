@@ -62,9 +62,19 @@ to contain anything; the tree fills it.
 </script>
 ```
 
+That gives you this:
+
+<TreeDemo demo="basic" />
+
 `htmlElement` is the only required option; everything else has a default. See
 [Options](../reference/options) for the full list, and [Styling](./styling) for the class names
 the stylesheet uses.
+
+::: tip
+Every tree on this site is the real widget, compiled from `src`. If a demo behaves differently
+from what a page says, the page is wrong — please
+[open an issue](https://github.com/mbraak/html-tree/issues).
+:::
 
 ## With a bundler
 
@@ -122,6 +132,13 @@ tree.openNode(node);
 tree.selectNode(node);
 tree.appendNode({ name: "Tyrannosauroids", id: 9 }, node);
 ```
+
+Select a node and use the buttons — they call `appendNode`, `updateNode`, `removeNode`, `openNode`
+and `closeNode` on the tree below:
+
+<TreeDemo demo="basic" api />
+
+The [methods reference](../reference/methods) has the full list.
 
 ## Clean up
 

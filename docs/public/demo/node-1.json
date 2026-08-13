@@ -1,0 +1,16 @@
+[
+  {
+    "id": 2,
+    "name": "Herrerasaurians"
+  },
+  {
+    "id": 3,
+    "name": "Theropods",
+    "load_on_demand": true
+  },
+  {
+    "id": 16,
+    "name": "Sauropodomorphs",
+    "load_on_demand": true
+  }
+]

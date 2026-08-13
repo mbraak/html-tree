@@ -1,0 +1,156 @@
+/* The frame around a live demo, and the overrides that keep html_tree.css legible
+   in the dark theme of the docs. */
+
+.tree-demo {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.tree-demo-tree {
+  max-height: 380px;
+  overflow: auto;
+  padding: 16px;
+}
+
+.tree-demo-toolbar,
+.tree-demo-log-header {
+  align-items: center;
+  background-color: var(--vp-c-bg-soft);
+  border-bottom: 1px solid var(--vp-c-divider);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.tree-demo-log-header {
+  border-bottom: none;
+  border-top: 1px solid var(--vp-c-divider);
+  font-size: 12px;
+  font-weight: 600;
+  justify-content: space-between;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.tree-demo button {
+  background-color: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  color: var(--vp-c-text-1);
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 3px 10px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.tree-demo button:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.tree-demo-error {
+  color: var(--vp-c-danger-1);
+  font-size: 13px;
+  margin: 0;
+  padding: 0 16px 12px;
+}
+
+.tree-demo-log {
+  background-color: var(--vp-c-bg-soft);
+}
+
+.tree-demo-log-entries {
+  list-style: none;
+  margin: 0;
+  max-height: 150px;
+  overflow: auto;
+  padding: 0 12px 12px;
+}
+
+.tree-demo-log-entries li {
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 0;
+}
+
+.tree-demo-log-entries code {
+  background-color: transparent;
+  color: var(--vp-c-brand-1);
+  font-size: 12px;
+  padding: 0;
+}
+
+.tree-demo-log-entries span {
+  color: var(--vp-c-text-2);
+}
+
+.tree-demo-log-empty {
+  color: var(--vp-c-text-3);
+  font-size: 13px;
+  margin: 0;
+  padding: 0 12px 12px;
+}
+
+/* html_tree.css picks its own colors. Map them onto the theme of the docs, so the
+   demos work in light and in dark mode. The extra .tree-demo makes these win. */
+.tree-demo ul.html-tree .html-tree-title {
+  color: var(--vp-c-text-1);
+}
+
+.tree-demo ul.html-tree .html-tree-toggler {
+  color: var(--vp-c-text-3);
+}
+
+.tree-demo ul.html-tree .html-tree-toggler:hover {
+  color: var(--vp-c-text-1);
+}
+
+.tree-demo ul.html-tree .html-tree-element:hover {
+  background-color: var(--vp-c-default-soft);
+}
+
+.tree-demo ul.html-tree li.html-tree-selected > .html-tree-element,
+.tree-demo ul.html-tree li.html-tree-selected > .html-tree-element:hover {
+  background: var(--vp-c-brand-soft);
+  text-shadow: none;
+}
+
+.tree-demo ul.html-tree .html-tree-title:focus-visible {
+  border-radius: 3px;
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 1px;
+}
+
+.tree-demo ul.html-tree li.html-tree-ghost span.html-tree-circle {
+  border-color: var(--vp-c-brand-1);
+}
+
+.tree-demo ul.html-tree li.html-tree-ghost span.html-tree-line {
+  background-color: var(--vp-c-brand-1);
+}
+
+.tree-demo ul.html-tree span.html-tree-border {
+  border-color: var(--vp-c-brand-1);
+}
+
+.tree-demo ul.html-tree .html-tree-moving > .html-tree-element .html-tree-title {
+  outline-color: var(--vp-c-brand-1);
+}
+
+/* The dragged node follows the cursor in an element that is appended to the body,
+   so it is outside .tree-demo. */
+span.html-tree-dragging {
+  background-color: var(--vp-c-bg-elv);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  box-shadow: var(--vp-shadow-2);
+  color: var(--vp-c-text-1);
+  font-size: 14px;
+  opacity: 0.9;
+  padding: 2px 8px;
+}

@@ -24,3 +24,22 @@ features:
   - title: Typed
     details: Written in TypeScript, so options, methods and node data are checked in your editor.
 ---
+
+## Try it
+
+This is the widget itself, built from `src` in this repository. Open the folders, select a node, walk
+through it with the arrow keys, and drag a node somewhere else.
+
+<TreeDemo demo="dragAndDrop" />
+
+```js
+new HtmlTree({
+  autoOpen: 1,
+  data,
+  dragAndDrop: true,
+  htmlElement: document.getElementById("tree1"),
+});
+```
+
+Start with the [guide](./guide/getting-started), or go straight to the
+[options](./reference/options).

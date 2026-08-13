@@ -1,0 +1,11 @@
+[
+  {
+    "id": 17,
+    "name": "Prosauropods"
+  },
+  {
+    "id": 18,
+    "name": "Sauropods",
+    "load_on_demand": true
+  }
+]

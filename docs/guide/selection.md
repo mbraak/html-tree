@@ -3,6 +3,10 @@
 Clicking a node selects it. The selected node gets the `html-tree-selected` class, and the tree
 dispatches [`tree.select`](../reference/events#tree-select).
 
+<TreeDemo demo="basic" events />
+
+Click a node to select it, then use the arrow keys — the event log shows what the tree reports.
+
 Set `selectable: false` to turn selection off entirely:
 
 ```js
@@ -74,9 +78,13 @@ element.addEventListener("tree.click", (e) => {
 new HtmlTree({
   data,
   htmlElement,
-  onCanSelectNode: (node) => node.isFolder() === false,
+  onCanSelectNode: (node) => node.isFolder(),
 });
 ```
+
+Only the folders in this tree can be selected; clicking a leaf does nothing:
+
+<TreeDemo demo="onlyFoldersSelectable" />
 
 ## Keyboard navigation
 

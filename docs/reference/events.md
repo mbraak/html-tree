@@ -11,6 +11,10 @@ element.addEventListener("tree.click", (e) => {
 });
 ```
 
+Everything you do in this tree is logged below it, most recent first:
+
+<TreeDemo demo="dragAndDrop" events />
+
 Because the events bubble, you can also listen higher up in the document, which is handy when the
 tree is re-created:
 

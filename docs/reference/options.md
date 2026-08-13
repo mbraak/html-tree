@@ -73,7 +73,7 @@ Put the open/close button before the node title. With `false` it goes after it.
 ### closedIcon
 
 - Type: `HTMLElement | string`
-- Default: `"&#x25ba;"` (`►`), or `"&#x25c0;"` (`◄`) when `rtl` is true
+- Default: `"&#x25ba;"` (`►`), or `"&#x25c0;"` (`◀`) when `rtl` is true
 
 The icon of a closed folder. A string is inserted as html; an element is cloned for every node.
 

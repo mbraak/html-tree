@@ -1,4 +1,7 @@
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitepress";
+
+const srcDir = fileURLToPath(new URL("../../src", import.meta.url));
 
 export default defineConfig({
   base: "/html-tree/",
@@ -48,4 +51,14 @@ export default defineConfig({
   },
   lang: "en-US",
   title: "html-tree",
+  // The live demos import the widget from src, which imports itself through the
+  // "htmlTree" alias from tsconfig.json.
+  vite: {
+    resolve: {
+      alias: [
+        { find: /^htmlTree$/, replacement: `${srcDir}/index.ts` },
+        { find: /^htmlTree\//, replacement: `${srcDir}/` },
+      ],
+    },
+  },
 });

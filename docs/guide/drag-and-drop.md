@@ -10,6 +10,10 @@ new HtmlTree({
 });
 ```
 
+Drag a node in this tree — onto a folder, or between two nodes:
+
+<TreeDemo demo="dragAndDrop" events />
+
 While dragging, a ghost element shows where the node will land: a line between two nodes for a
 `before` or `after` drop, and a highlight on the folder for an `inside` drop. Dragging over a closed
 folder opens it after `openFolderDelay` milliseconds (500 by default; `false` disables it).
@@ -42,6 +46,11 @@ new HtmlTree({
   },
 });
 ```
+
+In this tree, that `onCanMoveTo` is in effect: a node can only be dropped *into* a folder, and the
+line between two nodes never appears.
+
+<TreeDemo demo="dragIntoFoldersOnly" />
 
 A move that both hooks allow is applied by the tree itself.
 
