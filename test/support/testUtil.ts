@@ -28,7 +28,7 @@ export const generateHtmlElementsForTree = (tree: Node) => {
 
         if (isTree) {
             const element = document.createElement("ul");
-            element.className = "html-tree-tree";
+            element.className = "html-tree";
             return element;
         } else {
             const li = document.createElement("li");
