@@ -63,19 +63,21 @@ export default [
     {
         files: ["src/**/*.ts"],
         rules: {
+            // The build adds the leading underscore that terser mangles on,
+            // see config/babel-plugin-prefix-private-members.mjs.
             "@typescript-eslint/naming-convention": [
                 "error",
                 {
                     selector: "memberLike",
                     modifiers: ["private"],
                     format: [],
-                    leadingUnderscore: "require",
+                    leadingUnderscore: "forbid",
                 },
                 {
                     selector: "memberLike",
                     modifiers: ["protected"],
                     format: [],
-                    leadingUnderscore: "require",
+                    leadingUnderscore: "forbid",
                 },
             ],
         },
