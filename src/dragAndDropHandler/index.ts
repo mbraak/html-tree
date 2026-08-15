@@ -117,6 +117,10 @@ export class DragAndDropHandler {
         this.hitAreas = [];
         this.isDragging = false;
         this.currentItem = null;
+
+        this._dragElement = null;
+        this._openFolderTimer = null;
+        this._previousGhost = null;
     }
 
     public mouseCapture(positionInfo: PositionInfo): boolean | null {

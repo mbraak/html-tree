@@ -13,7 +13,7 @@ export default class SelectNodeHandler {
     constructor({ getNodeById }: SelectNodeHandlerParameters) {
         this._getNodeById = getNodeById;
         this._selectedNodes = new Set<NodeId>();
-        this.clear();
+        this._selectedSingleNode = null;
     }
 
     public addToSelection(node: Node): void {
