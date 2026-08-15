@@ -535,7 +535,7 @@ describe("mouseMove", () => {
         vi.useFakeTimers();
 
         const treeElement = document.createElement("ul");
-        treeElement.classList.add("html-tree-tree");
+        treeElement.classList.add("html-tree");
         document.body.appendChild(treeElement);
 
         const nodeElement = document.createElement("div");
@@ -591,7 +591,7 @@ describe("mouseMove", () => {
         vi.useFakeTimers();
 
         const treeElement = document.createElement("ul");
-        treeElement.classList.add("html-tree-tree");
+        treeElement.classList.add("html-tree");
         document.body.appendChild(treeElement);
 
         const nodeElement = document.createElement("div");
