@@ -1,6 +1,6 @@
-import type { DropHint } from "htmlTree/dragAndDropHandler/types";
-import type { GetScrollLeft } from "htmlTree/methodTypes";
-import type { Node, Position } from "htmlTree/node";
+import type { DropHint } from "../dragAndDropHandler/types";
+import type { GetScrollLeft } from "../methodTypes";
+import type { Node, Position } from "../node";
 
 import BorderDropHint from "./borderDropHint";
 import GhostDropHint from "./ghostDropHint";

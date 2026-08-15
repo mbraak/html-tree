@@ -8,7 +8,27 @@
   "license": "Apache-2.0",
   "browser": "./html_tree.js",
   "main": "./html_tree.js",
-  "types": "./src/html_tree.d.ts",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./html_tree.js"
+    },
+    "./html_tree.css": "./html_tree.css",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "html_tree.css",
+    "html_tree.debug.js",
+    "html_tree.debug.js.map",
+    "html_tree.js",
+    "html_tree.js.map",
+    "lib",
+    "src"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mbraak/html-tree.git"
@@ -24,6 +44,7 @@
     "build-with-coverage": "COVERAGE=true rollup --config config/rollup.config.mjs",
     "prettier": "prettier src/*.ts --write --tab-width 4",
     "tsc": "tsc --noEmit --project tsconfig.json",
+    "version": "node config/generateVersion.mjs && git add src/version.ts",
     "playwright": "pnpm build-with-coverage && playwright test --config playwright/playwright.config.js",
     "test": "pnpm vitest && pnpm playwright"
   },

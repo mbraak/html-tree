@@ -1,10 +1,9 @@
-import { getElementPosition, getOffsetTop } from "htmlTree/positionUtils";
-
 import type {
     HorizontalScrollDirection,
     VerticalScrollDirection,
 } from "./scrollParent";
 
+import { getElementPosition, getOffsetTop } from "../positionUtils";
 import { ScrollParent } from "./scrollParent";
 
 

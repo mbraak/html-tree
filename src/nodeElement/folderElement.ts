@@ -1,11 +1,9 @@
-import type { AnimationSpeed } from "htmlTree/animation";
-import type { OnFinishOpenNode, TriggerEvent } from "htmlTree/methodTypes";
-import type { Position } from "htmlTree/node";
-
-import { slideDown, slideUp } from "htmlTree/animation";
-
+import type { AnimationSpeed } from "../animation";
+import type { OnFinishOpenNode, TriggerEvent } from "../methodTypes";
+import type { Position } from "../node";
 import type { NodeElementParams } from "./index";
 
+import { slideDown, slideUp } from "../animation";
 import NodeElement from "./index";
 
 interface FolderElementParams extends NodeElementParams {
