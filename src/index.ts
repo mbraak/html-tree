@@ -60,7 +60,165 @@ export default class HtmlTree {
     this.tree = new Node({}, true);
     this._nodeMap = new WeakMap();
 
-    this._init();
+    const {
+      autoEscape,
+      buttonLeft,
+      closedIcon,
+      dataFilter,
+      dragAndDrop,
+      keyboardSupport,
+      onCanMove,
+      onCanMoveTo,
+      onCreateLi,
+      onDragMove,
+      onDragStop,
+      onGetStateFromStorage,
+      onIsMoveHandle,
+      onLoadFailed,
+      onLoading,
+      onSetStateFromStorage,
+      openedIcon,
+      openFolderDelay,
+      rtl,
+      saveState,
+      showEmptyFolder,
+      slide,
+      tabIndex,
+    } = this._options;
+
+    const closeNode = this.closeNode.bind(this);
+    const getNodeElement = this._getNodeElement.bind(this);
+    const getNodeElementForNode = this._getNodeElementForNode.bind(this);
+    const getNodeById = this.getNodeById.bind(this);
+    const getSelectedNode = this.getSelectedNode.bind(this);
+    const getTree = this.getTree.bind(this);
+    const isFocusOnTree = this._isFocusOnTree.bind(this);
+    const loadData = this.loadData.bind(this);
+    const openNode = this._openNodeInternal.bind(this);
+    const refreshElements = this._refreshElements.bind(this);
+    const refreshHitAreas = this.refreshHitAreas.bind(this);
+    const selectNode = this.selectNode.bind(this);
+    const setNodeElement = this._setNodeElement.bind(this);
+    const treeElement = this._htmlElement;
+    const triggerEvent = this._triggerEvent.bind(this);
+
+    const selectNodeHandler = new SelectNodeHandler({
+      getNodeById,
+    });
+
+    const addToSelection =
+      selectNodeHandler.addToSelection.bind(selectNodeHandler);
+    const getSelectedNodes =
+      selectNodeHandler.getSelectedNodes.bind(selectNodeHandler);
+    const isNodeSelected =
+      selectNodeHandler.isNodeSelected.bind(selectNodeHandler);
+    const removeFromSelection =
+      selectNodeHandler.removeFromSelection.bind(selectNodeHandler);
+    const getMouseDelay = () => this._options.startDndDelay ?? 0;
+
+    const dataLoader = new DataLoader({
+      dataFilter,
+      loadData,
+      onLoadFailed,
+      onLoading,
+      treeElement,
+      triggerEvent,
+    });
+
+    const saveStateHandler = new SaveStateHandler({
+      addToSelection,
+      getNodeById,
+      getSelectedNodes,
+      getTree,
+      onGetStateFromStorage,
+      onSetStateFromStorage,
+      openNode,
+      refreshElements,
+      removeFromSelection,
+      saveState,
+    });
+
+    const scrollHandler = new ScrollHandler({
+      refreshHitAreas,
+      treeElement,
+    });
+
+    const getScrollLeft = scrollHandler.getScrollLeft.bind(scrollHandler);
+
+    const dndHandler = new DragAndDropHandler({
+      autoEscape,
+      getNodeElement,
+      getNodeElementForNode,
+      getScrollLeft,
+      getTree,
+      onCanMove,
+      onCanMoveTo,
+      onDragMove,
+      onDragStop,
+      onIsMoveHandle,
+      openFolderDelay,
+      openNode,
+      refreshElements,
+      slide,
+      treeElement,
+      triggerEvent,
+    });
+
+    const keyHandler = new KeyHandler({
+      closeNode,
+      getSelectedNode,
+      isFocusOnTree,
+      keyboardSupport,
+      openNode,
+      selectNode,
+    });
+
+    const renderer = new ElementsRenderer({
+      autoEscape,
+      buttonLeft,
+      closedIcon,
+      dragAndDrop,
+      getTree,
+      htmlElement: treeElement,
+      isNodeSelected,
+      onCreateLi,
+      openedIcon,
+      rtl,
+      setNodeElement,
+      showEmptyFolder,
+      tabIndex,
+    });
+
+    const getNode = this.getNode.bind(this);
+    const onMouseCapture = this._mouseCapture.bind(this);
+    const onMouseDrag = this._mouseDrag.bind(this);
+    const onMouseStart = this._mouseStart.bind(this);
+    const onMouseStop = this._mouseStop.bind(this);
+
+    const mouseHandler = new MouseHandler({
+      element: treeElement,
+      getMouseDelay,
+      getNode,
+      onClickButton: this.toggle.bind(this),
+      onClickTitle: this.selectNode.bind(this),
+      onMouseCapture,
+      onMouseDrag,
+      onMouseStart,
+      onMouseStop,
+      triggerEvent,
+      useContextMenu: this._options.useContextMenu,
+    });
+
+    this._dataLoader = dataLoader;
+    this._dndHandler = dndHandler;
+    this._keyHandler = keyHandler;
+    this._mouseHandler = mouseHandler;
+    this._renderer = renderer;
+    this._saveStateHandler = saveStateHandler;
+    this._scrollHandler = scrollHandler;
+    this._selectNodeHandler = selectNodeHandler;
+
+    this._initData();
   }
 
   // Add a node after an existing node.
@@ -448,166 +606,6 @@ export default class HtmlTree {
     this._refreshElements(node);
   }
 
-  private _connectHandlers() {
-    const {
-      autoEscape,
-      buttonLeft,
-      closedIcon,
-      dataFilter,
-      dragAndDrop,
-      keyboardSupport,
-      onCanMove,
-      onCanMoveTo,
-      onCreateLi,
-      onDragMove,
-      onDragStop,
-      onGetStateFromStorage,
-      onIsMoveHandle,
-      onLoadFailed,
-      onLoading,
-      onSetStateFromStorage,
-      openedIcon,
-      openFolderDelay,
-      rtl,
-      saveState,
-      showEmptyFolder,
-      slide,
-      tabIndex,
-    } = this._options;
-
-    const closeNode = this.closeNode.bind(this);
-    const getNodeElement = this._getNodeElement.bind(this);
-    const getNodeElementForNode = this._getNodeElementForNode.bind(this);
-    const getNodeById = this.getNodeById.bind(this);
-    const getSelectedNode = this.getSelectedNode.bind(this);
-    const getTree = this.getTree.bind(this);
-    const isFocusOnTree = this._isFocusOnTree.bind(this);
-    const loadData = this.loadData.bind(this);
-    const openNode = this._openNodeInternal.bind(this);
-    const refreshElements = this._refreshElements.bind(this);
-    const refreshHitAreas = this.refreshHitAreas.bind(this);
-    const selectNode = this.selectNode.bind(this);
-    const setNodeElement = this._setNodeElement.bind(this);
-    const treeElement = this._htmlElement;
-    const triggerEvent = this._triggerEvent.bind(this);
-
-    const selectNodeHandler = new SelectNodeHandler({
-      getNodeById,
-    });
-
-    const addToSelection =
-      selectNodeHandler.addToSelection.bind(selectNodeHandler);
-    const getSelectedNodes =
-      selectNodeHandler.getSelectedNodes.bind(selectNodeHandler);
-    const isNodeSelected =
-      selectNodeHandler.isNodeSelected.bind(selectNodeHandler);
-    const removeFromSelection =
-      selectNodeHandler.removeFromSelection.bind(selectNodeHandler);
-    const getMouseDelay = () => this._options.startDndDelay ?? 0;
-
-    const dataLoader = new DataLoader({
-      dataFilter,
-      loadData,
-      onLoadFailed,
-      onLoading,
-      treeElement,
-      triggerEvent,
-    });
-
-    const saveStateHandler = new SaveStateHandler({
-      addToSelection,
-      getNodeById,
-      getSelectedNodes,
-      getTree,
-      onGetStateFromStorage,
-      onSetStateFromStorage,
-      openNode,
-      refreshElements,
-      removeFromSelection,
-      saveState,
-    });
-
-    const scrollHandler = new ScrollHandler({
-      refreshHitAreas,
-      treeElement,
-    });
-
-    const getScrollLeft = scrollHandler.getScrollLeft.bind(scrollHandler);
-
-    const dndHandler = new DragAndDropHandler({
-      autoEscape,
-      getNodeElement,
-      getNodeElementForNode,
-      getScrollLeft,
-      getTree,
-      onCanMove,
-      onCanMoveTo,
-      onDragMove,
-      onDragStop,
-      onIsMoveHandle,
-      openFolderDelay,
-      openNode,
-      refreshElements,
-      slide,
-      treeElement,
-      triggerEvent,
-    });
-
-    const keyHandler = new KeyHandler({
-      closeNode,
-      getSelectedNode,
-      isFocusOnTree,
-      keyboardSupport,
-      openNode,
-      selectNode,
-    });
-
-    const renderer = new ElementsRenderer({
-      autoEscape,
-      buttonLeft,
-      closedIcon,
-      dragAndDrop,
-      getTree,
-      htmlElement: treeElement,
-      isNodeSelected,
-      onCreateLi,
-      openedIcon,
-      rtl,
-      setNodeElement,
-      showEmptyFolder,
-      tabIndex,
-    });
-
-    const getNode = this.getNode.bind(this);
-    const onMouseCapture = this._mouseCapture.bind(this);
-    const onMouseDrag = this._mouseDrag.bind(this);
-    const onMouseStart = this._mouseStart.bind(this);
-    const onMouseStop = this._mouseStop.bind(this);
-
-    const mouseHandler = new MouseHandler({
-      element: treeElement,
-      getMouseDelay,
-      getNode,
-      onClickButton: this.toggle.bind(this),
-      onClickTitle: this.selectNode.bind(this),
-      onMouseCapture,
-      onMouseDrag,
-      onMouseStart,
-      onMouseStop,
-      triggerEvent,
-      useContextMenu: this._options.useContextMenu,
-    });
-
-    this._dataLoader = dataLoader;
-    this._dndHandler = dndHandler;
-    this._keyHandler = keyHandler;
-    this._mouseHandler = mouseHandler;
-    this._renderer = renderer;
-    this._saveStateHandler = saveStateHandler;
-    this._scrollHandler = scrollHandler;
-    this._selectNodeHandler = selectNodeHandler;
-  }
-
   private _createFolderElement(node: Node) {
     const closedIconElement = this._renderer.closedIconElement;
     const getScrollLeft = this._scrollHandler.getScrollLeft.bind(
@@ -732,12 +730,6 @@ export default class HtmlTree {
     } else {
       return null;
     }
-  }
-
-  private _init(): void {
-    this._connectHandlers();
-
-    this._initData();
   }
 
   private _initData(): void {

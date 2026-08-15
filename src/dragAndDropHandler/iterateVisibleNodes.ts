@@ -37,7 +37,7 @@ const iterateVisibleNodes = (
 
     const iterate = (node: Node, nextNode: Node | null): void => {
         let mustIterateInside =
-            (node.is_open || !node.element) && node.hasChildren();
+            (node.is_open === true || !node.element) && node.hasChildren();
 
         let element: HTMLElement | null = null;
 
