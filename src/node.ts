@@ -20,9 +20,9 @@ export class Node {
     public children: Node[];
     public element?: HTMLElement;
     public id?: NodeId;
-    public idMapping: Map<NodeId, Node>;
-    public is_loading: boolean;
-    public is_open: boolean;
+    public idMapping?: Map<NodeId, Node>;
+    public is_loading?: boolean;
+    public is_open?: boolean;
     public isEmptyFolder: boolean;
     public load_on_demand: boolean;
     public name: string;
@@ -47,11 +47,15 @@ export class Node {
 
         this.children = [];
         this.parent = null;
+        this.is_loading = undefined;
+        this.is_open ??= undefined;
 
         if (isRoot) {
             this.idMapping = new Map<NodeId, Node>();
             this.tree = this;
             this.nodeClass = nodeClass;
+        } else {
+            this.idMapping = undefined;
         }
     }
 
@@ -110,7 +114,7 @@ export class Node {
 
     public addNodeToIndex(node: Node): void {
         if (node.id != null) {
-            this.idMapping.set(node.id, node);
+            this.idMapping?.set(node.id, node);
         }
     }
 
@@ -301,7 +305,7 @@ export class Node {
     }
 
     public getNodeById(nodeId: NodeId): Node | null {
-        return this.idMapping.get(nodeId) ?? null;
+        return this.idMapping?.get(nodeId) ?? null;
     }
 
     public getNodeByName(name: string): Node | null {
@@ -590,7 +594,7 @@ export class Node {
 
     public removeNodeFromIndex(node: Node): void {
         if (node.id != null) {
-            this.idMapping.delete(node.id);
+            this.idMapping?.delete(node.id);
         }
     }
 

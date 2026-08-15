@@ -26,10 +26,13 @@ class NodeElement {
         treeElement,
     }: NodeElementParams) {
         this._getScrollLeft = getScrollLeft;
+        this.node = node;
         this._tabIndex = tabIndex;
         this._treeElement = treeElement;
 
-        this.init(node);
+        node.element ??= this._treeElement;
+        this.element = node.element;
+
     }
 
     public addDropHint(position: Position): DropHint {
@@ -48,14 +51,6 @@ class NodeElement {
         titleSpan.setAttribute("aria-selected", "false");
 
         titleSpan.blur();
-    }
-
-    public init(node: Node): void {
-        this.node = node;
-
-        node.element ??= this._treeElement;
-
-        this.element = node.element;
     }
 
     public select(mustSetFocus: boolean): void {
