@@ -7,14 +7,14 @@ import { getBanner } from "./banner.mjs";
 // Marks the output as ES modules for node, without making the whole package
 // "type": "module" - the main entry point is still a plain script.
 const emitModuleType = () => ({
-  name: "emit-module-type",
   generateBundle() {
     this.emitFile({
-      type: "asset",
       fileName: "package.json",
       source: `${JSON.stringify({ type: "module" }, null, 2)}\n`,
+      type: "asset",
     });
   },
+  name: "emit-module-type",
 });
 
 // Unbundled ES module build, used by the "module"/"exports" entry points so
