@@ -22,6 +22,21 @@ import setDefaultOptions from "./setDefaultOptions";
 import triggerCustomEvent from "./triggerCustomEvent";
 import __version__ from "./version";
 
+// The types that appear in the public api. Consumers cannot import them from
+// the submodules directly, because those are not exposed in package.json.
+// Type only, so that the iife build keeps exposing the HtmlTree class itself
+// as its global, instead of an object of named exports.
+export type {
+  HandleFinishedLoading,
+  HtmlTreeOptions,
+  Node,
+  NodeData,
+  NodeId,
+  OnFinishOpenNode,
+  Position,
+  SavedState,
+};
+
 export interface SelectNodeOptions {
   mustSetFocus?: boolean;
   mustToggle?: boolean;

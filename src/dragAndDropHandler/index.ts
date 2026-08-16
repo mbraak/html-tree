@@ -4,21 +4,19 @@ import type {
     OpenNode,
     RefreshElements,
     TriggerEvent,
-} from "htmlTree/methodTypes";
-import type { PositionInfo } from "htmlTree/mouseUtils";
-import type { Node } from "htmlTree/node";
-import type NodeElement from "htmlTree/nodeElement";
+} from "../methodTypes";
+import type { PositionInfo } from "../mouseUtils";
+import type { Node } from "../node";
+import type NodeElement from "../nodeElement";
 import type {
     DragMethod,
     OnCanMove,
     OnCanMoveTo,
     OnIsMoveHandle,
-} from "htmlTree/options";
-
-import { getElementPosition } from "htmlTree/positionUtils";
-
+} from "../options";
 import type { DropHint, HitArea } from "./types";
 
+import { getElementPosition } from "../positionUtils";
 import binarySearch from "./binarySearch";
 import DragElement from "./dragElement";
 import generateHitAreas from "./generateHitAreas";

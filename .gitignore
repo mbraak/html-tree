@@ -1,0 +1,16 @@
+node_modules/
+
+# Build output. The bundles in the project root (html_tree.js and friends) are
+# checked in on purpose, so they are not ignored here.
+lib/
+
+# Test output
+.nyc_output/
+js-coverage/
+playwright-report/
+test-results/
+
+# npm pack
+*.tgz
+
+.DS_Store

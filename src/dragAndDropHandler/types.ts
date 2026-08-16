@@ -1,4 +1,4 @@
-import type { Node, Position } from "htmlTree/node";
+import type { Node, Position } from "../node";
 
 export interface DropHint {
     remove: () => void;
