@@ -9,6 +9,8 @@ Tree widget in plain javascript. No jQuery, no framework, no runtime dependencie
 - Right-to-left support
 - Written in Typescript, ships with type declarations
 
+Full documentation: https://github.com/mbraak/html-tree
+
 ## Install
 
 ```sh
@@ -73,45 +75,45 @@ new HtmlTree({
 
 ## Options
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `animationSpeed` | `"fast"` | `"fast"`, `"slow"`, or a number of milliseconds |
-| `autoEscape` | `true` | Escape node names. Set to `false` to render html in a name |
-| `autoOpen` | `false` | `true` opens everything, a number opens that many levels (`0` is the first level) |
-| `buttonLeft` | `true` | Put the open/close button left of the title |
-| `closedIcon` | `►` (`◄` in rtl) | Html string or element |
-| `data` | | The nodes to display |
-| `dataFilter` | | Transforms the response of `dataUrl` into node data |
-| `dataUrl` | `data-url` attribute | Url, or a function returning a url |
-| `dragAndDrop` | `false` | Enable drag and drop |
-| `keyboardSupport` | `true` | Navigate with the arrow keys |
-| `nodeClass` | `Node` | Subclass of `Node` to use for nodes |
-| `openFolderDelay` | `500` | Milliseconds before a folder opens while dragging over it. `false` disables it |
-| `openedIcon` | `▼` | Html string or element |
-| `rtl` | `data-rtl` attribute | Right-to-left rendering |
-| `saveState` | `false` | `true`, or a string to use as the storage key |
-| `selectable` | `true` | Allow selecting nodes |
-| `showEmptyFolder` | `false` | Show the open/close button for nodes without children |
-| `slide` | `true` | Animate opening and closing |
-| `startDndDelay` | `300` | Milliseconds to hold before a drag starts |
-| `tabIndex` | `0` | Tab index of the tree element |
-| `useContextMenu` | `true` | Fire `tree.contextmenu` on right click |
+| Option            | Default              | Description                                                                       |
+| ----------------- | -------------------- | --------------------------------------------------------------------------------- |
+| `animationSpeed`  | `"fast"`             | `"fast"`, `"slow"`, or a number of milliseconds                                   |
+| `autoEscape`      | `true`               | Escape node names. Set to `false` to render html in a name                        |
+| `autoOpen`        | `false`              | `true` opens everything, a number opens that many levels (`0` is the first level) |
+| `buttonLeft`      | `true`               | Put the open/close button left of the title                                       |
+| `closedIcon`      | `►` (`◄` in rtl)     | Html string or element                                                            |
+| `data`            |                      | The nodes to display                                                              |
+| `dataFilter`      |                      | Transforms the response of `dataUrl` into node data                               |
+| `dataUrl`         | `data-url` attribute | Url, or a function returning a url                                                |
+| `dragAndDrop`     | `false`              | Enable drag and drop                                                              |
+| `keyboardSupport` | `true`               | Navigate with the arrow keys                                                      |
+| `nodeClass`       | `Node`               | Subclass of `Node` to use for nodes                                               |
+| `openFolderDelay` | `500`                | Milliseconds before a folder opens while dragging over it. `false` disables it    |
+| `openedIcon`      | `▼`                  | Html string or element                                                            |
+| `rtl`             | `data-rtl` attribute | Right-to-left rendering                                                           |
+| `saveState`       | `false`              | `true`, or a string to use as the storage key                                     |
+| `selectable`      | `true`               | Allow selecting nodes                                                             |
+| `showEmptyFolder` | `false`              | Show the open/close button for nodes without children                             |
+| `slide`           | `true`               | Animate opening and closing                                                       |
+| `startDndDelay`   | `300`                | Milliseconds to hold before a drag starts                                         |
+| `tabIndex`        | `0`                  | Tab index of the tree element                                                     |
+| `useContextMenu`  | `true`               | Fire `tree.contextmenu` on right click                                            |
 
 ### Callbacks
 
-| Option | Signature | Description |
-| --- | --- | --- |
-| `onCanMove` | `(node) => boolean` | May this node be dragged? |
-| `onCanMoveTo` | `(node, targetNode, position) => boolean` | May it be dropped here? `position` is `"before"`, `"after"` or `"inside"` |
-| `onCanSelectNode` | `(node) => boolean` | May this node be selected? |
-| `onCreateLi` | `(node, li, isSelected) => void` | Customise the `li` element of a node |
-| `onDragMove` | `(node, event) => void` | Called while dragging |
-| `onDragStop` | `(node, event) => void` | Called when a drag ends |
-| `onGetStateFromStorage` | `() => string` | Read saved state yourself |
-| `onSetStateFromStorage` | `(data) => void` | Write saved state yourself |
-| `onIsMoveHandle` | `(element) => boolean` | Is this element a drag handle? |
-| `onLoadFailed` | `(response) => void` | An ajax request failed |
-| `onLoading` | `(isLoading, node, element) => void` | Loading state changed |
+| Option                  | Signature                                 | Description                                                               |
+| ----------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
+| `onCanMove`             | `(node) => boolean`                       | May this node be dragged?                                                 |
+| `onCanMoveTo`           | `(node, targetNode, position) => boolean` | May it be dropped here? `position` is `"before"`, `"after"` or `"inside"` |
+| `onCanSelectNode`       | `(node) => boolean`                       | May this node be selected?                                                |
+| `onCreateLi`            | `(node, li, isSelected) => void`          | Customise the `li` element of a node                                      |
+| `onDragMove`            | `(node, event) => void`                   | Called while dragging                                                     |
+| `onDragStop`            | `(node, event) => void`                   | Called when a drag ends                                                   |
+| `onGetStateFromStorage` | `() => string`                            | Read saved state yourself                                                 |
+| `onSetStateFromStorage` | `(data) => void`                          | Write saved state yourself                                                |
+| `onIsMoveHandle`        | `(element) => boolean`                    | Is this element a drag handle?                                            |
+| `onLoadFailed`          | `(response) => void`                      | An ajax request failed                                                    |
+| `onLoading`             | `(isLoading, node, element) => void`      | Loading state changed                                                     |
 
 ## Events
 
@@ -124,19 +126,19 @@ element.addEventListener("tree.select", (e) => {
 });
 ```
 
-| Event | `detail` |
-| --- | --- |
-| `tree.init` | |
-| `tree.click` | `node`, `click_event` |
-| `tree.dblclick` | `node`, `click_event` |
-| `tree.contextmenu` | `node`, `click_event` |
-| `tree.select` | `node` (`null` when deselected), `deselected_node` or `previous_node` |
-| `tree.open` | `node` |
-| `tree.close` | `node` |
-| `tree.move` | `move_info` with `moved_node`, `target_node`, `position`, `previous_parent`, `do_move`, `original_event` |
-| `tree.refresh` | |
-| `tree.load_data` | `tree_data`, `parent_node` |
-| `tree.loading_data` | `isLoading`, `node`, `element` |
+| Event               | `detail`                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `tree.init`         |                                                                                                          |
+| `tree.click`        | `node`, `click_event`                                                                                    |
+| `tree.dblclick`     | `node`, `click_event`                                                                                    |
+| `tree.contextmenu`  | `node`, `click_event`                                                                                    |
+| `tree.select`       | `node` (`null` when deselected), `deselected_node` or `previous_node`                                    |
+| `tree.open`         | `node`                                                                                                   |
+| `tree.close`        | `node`                                                                                                   |
+| `tree.move`         | `move_info` with `moved_node`, `target_node`, `position`, `previous_parent`, `do_move`, `original_event` |
+| `tree.refresh`      |                                                                                                          |
+| `tree.load_data`    | `tree_data`, `parent_node`                                                                               |
+| `tree.loading_data` | `isLoading`, `node`, `element`                                                                           |
 
 `tree.click` and `tree.move` act on `event.preventDefault()`: it stops the node
 from being selected, and stops the move. For `tree.move`, call
@@ -166,7 +168,13 @@ The public types are exported from the package entry point:
 
 ```ts
 import HtmlTree from "html-tree";
-import type { HtmlTreeOptions, Node, NodeData, NodeId, SavedState } from "html-tree";
+import type {
+  HtmlTreeOptions,
+  Node,
+  NodeData,
+  NodeId,
+  SavedState,
+} from "html-tree";
 
 const options: Partial<HtmlTreeOptions> = { dragAndDrop: true };
 const data: NodeData[] = [{ name: "root", id: 1 }];
@@ -176,11 +184,11 @@ const data: NodeData[] = [{ name: "root", id: 1 }];
 
 ## Entry points
 
-| | |
-| --- | --- |
-| `import "html-tree"` | `lib/index.js`, unbundled es modules |
-| `require`, script tag | `html_tree.js`, minified iife exposing the global `HtmlTree` |
-| `html-tree/html_tree.css` | The stylesheet |
+|                           |                                                              |
+| ------------------------- | ------------------------------------------------------------ |
+| `import "html-tree"`      | `lib/index.js`, unbundled es modules                         |
+| `require`, script tag     | `html_tree.js`, minified iife exposing the global `HtmlTree` |
+| `html-tree/html_tree.css` | The stylesheet                                               |
 
 `html_tree.debug.js` is the same bundle without minification.
 
