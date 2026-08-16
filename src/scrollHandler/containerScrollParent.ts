@@ -9,21 +9,21 @@ import { ScrollParent } from "./scrollParent";
 
 
 export default class ContainerScrollParent extends ScrollParent {
-    private _scrollParentBottom?: number;
-    private _scrollParentTop?: number;
+    private scrollParentBottom?: number;
+    private scrollParentTop?: number;
 
     public stopScrolling() {
         super.stopScrolling();
 
-        this._horizontalScrollDirection = undefined;
-        this._verticalScrollDirection = undefined;
+        this.horizontalScrollDirection = undefined;
+        this.verticalScrollDirection = undefined;
     }
 
-    protected _getNewHorizontalScrollDirection(
+    protected getNewHorizontalScrollDirection(
         pageX: number,
     ): HorizontalScrollDirection | undefined {
-        const scrollParentOffset = getElementPosition(this._container);
-        const containerWidth = this._container.getBoundingClientRect().width;
+        const scrollParentOffset = getElementPosition(this.container);
+        const containerWidth = this.container.getBoundingClientRect().width;
 
         const rightEdge = scrollParentOffset.left + containerWidth;
         const leftEdge = scrollParentOffset.left;
@@ -39,34 +39,34 @@ export default class ContainerScrollParent extends ScrollParent {
         return undefined;
     }
 
-    protected _getNewVerticalScrollDirection(
+    protected getNewVerticalScrollDirection(
         pageY: number,
     ): undefined | VerticalScrollDirection {
-        if (pageY < this._getScrollParentTop()) {
+        if (pageY < this.getScrollParentTop()) {
             return "top";
         }
 
-        if (pageY > this._getScrollParentBottom()) {
+        if (pageY > this.getScrollParentBottom()) {
             return "bottom";
         }
 
         return undefined;
     }
 
-    private _getScrollParentBottom() {
-        if (this._scrollParentBottom == null) {
+    private getScrollParentBottom() {
+        if (this.scrollParentBottom == null) {
             const containerHeight =
-                this._container.getBoundingClientRect().height;
-            this._scrollParentBottom =
-                this._getScrollParentTop() + containerHeight;
+                this.container.getBoundingClientRect().height;
+            this.scrollParentBottom =
+                this.getScrollParentTop() + containerHeight;
         }
 
-        return this._scrollParentBottom;
+        return this.scrollParentBottom;
     }
 
-    private _getScrollParentTop() {
-        this._scrollParentTop ??= getOffsetTop(this._container);
+    private getScrollParentTop() {
+        this.scrollParentTop ??= getOffsetTop(this.container);
 
-        return this._scrollParentTop;
+        return this.scrollParentTop;
     }
 }
