@@ -54,21 +54,87 @@ imported over a relative path or one of the `paths` aliases are followed;
 Known limit: `memberAccess: "this"` misses accesses through anything but
 `this`/`super`, because deciding whether `x.foo` is *this* class's `foo` needs
 type information Babel does not have.
+
+This file is loaded by Babel straight from its config files (see
+config/babel.config.json), which works because Node strips the types itself.
+That needs Node 22.18 or newer, and it means the file may only use erasable
+syntax: no enums, no namespaces, no parameter properties.
 */
 
+import type {
+    File as BabelFile,
+    NodePath,
+    PluginAPI,
+    PluginObject,
+    types as t,
+} from "@babel/core";
+
+import { parseSync } from "@babel/core";
 import fs from "node:fs";
 import path from "node:path";
 
-import { parseSync } from "@babel/core";
+export interface Options {
+    /** Default ["private", "protected"]. */
+    accessibility?: string[];
+    /** Import prefix -> directory, resolved against `root`. */
+    aliases?: Record<string, string>;
+    /**
+     * "this" (the default) or "all". Typed as a string because it comes out of
+     * a JSON config file, and is checked at runtime.
+     */
+    memberAccess?: string;
+    /** Default "_". */
+    prefix?: string;
+    /** Default process.cwd(). */
+    root?: string;
+}
 
-const MEMBER_TYPES = new Set([
-    "ClassAccessorProperty",
-    "ClassMethod",
-    "ClassProperty",
-    "TSDeclareMethod",
-]);
+// The plugin options as the base class walk needs them: parsed, and with the
+// cache key that tells two different accessibility lists apart.
+interface BaseClassOptions {
+    accessibility: Set<string>;
+    aliases: Record<string, string>;
+    cacheKey: string;
+}
 
-const getName = (node) => {
+// Everything a class body can hold, of which only the four member types below
+// are ours to rename; a static block or an index signature has no name.
+type ClassBodyMember = t.ClassBody["body"][number];
+
+type ClassSource = ImportedClass | LocalClass;
+
+// What an export name points at: the class itself, or a re-export to follow.
+interface ExportedClass {
+    classNode?: null | t.ClassDeclaration;
+    redirect?: ImportedClass;
+}
+
+// A class named by an `extends` clause: either in this file, or behind an
+// import to follow.
+interface ImportedClass {
+    exportName: string;
+    source: string;
+}
+
+interface LocalClass {
+    classNode: t.ClassDeclaration;
+}
+
+type MemberNode =
+    | t.ClassAccessorProperty
+    | t.ClassMethod
+    | t.ClassProperty
+    | t.TSDeclareMethod;
+
+type PropertyAccess = t.MemberExpression | t.OptionalMemberExpression;
+
+const isMemberNode = (member: ClassBodyMember): member is MemberNode =>
+    member.type === "ClassAccessorProperty" ||
+    member.type === "ClassMethod" ||
+    member.type === "ClassProperty" ||
+    member.type === "TSDeclareMethod";
+
+const getName = (node: t.Node): null | string => {
     if (node.type === "Identifier") {
         return node.name;
     }
@@ -80,44 +146,65 @@ const getName = (node) => {
     return null;
 };
 
-const setName = (node, name) => {
+const setName = (node: t.Node, name: string): void => {
     if (node.type === "Identifier") {
         node.name = name;
-    } else {
+    } else if (node.type === "StringLiteral") {
         node.value = name;
     }
 };
 
-// Name of a member declaration that this plugin may rename, or null.
-const getMemberName = (member, accessibility) => {
-    if (!MEMBER_TYPES.has(member.type)) {
+// An import or export name is always an identifier or a string.
+const getModuleExportName = (node: t.Identifier | t.StringLiteral): string =>
+    node.type === "Identifier" ? node.name : node.value;
+
+// Key of a member declaration that this plugin may rename, or null.
+const getMemberKey = (
+    member: ClassBodyMember,
+    accessibility: Set<string>,
+): null | t.Node => {
+    if (!isMemberNode(member)) {
         return null;
     }
 
-    if (member.computed || member.kind === "constructor") {
+    if (member.computed || ("kind" in member && member.kind === "constructor")) {
         return null;
     }
 
-    if (!accessibility.has(member.accessibility)) {
+    if (member.accessibility == null || !accessibility.has(member.accessibility)) {
         return null;
     }
 
-    return getName(member.key);
+    return member.key;
+};
+
+const getMemberName = (
+    member: ClassBodyMember,
+    accessibility: Set<string>,
+): null | string => {
+    const key = getMemberKey(member, accessibility);
+
+    return key == null ? null : getName(key);
 };
 
 // `constructor(private container: HTMLElement)` declares a member *and* a
 // binding, so both have to be renamed.
-const getParameterProperties = (member) => {
+const getParameterProperties = (
+    member: ClassBodyMember,
+): t.TSParameterProperty[] => {
     if (member.type !== "ClassMethod" || member.kind !== "constructor") {
         return [];
     }
 
     return member.params.filter(
-        (param) => param.type === "TSParameterProperty",
+        (param): param is t.TSParameterProperty =>
+            param.type === "TSParameterProperty",
     );
 };
 
-const getParameterIdentifier = (parameterProperty) => {
+const getParameterIdentifier = (
+    parameterProperty: t.TSParameterProperty,
+): t.Node => {
     const { parameter } = parameterProperty;
 
     if (parameter.type === "AssignmentPattern") {
@@ -129,12 +216,12 @@ const getParameterIdentifier = (parameterProperty) => {
 
 const EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs"];
 
-const parsedFiles = new Map();
-const baseClassMembers = new Map();
+const parsedFiles = new Map<string, { mtimeMs: number; program: t.Program }>();
+const baseClassMembers = new Map<string, string[]>();
 
 // Base classes are parsed once and kept, keyed on the file's mtime so that a
 // watching build picks up an edited base class.
-const parseFile = (file) => {
+const parseFile = (file: string): t.Program => {
     const { mtimeMs } = fs.statSync(file);
     const cached = parsedFiles.get(file);
 
@@ -150,6 +237,10 @@ const parseFile = (file) => {
         sourceType: "module",
     });
 
+    if (!ast) {
+        throw new Error(`prefix-private-members: could not parse ${file}`);
+    }
+
     parsedFiles.set(file, { mtimeMs, program: ast.program });
     baseClassMembers.clear();
 
@@ -159,13 +250,17 @@ const parseFile = (file) => {
 // Turns an import specifier into a file, for relative imports and for the
 // configured aliases. Bare imports ("react") resolve to null: a class from a
 // package is not ours to rename.
-const resolveModule = (specifier, fromFile, aliases) => {
+const resolveModule = (
+    specifier: string,
+    fromFile: string,
+    aliases: Record<string, string>,
+): null | string => {
     let target;
 
     if (specifier.startsWith(".")) {
         target = path.resolve(path.dirname(fromFile), specifier);
     } else {
-        const alias = Object.keys(aliases).find((prefix) =>
+        const alias = Object.entries(aliases).find(([prefix]) =>
             specifier.startsWith(prefix),
         );
 
@@ -173,10 +268,9 @@ const resolveModule = (specifier, fromFile, aliases) => {
             return null;
         }
 
-        target = path.resolve(
-            aliases[alias],
-            specifier.slice(alias.length) || ".",
-        );
+        const [prefix, directory] = alias;
+
+        target = path.resolve(directory, specifier.slice(prefix.length) || ".");
     }
 
     const candidates = [
@@ -193,22 +287,34 @@ const resolveModule = (specifier, fromFile, aliases) => {
     );
 };
 
-const findLocalClass = (programNode, name) =>
-    programNode.body
-        .flatMap((node) =>
+const findLocalClass = (
+    programNode: t.Program,
+    name: string,
+): null | t.ClassDeclaration => {
+    for (const node of programNode.body) {
+        const declaration =
             node.type === "ExportNamedDeclaration" ||
             node.type === "ExportDefaultDeclaration"
-                ? [node.declaration]
-                : [node],
-        )
-        .find(
-            (node) =>
-                node?.type === "ClassDeclaration" && node.id?.name === name,
-        ) ?? null;
+                ? node.declaration
+                : node;
+
+        if (
+            declaration?.type === "ClassDeclaration" &&
+            declaration.id?.name === name
+        ) {
+            return declaration;
+        }
+    }
+
+    return null;
+};
 
 // Where a class name used as `extends` comes from: a class in this file, or an
 // import to follow.
-const findClassSource = (programNode, name) => {
+const findClassSource = (
+    programNode: t.Program,
+    name: string,
+): ClassSource | null => {
     for (const node of programNode.body) {
         if (node.type !== "ImportDeclaration") {
             continue;
@@ -225,7 +331,7 @@ const findClassSource = (programNode, name) => {
 
             if (specifier.type === "ImportSpecifier") {
                 return {
-                    exportName: getName(specifier.imported),
+                    exportName: getModuleExportName(specifier.imported),
                     source: node.source.value,
                 };
             }
@@ -240,7 +346,10 @@ const findClassSource = (programNode, name) => {
 };
 
 // The class an export name points at, or the re-export to follow.
-const findExportedClass = (programNode, exportName) => {
+const findExportedClass = (
+    programNode: t.Program,
+    exportName: string,
+): ExportedClass => {
     for (const node of programNode.body) {
         if (
             node.type === "ExportDefaultDeclaration" &&
@@ -253,7 +362,9 @@ const findExportedClass = (programNode, exportName) => {
             }
 
             if (declaration.type === "Identifier") {
-                return { classNode: findLocalClass(programNode, declaration.name) };
+                return {
+                    classNode: findLocalClass(programNode, declaration.name),
+                };
             }
         }
 
@@ -268,10 +379,10 @@ const findExportedClass = (programNode, exportName) => {
             return { classNode: node.declaration };
         }
 
-        for (const specifier of node.specifiers ?? []) {
+        for (const specifier of node.specifiers) {
             if (
                 specifier.type !== "ExportSpecifier" ||
-                getName(specifier.exported) !== exportName
+                getModuleExportName(specifier.exported) !== exportName
             ) {
                 continue;
             }
@@ -285,14 +396,19 @@ const findExportedClass = (programNode, exportName) => {
                 };
             }
 
-            return { classNode: findLocalClass(programNode, specifier.local.name) };
+            return {
+                classNode: findLocalClass(programNode, specifier.local.name),
+            };
         }
     }
 
     return {};
 };
 
-const getOwnMemberNames = (classNode, accessibility) =>
+const getOwnMemberNames = (
+    classNode: t.Class,
+    accessibility: Set<string>,
+): string[] =>
     classNode.body.body.flatMap((member) => {
         const names = [];
         const name = getMemberName(member, accessibility);
@@ -302,7 +418,10 @@ const getOwnMemberNames = (classNode, accessibility) =>
         }
 
         for (const parameterProperty of getParameterProperties(member)) {
-            if (accessibility.has(parameterProperty.accessibility)) {
+            if (
+                parameterProperty.accessibility != null &&
+                accessibility.has(parameterProperty.accessibility)
+            ) {
                 const parameterName = getName(
                     getParameterIdentifier(parameterProperty),
                 );
@@ -317,16 +436,28 @@ const getOwnMemberNames = (classNode, accessibility) =>
     });
 
 // The members of one class plus the ones it inherits.
-const getClassMemberNames = (classNode, programNode, file, options, seen) => [
+const getClassMemberNames = (
+    classNode: t.Class,
+    programNode: t.Program,
+    file: string,
+    options: BaseClassOptions,
+    seen: Set<string>,
+): string[] => [
     ...getOwnMemberNames(classNode, options.accessibility),
     ...getBaseClassMemberNames(classNode, programNode, file, options, seen),
 ];
 
-const getExportedClassMemberNames = (file, exportName, options, seen) => {
+const getExportedClassMemberNames = (
+    file: string,
+    exportName: string,
+    options: BaseClassOptions,
+    seen: Set<string>,
+): string[] => {
     const key = `${file}::${exportName}::${options.cacheKey}`;
+    const cached = baseClassMembers.get(key);
 
-    if (baseClassMembers.has(key)) {
-        return baseClassMembers.get(key);
+    if (cached) {
+        return cached;
     }
 
     if (seen.has(key)) {
@@ -338,7 +469,7 @@ const getExportedClassMemberNames = (file, exportName, options, seen) => {
 
     const programNode = parseFile(file);
     const { classNode, redirect } = findExportedClass(programNode, exportName);
-    let names = [];
+    let names: string[] = [];
 
     if (redirect) {
         const source = resolveModule(redirect.source, file, options.aliases);
@@ -361,10 +492,16 @@ const getExportedClassMemberNames = (file, exportName, options, seen) => {
 };
 
 // Members that `class X extends Y` inherits from Y, wherever Y lives.
-const getBaseClassMemberNames = (classNode, programNode, file, options, seen) => {
+const getBaseClassMemberNames = (
+    classNode: t.Class,
+    programNode: t.Program,
+    file: string,
+    options: BaseClassOptions,
+    seen: Set<string>,
+): string[] => {
     const { superClass } = classNode;
 
-    if (superClass?.type !== "Identifier" || file == null) {
+    if (superClass?.type !== "Identifier") {
         return [];
     }
 
@@ -374,7 +511,7 @@ const getBaseClassMemberNames = (classNode, programNode, file, options, seen) =>
         return [];
     }
 
-    if (classSource.classNode) {
+    if ("classNode" in classSource) {
         return getClassMemberNames(
             classSource.classNode,
             programNode,
@@ -397,7 +534,7 @@ const getBaseClassMemberNames = (classNode, programNode, file, options, seen) =>
 };
 
 // Property name of `a.b` / `a?.b`, or null when it cannot be renamed.
-const getPropertyName = (node) => {
+const getPropertyName = (node: PropertyAccess): null | string => {
     if (node.computed) {
         return null;
     }
@@ -408,7 +545,12 @@ const getPropertyName = (node) => {
 // A parameter property declares a member *and* a binding, and Babel does not
 // track that binding in its scope info, so the references in the constructor
 // body are renamed by hand.
-const renameParameter = (constructorPath, identifier, name, newName) => {
+const renameParameter = (
+    constructorPath: NodePath<t.ClassMethod>,
+    identifier: t.Node,
+    name: string,
+    newName: string,
+): void => {
     setName(identifier, newName);
 
     constructorPath.get("body").traverse({
@@ -423,9 +565,10 @@ const renameParameter = (constructorPath, identifier, name, newName) => {
                 return;
             }
 
+            const { parentPath } = path;
             const isAssignmentTarget =
-                path.parentPath.isAssignmentExpression() &&
-                path.parentPath.node.left === path.node;
+                parentPath.isAssignmentExpression() &&
+                parentPath.node.left === path.node;
 
             if (path.isReferencedIdentifier() || isAssignmentTarget) {
                 path.node.name = newName;
@@ -436,13 +579,19 @@ const renameParameter = (constructorPath, identifier, name, newName) => {
 
 const DIRECTIVE = /prefix-private-members:\s*all/;
 
-const hasAllDirective = (file) =>
+const hasAllDirective = (file: BabelFile): boolean =>
     (file.ast.comments ?? []).some((comment) => DIRECTIVE.test(comment.value));
 
-const isInstanceReference = (node) =>
-    node.object.type === "ThisExpression" || node.object.type === "Super";
+const isInstanceReference = (node: PropertyAccess): boolean => {
+    const { object } = node;
 
-export default function prefixPrivateMembers(_api, options = {}) {
+    return object.type === "ThisExpression" || object.type === "Super";
+};
+
+export default function prefixPrivateMembers(
+    _api: PluginAPI,
+    options: Options = {},
+): PluginObject {
     const prefix = options.prefix ?? "_";
     const accessibility = new Set(
         options.accessibility ?? ["private", "protected"],
@@ -462,7 +611,7 @@ export default function prefixPrivateMembers(_api, options = {}) {
             path.resolve(root, target),
         ]),
     );
-    const baseClassOptions = {
+    const baseClassOptions: BaseClassOptions = {
         accessibility,
         aliases,
         cacheKey: [...accessibility].sort().join(","),
@@ -470,8 +619,12 @@ export default function prefixPrivateMembers(_api, options = {}) {
 
     // Members inherited from base classes: declared elsewhere, but referenced
     // here, so they need the same rename.
-    const getInheritedRenames = (classPath, programPath, filename) => {
-        const renames = new Map();
+    const getInheritedRenames = (
+        classPath: NodePath<t.Class>,
+        programPath: NodePath<t.Program>,
+        filename: string | undefined,
+    ): Map<string, string> => {
+        const renames = new Map<string, string>();
 
         if (filename == null) {
             return renames;
@@ -495,20 +648,31 @@ export default function prefixPrivateMembers(_api, options = {}) {
     };
 
     // Renames the declarations of one class and returns them as old -> new.
-    const renameDeclarations = (classPath) => {
-        const renames = new Map();
+    const renameDeclarations = (
+        classPath: NodePath<t.Class>,
+    ): Map<string, string> => {
+        const renames = new Map<string, string>();
 
-        for (const memberPath of classPath.get("body.body")) {
-            const member = memberPath.node;
-            const name = getMemberName(member, accessibility);
+        for (const memberPath of classPath.get("body").get("body")) {
+            const key = getMemberKey(memberPath.node, accessibility);
+            const name = key == null ? null : getName(key);
 
-            if (name != null && !name.startsWith(prefix)) {
+            if (key != null && name != null && !name.startsWith(prefix)) {
                 renames.set(name, `${prefix}${name}`);
-                setName(member.key, `${prefix}${name}`);
+                setName(key, `${prefix}${name}`);
             }
 
-            for (const parameterProperty of getParameterProperties(member)) {
-                if (!accessibility.has(parameterProperty.accessibility)) {
+            if (!memberPath.isClassMethod()) {
+                continue;
+            }
+
+            for (const parameterProperty of getParameterProperties(
+                memberPath.node,
+            )) {
+                if (
+                    parameterProperty.accessibility == null ||
+                    !accessibility.has(parameterProperty.accessibility)
+                ) {
                     continue;
                 }
 
@@ -535,8 +699,11 @@ export default function prefixPrivateMembers(_api, options = {}) {
     // Rewrites `this.x` and `super.x` inside one class body. Nested classes
     // and nested non-arrow functions are skipped: their `this` is a different
     // object, and a nested class is visited on its own.
-    const rewriteInstanceReferences = (classPath, renames) => {
-        const rewrite = (path) => {
+    const rewriteInstanceReferences = (
+        classPath: NodePath<t.Class>,
+        renames: Map<string, string>,
+    ): void => {
+        const rewrite = (path: NodePath<PropertyAccess>) => {
             if (!isInstanceReference(path.node)) {
                 return;
             }
@@ -572,8 +739,11 @@ export default function prefixPrivateMembers(_api, options = {}) {
 
     // "all": rewrite every access to a name that is private or protected
     // somewhere in this file, whatever the object is.
-    const rewriteAllReferences = (programPath, renames) => {
-        const rewrite = (path) => {
+    const rewriteAllReferences = (
+        programPath: NodePath<t.Program>,
+        renames: Map<string, string>,
+    ): void => {
+        const rewrite = (path: NodePath<PropertyAccess>) => {
             const name = getPropertyName(path.node);
             const newName = name == null ? undefined : renames.get(name);
 
@@ -592,7 +762,7 @@ export default function prefixPrivateMembers(_api, options = {}) {
         name: "prefix-private-members",
         visitor: {
             Program(programPath, state) {
-                const allRenames = new Map();
+                const allRenames = new Map<string, string>();
                 const rewriteAll =
                     memberAccess === "all" || hasAllDirective(state.file);
 

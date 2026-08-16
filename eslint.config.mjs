@@ -61,10 +61,22 @@ export default [
         },
     },
     {
+        // The javascript build configuration is not part of the typescript
+        // project, so the type aware rules have nothing to work with.
+        files: ["config/**/*.mjs"],
+        ...tseslint.configs.disableTypeChecked,
+        languageOptions: {
+            ...tseslint.configs.disableTypeChecked.languageOptions,
+            globals: {
+                process: "readonly",
+            },
+        },
+    },
+    {
         files: ["src/**/*.ts"],
         rules: {
             // The build adds the leading underscore that terser mangles on,
-            // see config/babel-plugin-prefix-private-members.mjs.
+            // see config/babel-plugin-prefix-private-members.ts.
             "@typescript-eslint/naming-convention": [
                 "error",
                 {

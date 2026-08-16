@@ -2,7 +2,7 @@
     "presets": ["@babel/preset-typescript", "@babel/preset-env"],
     "plugins": [
         [
-            "./babel-plugin-prefix-private-members.mjs",
+            "./babel-plugin-prefix-private-members.ts",
             { "aliases": { "htmlTree/": "./src/" } }
         ],
         "istanbul"

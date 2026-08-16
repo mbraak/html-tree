@@ -2,17 +2,16 @@ import { transformSync } from "@babel/core";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, test } from "vitest";
 
-import prefixPrivateMembers from "../config/babel-plugin-prefix-private-members.mjs";
+import type { Options } from "../config/babel-plugin-prefix-private-members";
 
-/**
- * @param {string} code
- * @param {Record<string, unknown>} [options]
- * @param {string} [filename]
- * @returns {string}
- */
-const transform = (code, options = {}, filename = "test.ts") => {
+import prefixPrivateMembers from "../config/babel-plugin-prefix-private-members";
+
+const transform = (
+    code: string,
+    options: Options = {},
+    filename = "test.ts",
+): string => {
     const result = transformSync(code, {
         babelrc: false,
         configFile: false,
@@ -22,19 +21,22 @@ const transform = (code, options = {}, filename = "test.ts") => {
         retainLines: false,
     });
 
+    if (result?.code == null) {
+        throw new Error("babel did not generate any code");
+    }
+
     return result.code;
 };
 
 /**
  * Compiles one file of a small project on disk, so that the plugin can follow
  * the imports to the base classes.
- *
- * @param {Record<string, string>} files
- * @param {string} entry
- * @param {Record<string, unknown>} [options]
- * @returns {string}
  */
-const transformProject = (files, entry, options = {}) => {
+const transformProject = (
+    files: Record<string, string>,
+    entry: string,
+    options: Options = {},
+): string => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), "prefix-plugin-"));
 
     for (const [name, content] of Object.entries(files)) {
@@ -57,7 +59,7 @@ const transformProject = (files, entry, options = {}) => {
 };
 
 describe("prefix-private-members", () => {
-    test("prefixes private methods and their this-references", () => {
+    it("prefixes private methods and their this-references", () => {
         const code = transform(`
             class Tree {
                 public open(): void {
@@ -74,7 +76,7 @@ describe("prefix-private-members", () => {
         expect(code).not.toContain("this.render()");
     });
 
-    test("prefixes protected members", () => {
+    it("prefixes protected members", () => {
         const code = transform(`
             class ScrollParent {
                 protected container: HTMLElement;
@@ -90,7 +92,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("_scroll()");
     });
 
-    test("leaves public members alone", () => {
+    it("leaves public members alone", () => {
         const code = transform(`
             class Tree {
                 public element: HTMLElement;
@@ -105,7 +107,7 @@ describe("prefix-private-members", () => {
         expect(code).not.toContain("_open");
     });
 
-    test("leaves members without an accessibility modifier alone", () => {
+    it("leaves members without an accessibility modifier alone", () => {
         const code = transform(`
             class Tree {
                 element: HTMLElement;
@@ -120,7 +122,7 @@ describe("prefix-private-members", () => {
         expect(code).not.toContain("_open");
     });
 
-    test("is idempotent for names that are already prefixed", () => {
+    it("is idempotent for names that are already prefixed", () => {
         const code = transform(`
             class Tree {
                 private _element: HTMLElement;
@@ -136,7 +138,7 @@ describe("prefix-private-members", () => {
         expect(code).not.toContain("__open");
     });
 
-    test("prefixes getters, setters and static members", () => {
+    it("prefixes getters, setters and static members", () => {
         const code = transform(`
             class Tree {
                 private static count = 0;
@@ -158,7 +160,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._width = value");
     });
 
-    test("keeps the constructor name", () => {
+    it("keeps the constructor name", () => {
         const code = transform(`
             class Tree {
                 private constructor() {}
@@ -169,7 +171,7 @@ describe("prefix-private-members", () => {
         expect(code).not.toContain("_constructor");
     });
 
-    test("does not touch computed keys", () => {
+    it("does not touch computed keys", () => {
         const code = transform(`
             const key = "render";
 
@@ -182,7 +184,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("[key]");
     });
 
-    test("prefixes an abstract member declaration", () => {
+    it("prefixes an abstract member declaration", () => {
         const code = transform(`
             abstract class ScrollParent {
                 protected abstract scroll(): void;
@@ -196,7 +198,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._scroll()");
     });
 
-    test("prefixes a parameter property and its references", () => {
+    it("prefixes a parameter property and its references", () => {
         const code = transform(`
             class Tree {
                 constructor(private element: HTMLElement) {
@@ -214,7 +216,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._element.focus()");
     });
 
-    test("rewrites this-references from arrow functions", () => {
+    it("rewrites this-references from arrow functions", () => {
         const code = transform(`
             class Tree {
                 public open(): void {
@@ -229,7 +231,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._render()");
     });
 
-    test("does not rewrite this-references from a nested function", () => {
+    it("does not rewrite this-references from a nested function", () => {
         const code = transform(`
             class Tree {
                 public open(): void {
@@ -248,7 +250,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("_render()");
     });
 
-    test("keeps nested classes apart", () => {
+    it("keeps nested classes apart", () => {
         const code = transform(`
             class Outer {
                 public run(): void {
@@ -272,7 +274,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._log()");
     });
 
-    test("does not rewrite an unrelated object with the same property name", () => {
+    it("does not rewrite an unrelated object with the same property name", () => {
         const code = transform(`
             class Tree {
                 private render(): void {}
@@ -286,7 +288,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("options.render()");
     });
 
-    test("rewrites access to another instance with memberAccess all", () => {
+    it("rewrites access to another instance with memberAccess all", () => {
         const code = transform(
             `
                 class Node {
@@ -303,7 +305,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("node._setParent(this)");
     });
 
-    test("takes a custom prefix", () => {
+    it("takes a custom prefix", () => {
         const code = transform(
             `
                 class Tree {
@@ -320,7 +322,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this.$render()");
     });
 
-    test("takes a custom accessibility list", () => {
+    it("takes a custom accessibility list", () => {
         const code = transform(
             `
                 class Tree {
@@ -337,7 +339,7 @@ describe("prefix-private-members", () => {
         expect(code).not.toContain("_draw()");
     });
 
-    test("rewrites access to another instance after the file directive", () => {
+    it("rewrites access to another instance after the file directive", () => {
         const code = transform(`
             // prefix-private-members: all
 
@@ -353,7 +355,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("node._setParent(this)");
     });
 
-    test("prefixes members inherited from a base class in another file", () => {
+    it("prefixes members inherited from a base class in another file", () => {
         const code = transformProject(
             {
                 "base.ts": `
@@ -380,7 +382,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("_scroll()");
     });
 
-    test("follows the whole chain of base classes", () => {
+    it("follows the whole chain of base classes", () => {
         const code = transformProject(
             {
                 "a.ts": `
@@ -411,7 +413,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._top = this._middle");
     });
 
-    test("follows a base class imported through an alias", () => {
+    it("follows a base class imported through an alias", () => {
         const code = transformProject(
             {
                 "lib/base.ts": `
@@ -436,7 +438,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this._container.remove()");
     });
 
-    test("leaves a base class from a package alone", () => {
+    it("leaves a base class from a package alone", () => {
         const code = transform(`
             import { Widget } from "some-package";
 
@@ -450,7 +452,7 @@ describe("prefix-private-members", () => {
         expect(code).toContain("this.container.focus()");
     });
 
-    test("rejects an unknown memberAccess option", () => {
+    it("rejects an unknown memberAccess option", () => {
         expect(() => transform("class Tree {}", { memberAccess: "nope" })).toThrow(
             /memberAccess/,
         );
