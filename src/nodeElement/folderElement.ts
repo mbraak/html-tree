@@ -15,9 +15,9 @@ interface FolderElementParams extends NodeElementParams {
 }
 
 class FolderElement extends NodeElement {
-    private _closedIconElement?: HTMLElement | Text;
-    private _openedIconElement?: HTMLElement | Text;
-    private _triggerEvent: TriggerEvent;
+    private closedIconElement?: HTMLElement | Text;
+    private openedIconElement?: HTMLElement | Text;
+    private triggerEvent: TriggerEvent;
 
     constructor({
         closedIconElement,
@@ -35,9 +35,9 @@ class FolderElement extends NodeElement {
             treeElement,
         });
 
-        this._closedIconElement = closedIconElement;
-        this._openedIconElement = openedIconElement;
-        this._triggerEvent = triggerEvent;
+        this.closedIconElement = closedIconElement;
+        this.openedIconElement = openedIconElement;
+        this.triggerEvent = triggerEvent;
     }
 
     public close(slide: boolean, animationSpeed: AnimationSpeed): void {
@@ -47,11 +47,11 @@ class FolderElement extends NodeElement {
 
         this.node.is_open = false;
 
-        const button = this._getButton();
+        const button = this.getButton();
         button.classList.add("html-tree-closed");
         button.innerHTML = "";
 
-        const closedIconElement = this._closedIconElement;
+        const closedIconElement = this.closedIconElement;
 
         if (closedIconElement) {
             const icon = closedIconElement.cloneNode(true);
@@ -61,15 +61,15 @@ class FolderElement extends NodeElement {
         const doClose = (): void => {
             this.element.classList.add("html-tree-closed");
 
-            const titleSpan = this._getTitleSpan();
+            const titleSpan = this.getTitleSpan();
             titleSpan.setAttribute("aria-expanded", "false");
 
-            this._triggerEvent("tree.close", {
+            this.triggerEvent("tree.close", {
                 node: this.node,
             });
         };
 
-        const ul = this._getUl();
+        const ul = this.getUl();
 
         if (slide) {
             slideUp(ul, animationSpeed, doClose);
@@ -90,11 +90,11 @@ class FolderElement extends NodeElement {
 
         this.node.is_open = true;
 
-        const button = this._getButton();
+        const button = this.getButton();
         button.classList.remove("html-tree-closed");
         button.innerHTML = "";
 
-        const openedIconElement = this._openedIconElement;
+        const openedIconElement = this.openedIconElement;
 
         if (openedIconElement) {
             const icon = openedIconElement.cloneNode(true);
@@ -104,19 +104,19 @@ class FolderElement extends NodeElement {
         const doOpen = (): void => {
             this.element.classList.remove("html-tree-closed");
 
-            const titleSpan = this._getTitleSpan();
+            const titleSpan = this.getTitleSpan();
             titleSpan.setAttribute("aria-expanded", "true");
 
             if (onFinished) {
                 onFinished(this.node);
             }
 
-            this._triggerEvent("tree.open", {
+            this.triggerEvent("tree.open", {
                 node: this.node,
             });
         };
 
-        const ul = this._getUl();
+        const ul = this.getUl();
 
         if (slide) {
             slideDown(ul, animationSpeed, doOpen);
@@ -126,11 +126,11 @@ class FolderElement extends NodeElement {
         }
     }
 
-    protected _mustShowBorderDropHint(position: Position): boolean {
+    protected mustShowBorderDropHint(position: Position): boolean {
         return !this.node.is_open && position === "inside";
     }
 
-    private _getButton(): HTMLLinkElement {
+    private getButton(): HTMLLinkElement {
         return this.element.querySelector(
             ":scope > .html-tree-element > a.html-tree-toggler",
         ) as HTMLLinkElement;

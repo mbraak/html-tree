@@ -58,25 +58,25 @@ export class DragAndDropHandler {
     public hoveredArea: HitArea | null;
     public isDragging: boolean;
 
-    private _autoEscape?: boolean;
-    private _dragElement: DragElement | null;
-    private _getNodeElement: GetNodeElement;
-    private _getNodeElementForNode: GetNodeElementForNode;
-    private _getScrollLeft: GetScrollLeft;
-    private _getTree: GetTree;
-    private _onCanMove?: OnCanMove;
-    private _onCanMoveTo?: OnCanMoveTo;
-    private _onDragMove?: DragMethod;
-    private _onDragStop?: DragMethod;
-    private _onIsMoveHandle?: OnIsMoveHandle;
-    private _openFolderDelay: false | number;
-    private _openFolderTimer: null | number;
-    private _openNode: OpenNode;
-    private _previousGhost: DropHint | null;
-    private _refreshElements: RefreshElements;
-    private _slide: boolean;
-    private _treeElement: HTMLElement;
-    private _triggerEvent: TriggerEvent;
+    private autoEscape?: boolean;
+    private dragElement: DragElement | null;
+    private getNodeElement: GetNodeElement;
+    private getNodeElementForNode: GetNodeElementForNode;
+    private getScrollLeft: GetScrollLeft;
+    private getTree: GetTree;
+    private onCanMove?: OnCanMove;
+    private onCanMoveTo?: OnCanMoveTo;
+    private onDragMove?: DragMethod;
+    private onDragStop?: DragMethod;
+    private onIsMoveHandle?: OnIsMoveHandle;
+    private openFolderDelay: false | number;
+    private openFolderTimer: null | number;
+    private openNode: OpenNode;
+    private previousGhost: DropHint | null;
+    private refreshElements: RefreshElements;
+    private slide: boolean;
+    private treeElement: HTMLElement;
+    private triggerEvent: TriggerEvent;
 
     constructor({
         autoEscape,
@@ -96,48 +96,48 @@ export class DragAndDropHandler {
         treeElement,
         triggerEvent,
     }: DragAndDropHandlerParams) {
-        this._autoEscape = autoEscape;
-        this._getNodeElement = getNodeElement;
-        this._getNodeElementForNode = getNodeElementForNode;
-        this._getScrollLeft = getScrollLeft;
-        this._getTree = getTree;
-        this._onCanMove = onCanMove;
-        this._onCanMoveTo = onCanMoveTo;
-        this._onDragMove = onDragMove;
-        this._onDragStop = onDragStop;
-        this._onIsMoveHandle = onIsMoveHandle;
-        this._openFolderDelay = openFolderDelay;
-        this._openNode = openNode;
-        this._refreshElements = refreshElements;
-        this._slide = slide;
-        this._treeElement = treeElement;
-        this._triggerEvent = triggerEvent;
+        this.autoEscape = autoEscape;
+        this.getNodeElement = getNodeElement;
+        this.getNodeElementForNode = getNodeElementForNode;
+        this.getScrollLeft = getScrollLeft;
+        this.getTree = getTree;
+        this.onCanMove = onCanMove;
+        this.onCanMoveTo = onCanMoveTo;
+        this.onDragMove = onDragMove;
+        this.onDragStop = onDragStop;
+        this.onIsMoveHandle = onIsMoveHandle;
+        this.openFolderDelay = openFolderDelay;
+        this.openNode = openNode;
+        this.refreshElements = refreshElements;
+        this.slide = slide;
+        this.treeElement = treeElement;
+        this.triggerEvent = triggerEvent;
 
         this.hoveredArea = null;
         this.hitAreas = [];
         this.isDragging = false;
         this.currentItem = null;
 
-        this._dragElement = null;
-        this._openFolderTimer = null;
-        this._previousGhost = null;
+        this.dragElement = null;
+        this.openFolderTimer = null;
+        this.previousGhost = null;
     }
 
     public mouseCapture(positionInfo: PositionInfo): boolean | null {
         const element = positionInfo.target;
 
-        if (!this._mustCaptureElement(element)) {
+        if (!this.mustCaptureElement(element)) {
             return null;
         }
 
-        if (this._onIsMoveHandle && !this._onIsMoveHandle(element)) {
+        if (this.onIsMoveHandle && !this.onIsMoveHandle(element)) {
             return null;
         }
 
-        let nodeElement = this._getNodeElement(element);
+        let nodeElement = this.getNodeElement(element);
 
-        if (nodeElement && this._onCanMove) {
-            if (!this._onCanMove(nodeElement.node)) {
+        if (nodeElement && this.onCanMove) {
+            if (!this.onCanMove(nodeElement.node)) {
                 nodeElement = null;
             }
         }
@@ -147,43 +147,43 @@ export class DragAndDropHandler {
     }
 
     public mouseDrag(positionInfo: PositionInfo): boolean {
-        if (!this.currentItem || !this._dragElement) {
+        if (!this.currentItem || !this.dragElement) {
             return false;
         }
 
-        this._dragElement.move(positionInfo.pageX, positionInfo.pageY);
+        this.dragElement.move(positionInfo.pageX, positionInfo.pageY);
 
-        const area = this._findHoveredArea(
+        const area = this.findHoveredArea(
             positionInfo.pageX,
             positionInfo.pageY,
         );
 
-        if (area && this._canMoveToArea(area, this.currentItem)) {
+        if (area && this.canMoveToArea(area, this.currentItem)) {
             if (!area.node.isFolder()) {
-                this._stopOpenFolderTimer();
+                this.stopOpenFolderTimer();
             }
 
             if (this.hoveredArea !== area) {
                 this.hoveredArea = area;
 
                 // If this is a closed folder, start timer to open it
-                if (this._mustOpenFolderTimer(area)) {
-                    this._startOpenFolderTimer(area.node);
+                if (this.mustOpenFolderTimer(area)) {
+                    this.startOpenFolderTimer(area.node);
                 } else {
-                    this._stopOpenFolderTimer();
+                    this.stopOpenFolderTimer();
                 }
 
-                this._updateDropHint();
+                this.updateDropHint();
             }
         } else {
-            this._removeDropHint();
-            this._stopOpenFolderTimer();
+            this.removeDropHint();
+            this.stopOpenFolderTimer();
             this.hoveredArea = area;
         }
 
         if (!area) {
-            if (this._onDragMove) {
-                this._onDragMove(
+            if (this.onDragMove) {
+                this.onDragMove(
                     this.currentItem.node,
                     positionInfo.originalEvent,
                 );
@@ -204,12 +204,12 @@ export class DragAndDropHandler {
 
         const node = this.currentItem.node;
 
-        this._dragElement = new DragElement({
-            autoEscape: this._autoEscape ?? true,
+        this.dragElement = new DragElement({
+            autoEscape: this.autoEscape ?? true,
             nodeName: node.name,
             offsetX: positionInfo.pageX - left,
             offsetY: positionInfo.pageY - top,
-            treeElement: this._treeElement,
+            treeElement: this.treeElement,
         });
 
         this.isDragging = true;
@@ -219,11 +219,11 @@ export class DragAndDropHandler {
     }
 
     public mouseStop(positionInfo: PositionInfo): boolean {
-        this._moveItem(positionInfo);
-        this._clear();
-        this._removeHover();
-        this._removeDropHint();
-        this._removeHitAreas();
+        this.moveItem(positionInfo);
+        this.clear();
+        this.removeHover();
+        this.removeDropHint();
+        this.removeHitAreas();
 
         const currentItem = this.currentItem;
 
@@ -235,8 +235,8 @@ export class DragAndDropHandler {
         this.isDragging = false;
 
         if (!this.hoveredArea && currentItem) {
-            if (this._onDragStop) {
-                this._onDragStop(currentItem.node, positionInfo.originalEvent);
+            if (this.onDragStop) {
+                this.onDragStop(currentItem.node, positionInfo.originalEvent);
             }
         }
 
@@ -244,12 +244,12 @@ export class DragAndDropHandler {
     }
 
     public refresh(): void {
-        this._removeHitAreas();
+        this.removeHitAreas();
 
         if (this.currentItem) {
             const currentNode = this.currentItem.node;
-            this._generateHitAreas(currentNode);
-            this.currentItem = this._getNodeElementForNode(currentNode);
+            this.generateHitAreas(currentNode);
+            this.currentItem = this.getNodeElementForNode(currentNode);
 
             if (this.isDragging) {
                 this.currentItem.element.classList.add("html-tree-moving");
@@ -257,23 +257,23 @@ export class DragAndDropHandler {
         }
     }
 
-    private _canMoveToArea(area: HitArea, currentItem: NodeElement): boolean {
-        if (!this._onCanMoveTo) {
+    private canMoveToArea(area: HitArea, currentItem: NodeElement): boolean {
+        if (!this.onCanMoveTo) {
             return true;
         }
 
-        return this._onCanMoveTo(currentItem.node, area.node, area.position);
+        return this.onCanMoveTo(currentItem.node, area.node, area.position);
     }
 
-    private _clear(): void {
-        if (this._dragElement) {
-            this._dragElement.remove();
-            this._dragElement = null;
+    private clear(): void {
+        if (this.dragElement) {
+            this.dragElement.remove();
+            this.dragElement = null;
         }
     }
 
-    private _findHoveredArea(x: number, y: number): HitArea | null {
-        const dimensions = this._getTreeDimensions();
+    private findHoveredArea(x: number, y: number): HitArea | null {
+        const dimensions = this.getTreeDimensions();
 
         if (
             x < dimensions.left ||
@@ -295,8 +295,8 @@ export class DragAndDropHandler {
         });
     }
 
-    private _generateHitAreas(currentNode: Node): void {
-        const tree = this._getTree();
+    private generateHitAreas(currentNode: Node): void {
+        const tree = this.getTree();
 
         if (!tree) {
             this.hitAreas = [];
@@ -304,32 +304,32 @@ export class DragAndDropHandler {
             this.hitAreas = generateHitAreas(
                 tree,
                 currentNode,
-                this._getTreeDimensions().bottom,
+                this.getTreeDimensions().bottom,
             );
         }
     }
 
-    private _getTreeDimensions(): Dimensions {
+    private getTreeDimensions(): Dimensions {
         // Return the dimensions of the tree. Add a margin to the bottom to allow
         // to drag-and-drop after the last element.
-        const treePosition = getElementPosition(this._treeElement);
-        const left = treePosition.left + this._getScrollLeft();
+        const treePosition = getElementPosition(this.treeElement);
+        const left = treePosition.left + this.getScrollLeft();
         const top = treePosition.top;
 
         return {
-            bottom: top + this._treeElement.clientHeight + 16,
+            bottom: top + this.treeElement.clientHeight + 16,
             left,
-            right: left + this._treeElement.clientWidth,
+            right: left + this.treeElement.clientWidth,
             top,
         };
     }
 
     /* Move the dragged node to the selected position in the tree. */
-    private _moveItem(positionInfo: PositionInfo): void {
+    private moveItem(positionInfo: PositionInfo): void {
         if (
             this.currentItem &&
             this.hoveredArea?.position &&
-            this._canMoveToArea(this.hoveredArea, this.currentItem)
+            this.canMoveToArea(this.hoveredArea, this.currentItem)
         ) {
             const movedNode = this.currentItem.node;
             const targetNode = this.hoveredArea.node;
@@ -341,17 +341,17 @@ export class DragAndDropHandler {
             }
 
             const doMove = (): void => {
-                const tree = this._getTree();
+                const tree = this.getTree();
 
                 if (tree) {
                     tree.moveNode(movedNode, targetNode, position);
 
-                    this._treeElement.textContent = "";
-                    this._refreshElements(null);
+                    this.treeElement.textContent = "";
+                    this.refreshElements(null);
                 }
             };
 
-            if (this._triggerEvent("tree.move", {
+            if (this.triggerEvent("tree.move", {
                 move_info: {
                     do_move: doMove,
                     moved_node: movedNode,
@@ -366,7 +366,7 @@ export class DragAndDropHandler {
         }
     }
 
-    private _mustCaptureElement(element: HTMLElement): boolean {
+    private mustCaptureElement(element: HTMLElement): boolean {
         const nodeName = element.nodeName;
 
         return (
@@ -376,63 +376,63 @@ export class DragAndDropHandler {
         );
     }
 
-    private _mustOpenFolderTimer(area: HitArea): boolean {
+    private mustOpenFolderTimer(area: HitArea): boolean {
         const node = area.node;
 
         return node.isFolder() && !node.is_open && area.position === "inside";
     }
 
-    private _removeDropHint(): void {
-        if (this._previousGhost) {
-            this._previousGhost.remove();
+    private removeDropHint(): void {
+        if (this.previousGhost) {
+            this.previousGhost.remove();
         }
     }
 
-    private _removeHitAreas(): void {
+    private removeHitAreas(): void {
         this.hitAreas = [];
     }
 
-    private _removeHover(): void {
+    private removeHover(): void {
         this.hoveredArea = null;
     }
 
-    private _startOpenFolderTimer(folder: Node): void {
+    private startOpenFolderTimer(folder: Node): void {
         const openFolder = (): void => {
-            this._openNode(folder, this._slide, () => {
+            this.openNode(folder, this.slide, () => {
                 this.refresh();
-                this._updateDropHint();
+                this.updateDropHint();
             });
         };
 
-        this._stopOpenFolderTimer();
+        this.stopOpenFolderTimer();
 
-        const openFolderDelay = this._openFolderDelay;
+        const openFolderDelay = this.openFolderDelay;
 
         if (openFolderDelay !== false) {
-            this._openFolderTimer = window.setTimeout(
+            this.openFolderTimer = window.setTimeout(
                 openFolder,
                 openFolderDelay,
             );
         }
     }
 
-    private _stopOpenFolderTimer(): void {
-        if (this._openFolderTimer) {
-            clearTimeout(this._openFolderTimer);
-            this._openFolderTimer = null;
+    private stopOpenFolderTimer(): void {
+        if (this.openFolderTimer) {
+            clearTimeout(this.openFolderTimer);
+            this.openFolderTimer = null;
         }
     }
 
-    private _updateDropHint(): void {
+    private updateDropHint(): void {
         if (!this.hoveredArea) {
             return;
         }
 
         // remove previous drop hint
-        this._removeDropHint();
+        this.removeDropHint();
 
         // add new drop hint
-        const nodeElement = this._getNodeElementForNode(this.hoveredArea.node);
-        this._previousGhost = nodeElement.addDropHint(this.hoveredArea.position);
+        const nodeElement = this.getNodeElementForNode(this.hoveredArea.node);
+        this.previousGhost = nodeElement.addDropHint(this.hoveredArea.position);
     }
 }

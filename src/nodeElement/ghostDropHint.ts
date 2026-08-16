@@ -2,39 +2,39 @@ import type { DropHint } from "htmlTree/dragAndDropHandler/types";
 import type { Node, Position } from "htmlTree/node";
 
 class GhostDropHint implements DropHint {
-    private _element: HTMLElement;
-    private _ghost: HTMLElement;
-    private _node: Node;
+    private element: HTMLElement;
+    private ghost: HTMLElement;
+    private node: Node;
 
     constructor(node: Node, element: HTMLElement, position: Position) {
-        this._element = element;
-        this._node = node;
-        this._ghost = this._createGhostElement();
+        this.element = element;
+        this.node = node;
+        this.ghost = this.createGhostElement();
 
         switch (position) {
             case "after":
-                this._moveAfter();
+                this.moveAfter();
                 break;
 
             case "before":
-                this._moveBefore();
+                this.moveBefore();
                 break;
 
             case "inside": {
                 if (node.isFolder() && node.is_open) {
-                    this._moveInsideOpenFolder();
+                    this.moveInsideOpenFolder();
                 } else {
-                    this._moveInside();
+                    this.moveInside();
                 }
             }
         }
     }
 
     public remove(): void {
-        this._ghost.remove();
+        this.ghost.remove();
     }
 
-    private _createGhostElement() {
+    private createGhostElement() {
         const ghost = document.createElement("li");
         ghost.className = "html-tree-common html-tree-ghost";
 
@@ -49,24 +49,24 @@ class GhostDropHint implements DropHint {
         return ghost;
     }
 
-    private _moveAfter(): void {
-        this._element.after(this._ghost);
+    private moveAfter(): void {
+        this.element.after(this.ghost);
     }
 
-    private _moveBefore(): void {
-        this._element.before(this._ghost);
+    private moveBefore(): void {
+        this.element.before(this.ghost);
     }
 
-    private _moveInside(): void {
-        this._element.after(this._ghost);
-        this._ghost.classList.add("html-tree-inside");
+    private moveInside(): void {
+        this.element.after(this.ghost);
+        this.ghost.classList.add("html-tree-inside");
     }
 
-    private _moveInsideOpenFolder(): void {
-        const childElement = this._node.children[0]?.element;
+    private moveInsideOpenFolder(): void {
+        const childElement = this.node.children[0]?.element;
 
         if (childElement) {
-            childElement.before(this._ghost);
+            childElement.before(this.ghost);
         }
     }
 }

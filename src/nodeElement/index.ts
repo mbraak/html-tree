@@ -15,9 +15,9 @@ export interface NodeElementParams {
 class NodeElement {
     public element: HTMLElement;
     public node: Node;
-    private _getScrollLeft: GetScrollLeft;
-    private _tabIndex?: number;
-    private _treeElement: HTMLElement;
+    private getScrollLeft: GetScrollLeft;
+    private tabIndex?: number;
+    private treeElement: HTMLElement;
 
     constructor({
         getScrollLeft,
@@ -25,19 +25,19 @@ class NodeElement {
         tabIndex,
         treeElement,
     }: NodeElementParams) {
-        this._getScrollLeft = getScrollLeft;
+        this.getScrollLeft = getScrollLeft;
         this.node = node;
-        this._tabIndex = tabIndex;
-        this._treeElement = treeElement;
+        this.tabIndex = tabIndex;
+        this.treeElement = treeElement;
 
-        node.element ??= this._treeElement;
+        node.element ??= this.treeElement;
         this.element = node.element;
 
     }
 
     public addDropHint(position: Position): DropHint {
-        if (this._mustShowBorderDropHint(position)) {
-            return new BorderDropHint(this.element, this._getScrollLeft());
+        if (this.mustShowBorderDropHint(position)) {
+            return new BorderDropHint(this.element, this.getScrollLeft());
         } else {
             return new GhostDropHint(this.node, this.element, position);
         }
@@ -46,7 +46,7 @@ class NodeElement {
     public deselect(): void {
         this.element.classList.remove("html-tree-selected");
 
-        const titleSpan = this._getTitleSpan();
+        const titleSpan = this.getTitleSpan();
         titleSpan.removeAttribute("tabindex");
         titleSpan.setAttribute("aria-selected", "false");
 
@@ -56,8 +56,8 @@ class NodeElement {
     public select(mustSetFocus: boolean): void {
         this.element.classList.add("html-tree-selected");
 
-        const titleSpan = this._getTitleSpan();
-        const tabIndex = this._tabIndex;
+        const titleSpan = this.getTitleSpan();
+        const tabIndex = this.tabIndex;
 
         // Check for null or undefined
         if (tabIndex != null) {
@@ -71,17 +71,17 @@ class NodeElement {
         }
     }
 
-    protected _getTitleSpan(): HTMLSpanElement {
+    protected getTitleSpan(): HTMLSpanElement {
         return this.element.querySelector(
             ":scope > .html-tree-element > span.html-tree-title",
         ) as HTMLSpanElement;
     }
 
-    protected _getUl(): HTMLUListElement {
+    protected getUl(): HTMLUListElement {
         return this.element.querySelector(":scope > ul") as HTMLUListElement;
     }
 
-    protected _mustShowBorderDropHint(position: Position): boolean {
+    protected mustShowBorderDropHint(position: Position): boolean {
         return position === "inside";
     }
 }
