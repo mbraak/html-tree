@@ -1,3 +1,10 @@
+/*
+A node reads and writes the private members of other nodes (node.setParent),
+so the `_` prefix that the build adds cannot be limited to `this.`:
+
+prefix-private-members: all
+*/
+
 import { isNodeRecordWithChildren } from "./nodeUtils";
 
 export type NodeData = NodeRecord | string;
@@ -63,12 +70,12 @@ export class Node {
         if (!this.parent) {
             return null;
         } else {
-            const node = this._createNode(nodeInfo);
+            const node = this.createNode(nodeInfo);
 
             const childIndex = this.parent.getChildIndex(this);
             this.parent.addChildAtPosition(node, childIndex + 1);
 
-            node._loadChildrenFromData(nodeInfo);
+            node.loadChildrenFromData(nodeInfo);
             return node;
         }
     }
@@ -77,12 +84,12 @@ export class Node {
         if (!this.parent) {
             return null;
         } else {
-            const node = this._createNode(nodeInfo);
+            const node = this.createNode(nodeInfo);
 
             const childIndex = this.parent.getChildIndex(this);
             this.parent.addChildAtPosition(node, childIndex);
 
-            node._loadChildrenFromData(nodeInfo);
+            node.loadChildrenFromData(nodeInfo);
             return node;
         }
     }
@@ -96,7 +103,7 @@ export class Node {
     */
     public addChild(node: Node): void {
         this.children.push(node);
-        node._setParent(this);
+        node.setParent(this);
     }
 
     /*
@@ -109,7 +116,7 @@ export class Node {
     */
     public addChildAtPosition(node: Node, index: number): void {
         this.children.splice(index, 0, node);
-        node._setParent(this);
+        node.setParent(this);
     }
 
     public addNodeToIndex(node: Node): void {
@@ -122,10 +129,10 @@ export class Node {
         if (!this.parent) {
             return null;
         } else {
-            const newParent = this._createNode(nodeInfo);
+            const newParent = this.createNode(nodeInfo);
 
             if (this.tree) {
-                newParent._setParent(this.tree);
+                newParent.setParent(this.tree);
             }
             const originalParent = this.parent;
 
@@ -140,10 +147,10 @@ export class Node {
     }
 
     public append(nodeInfo: NodeData): Node {
-        const node = this._createNode(nodeInfo);
+        const node = this.createNode(nodeInfo);
         this.addChild(node);
 
-        node._loadChildrenFromData(nodeInfo);
+        node.loadChildrenFromData(nodeInfo);
         return node;
     }
 
@@ -414,7 +421,7 @@ export class Node {
 
         const addChildren = (childrenData: NodeData[]): void => {
             for (const child of childrenData) {
-                const node = this._createNode();
+                const node = this.createNode();
                 node.initFromData(child);
                 this.addChild(node);
             }
@@ -493,7 +500,7 @@ export class Node {
         this.removeChildren();
 
         for (const childData of data) {
-            const node = this._createNode(childData);
+            const node = this.createNode(childData);
             this.addChild(node);
 
             if (isNodeRecordWithChildren(childData)) {
@@ -522,7 +529,7 @@ export class Node {
             // - Or, parent is empty
             return false;
         } else {
-            movedNode.parent._doRemoveChild(movedNode);
+            movedNode.parent.doRemoveChild(movedNode);
 
             switch (position) {
                 case "after": {
@@ -557,10 +564,10 @@ export class Node {
     }
 
     public prepend(nodeInfo: NodeData): Node {
-        const node = this._createNode(nodeInfo);
+        const node = this.createNode(nodeInfo);
         this.addChildAtPosition(node, 0);
 
-        node._loadChildrenFromData(nodeInfo);
+        node.loadChildrenFromData(nodeInfo);
         return node;
     }
 
@@ -580,7 +587,7 @@ export class Node {
         // remove children from the index
         node.removeChildren();
 
-        this._doRemoveChild(node);
+        this.doRemoveChild(node);
     }
 
     public removeChildren(): void {
@@ -638,28 +645,28 @@ export class Node {
         }
     }
 
-    private _createNode(nodeData?: NodeData): Node {
-        const nodeClass = this._getNodeClass();
+    private createNode(nodeData?: NodeData): Node {
+        const nodeClass = this.getNodeClass();
         return new nodeClass(nodeData);
     }
 
-    private _doRemoveChild(node: Node): void {
+    private doRemoveChild(node: Node): void {
         this.children.splice(this.getChildIndex(node), 1);
         this.tree?.removeNodeFromIndex(node);
     }
 
-    private _getNodeClass(): typeof Node {
+    private getNodeClass(): typeof Node {
         return this.nodeClass ?? this.tree?.nodeClass ?? Node;
     }
 
     // Load children data from nodeInfo if it has children
-    private _loadChildrenFromData(nodeInfo: NodeData) {
+    private loadChildrenFromData(nodeInfo: NodeData) {
         if (isNodeRecordWithChildren(nodeInfo) && nodeInfo.children.length) {
             this.loadFromData(nodeInfo.children);
         }
     }
 
-    private _setParent(parent: Node): void {
+    private setParent(parent: Node): void {
         this.parent = parent;
         this.tree = parent.tree;
         this.tree?.addNodeToIndex(this);

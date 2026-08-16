@@ -1301,6 +1301,13 @@ var HtmlTree = (function () {
 
     const isNodeRecordWithChildren = data => typeof data === "object" && "children" in data && data.children instanceof Array;
 
+    /*
+    A node reads and writes the private members of other nodes (node.setParent),
+    so the `_` prefix that the build adds cannot be limited to `this.`:
+
+    prefix-private-members: all
+    */
+
     class Node {
       children;
       element;

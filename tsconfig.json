@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "exclude": ["_site", "node_modules"],
-  "include": ["src/**/*", "playwright/**/*", "test/**/*"],
+  "include": ["config/**/*.ts", "src/**/*", "playwright/**/*", "test/**/*"],
   "compilerOptions": {
     "allowJs": true,
     "erasableSyntaxOnly": true,

@@ -1,8 +1,8 @@
 import { babel } from "@rollup/plugin-babel";
 import resolve from "@rollup/plugin-node-resolve";
-import tsConfigPaths from "rollup-plugin-tsconfig-paths";
-import serve from "rollup-plugin-serve";
 import terser from "@rollup/plugin-terser";
+import serve from "rollup-plugin-serve";
+import tsConfigPaths from "rollup-plugin-tsconfig-paths";
 
 import { getBanner } from "./banner.mjs";
 

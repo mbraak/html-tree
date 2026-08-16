@@ -12,18 +12,18 @@ interface Params {
 }
 
 export default class DocumentScrollParent extends ScrollParent {
-    private _documentScrollHeight?: number;
-    private _documentScrollWidth?: number;
-    private _treeElement: HTMLElement;
+    private documentScrollHeight?: number;
+    private documentScrollWidth?: number;
+    private treeElement: HTMLElement;
 
     constructor({ refreshHitAreas, treeElement }: Params) {
         super({ container: document.documentElement, refreshHitAreas });
 
-        this._treeElement = treeElement;
+        this.treeElement = treeElement;
     }
 
     public scrollToY(top: number): void {
-        const treeTop = getOffsetTop(this._treeElement);
+        const treeTop = getOffsetTop(this.treeElement);
 
         super.scrollToY(top + treeTop);
     }
@@ -31,20 +31,20 @@ export default class DocumentScrollParent extends ScrollParent {
     public stopScrolling() {
         super.stopScrolling();
 
-        this._documentScrollHeight = undefined;
-        this._documentScrollWidth = undefined;
+        this.documentScrollHeight = undefined;
+        this.documentScrollWidth = undefined;
     }
 
-    protected _getNewHorizontalScrollDirection(
+    protected getNewHorizontalScrollDirection(
         pageX: number,
     ): HorizontalScrollDirection | undefined {
-        const scrollLeft = this._container.scrollLeft;
+        const scrollLeft = this.container.scrollLeft;
         const windowWidth = window.innerWidth;
 
         const isNearRightEdge = pageX > windowWidth - 20;
         const isNearLeftEdge = pageX - scrollLeft < 20;
 
-        if (isNearRightEdge && this._canScrollRight()) {
+        if (isNearRightEdge && this.canScrollRight()) {
             return "right";
         }
 
@@ -55,10 +55,10 @@ export default class DocumentScrollParent extends ScrollParent {
         return undefined;
     }
 
-    protected _getNewVerticalScrollDirection(
+    protected getNewVerticalScrollDirection(
         pageY: number,
     ): undefined | VerticalScrollDirection {
-        const scrollTop = this._container.scrollTop;
+        const scrollTop = this.container.scrollTop;
         const distanceTop = pageY - scrollTop;
 
         if (distanceTop < 20) {
@@ -67,38 +67,38 @@ export default class DocumentScrollParent extends ScrollParent {
 
         const windowHeight = window.innerHeight;
 
-        if (windowHeight - (pageY - scrollTop) < 20 && this._canScrollDown()) {
+        if (windowHeight - (pageY - scrollTop) < 20 && this.canScrollDown()) {
             return "bottom";
         }
 
         return undefined;
     }
 
-    private _canScrollDown() {
+    private canScrollDown() {
         return (
-            this._container.scrollTop + this._container.clientHeight <
-            this._getDocumentScrollHeight()
+            this.container.scrollTop + this.container.clientHeight <
+            this.getDocumentScrollHeight()
         );
     }
 
-    private _canScrollRight() {
+    private canScrollRight() {
         return (
-            this._container.scrollLeft + this._container.clientWidth <
-            this._getDocumentScrollWidth()
+            this.container.scrollLeft + this.container.clientWidth <
+            this.getDocumentScrollWidth()
         );
     }
 
-    private _getDocumentScrollHeight() {
+    private getDocumentScrollHeight() {
         // Store the original scroll height because the scroll height can increase when the drag element is moved beyond the scroll height.
-        this._documentScrollHeight ??= this._container.scrollHeight;
+        this.documentScrollHeight ??= this.container.scrollHeight;
 
-        return this._documentScrollHeight;
+        return this.documentScrollHeight;
     }
 
-    private _getDocumentScrollWidth() {
+    private getDocumentScrollWidth() {
         // Store the original scroll width because the scroll width can increase when the drag element is moved beyond the scroll width.
-        this._documentScrollWidth ??= this._container.scrollWidth;
+        this.documentScrollWidth ??= this.container.scrollWidth;
 
-        return this._documentScrollWidth;
+        return this.documentScrollWidth;
     }
 }

@@ -7,9 +7,9 @@ interface DragElementParams {
 }
 
 class DragElement {
-    private _element: HTMLElement;
-    private _offsetX: number;
-    private _offsetY: number;
+    private element: HTMLElement;
+    private offsetX: number;
+    private offsetY: number;
 
     constructor({
         autoEscape,
@@ -18,24 +18,24 @@ class DragElement {
         offsetY,
         treeElement,
     }: DragElementParams) {
-        this._offsetX = offsetX;
-        this._offsetY = offsetY;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
 
-        this._element = this._createElement(nodeName, autoEscape);
+        this.element = this.createElement(nodeName, autoEscape);
 
-        treeElement.appendChild(this._element);
+        treeElement.appendChild(this.element);
     }
 
     public move(pageX: number, pageY: number): void {
-        this._element.style.left = `${pageX - this._offsetX}px`;
-        this._element.style.top = `${pageY - this._offsetY}px`;
+        this.element.style.left = `${pageX - this.offsetX}px`;
+        this.element.style.top = `${pageY - this.offsetY}px`;
     }
 
     public remove(): void {
-        this._element.remove();
+        this.element.remove();
     }
 
-    private _createElement(nodeName: string, autoEscape: boolean) {
+    private createElement(nodeName: string, autoEscape: boolean) {
         const element = document.createElement("span");
         element.classList.add("html-tree-title", "html-tree-dragging");
 
