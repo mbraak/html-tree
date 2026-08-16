@@ -68,6 +68,7 @@ export default [
     languageOptions: {
       ...tseslint.configs.disableTypeChecked.languageOptions,
       globals: {
+        console: "readonly",
         process: "readonly",
       },
     },

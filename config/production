@@ -1,6 +1,8 @@
 rm -rf ./lib &&
-mkdir lib &&
+node config/generateVersion.mjs &&
 rollup -c config/rollup.config.mjs &&
 DEBUG_BUILD=true rollup -c config/rollup.config.mjs &&
-babel src --config-file ./config/babel.config.json --out-dir lib --extensions .ts &&
+rollup -c config/rollup.lib.config.mjs &&
+tsc --project tsconfig.build.json &&
+node config/fixDeclarationExtensions.mjs &&
 postcss --config ./config -o html_tree.css css/html_tree.postcss

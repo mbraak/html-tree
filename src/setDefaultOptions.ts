@@ -32,7 +32,7 @@ const defaults: HtmlTreeOptions = {
   // The symbol to use for an open node - ▼ BLACK DOWN-POINTING TRIANGLE
   // http://www.fileformat.info/info/unicode/char/25bc/index.htm
   rtl: undefined, // right-to-left support; true / false (default)
-  saveState: false, // true / false / string (cookie name)
+  saveState: false, // true / false / string (local storage key; the default key is "tree")
   selectable: true,
   showEmptyFolder: false,
   slide: true, // must display slide animation?

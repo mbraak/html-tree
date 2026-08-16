@@ -1,9 +1,7 @@
-import type { Node, Position } from "htmlTree/node";
-
-import { getOffsetTop } from "htmlTree/positionUtils";
-
+import type { Node, Position } from "../node";
 import type { HitArea } from "./types";
 
+import { getOffsetTop } from "../positionUtils";
 import iterateVisibleNodes from "./iterateVisibleNodes";
 
 interface HitPosition {
