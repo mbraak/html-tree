@@ -1,0 +1,11 @@
+[
+  {
+    "id": 19,
+    "name": "Diplodocoids"
+  },
+  {
+    "id": 20,
+    "name": "Macronarians",
+    "load_on_demand": true
+  }
+]

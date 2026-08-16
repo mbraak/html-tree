@@ -1,0 +1,23 @@
+[
+  {
+    "id": 4,
+    "name": "Coelophysoids"
+  },
+  {
+    "id": 5,
+    "name": "Ceratosaurians"
+  },
+  {
+    "id": 6,
+    "name": "Spinosauroids"
+  },
+  {
+    "id": 7,
+    "name": "Carnosaurians"
+  },
+  {
+    "id": 8,
+    "name": "Coelurosaurians",
+    "load_on_demand": true
+  }
+]

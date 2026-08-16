@@ -1,0 +1,24 @@
+[
+  {
+    "id": 24,
+    "name": "Heterodontosaurids"
+  },
+  {
+    "id": 25,
+    "name": "Thyreophorans",
+    "load_on_demand": true
+  },
+  {
+    "id": 28,
+    "name": "Ornithopods",
+    "load_on_demand": true
+  },
+  {
+    "id": 30,
+    "name": "Pachycephalosaurians"
+  },
+  {
+    "id": 31,
+    "name": "Ceratopsians"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "name": "Saurischia",
+    "load_on_demand": true
+  },
+  {
+    "id": 23,
+    "name": "Ornithischians",
+    "load_on_demand": true
+  }
+]
