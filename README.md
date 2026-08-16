@@ -9,7 +9,7 @@ Tree widget in plain javascript. No jQuery, no framework, no runtime dependencie
 - Right-to-left support
 - Written in Typescript, ships with type declarations
 
-Full documentation: https://github.com/mbraak/html-tree
+Full documentation: https://mbraak.github.io/html-tree/
 
 ## Install
 
