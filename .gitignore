@@ -4,6 +4,10 @@ node_modules/
 # checked in on purpose, so they are not ignored here.
 lib/
 
+# Docs build output
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
 # Test output
 .nyc_output/
 js-coverage/

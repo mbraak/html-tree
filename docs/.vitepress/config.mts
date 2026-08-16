@@ -8,7 +8,7 @@ export default defineConfig({
   description: "Tree widget in plain javascript",
   themeConfig: {
     editLink: {
-      pattern: "https://github.com/mbraak/html-tree/edit/main/docs/:path",
+      pattern: "https://github.com/mbraak/html-tree/edit/master/docs/:path",
       text: "Edit this page on GitHub",
     },
     footer: {
