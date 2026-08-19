@@ -5,18 +5,18 @@
 Build the distribution files from a checkout:
 
 ```sh
-pnpm install
-pnpm production
+npm install
+npm production
 ```
 
 That produces:
 
-| File                  | What it is                                                                  |
-| --------------------- | --------------------------------------------------------------------------- |
-| `html_tree.js`        | The bundle: an [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) that defines a global `HtmlTree`. |
-| `html_tree.debug.js`  | The same bundle, unminified.                                                |
-| `html_tree.css`       | The stylesheet.                                                             |
-| `lib/`                | The source compiled to ES modules, for bundlers.                            |
+| File                 | What it is                                                                                                      |
+| -------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `html_tree.js`       | The bundle: an [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) that defines a global `HtmlTree`. |
+| `html_tree.debug.js` | The same bundle, unminified.                                                                                    |
+| `html_tree.css`      | The stylesheet.                                                                                                 |
+| `lib/`               | The source compiled to ES modules, for bundlers.                                                                |
 
 ::: info
 `html-tree` is not published on npm yet, so there is no `npm install html-tree`. Copy the built
@@ -102,7 +102,7 @@ The repository contains a dev server with a working example
 (`devserver/index.html` and `devserver/devserver.js`):
 
 ```sh
-pnpm devserver
+nnpm run devserver
 ```
 
 It builds the bundle, watches `src`, and serves the example on `http://localhost:8080`.
