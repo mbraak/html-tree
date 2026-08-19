@@ -4,7 +4,7 @@ The widget needs `html_tree.css` to look like a tree: it removes the list bullet
 levels, hides closed folders and draws the drag-and-drop hints. Everything else — colors, fonts,
 spacing — is meant to be overridden.
 
-The stylesheet is generated from `css/html_tree.postcss` by `pnpm production`.
+The stylesheet is generated from `css/html_tree.postcss` by `npm run production`.
 
 ## Markup
 
@@ -24,7 +24,10 @@ A tree renders as nested lists:
     <ul class="html-tree-common" role="group">
       <li class="html-tree-common" role="none">
         <div class="html-tree-element html-tree-common" role="none">
-          <span class="html-tree-title html-tree-common html-tree-title-button-left">child</span>
+          <span
+            class="html-tree-title html-tree-common html-tree-title-button-left"
+            >child</span
+          >
         </div>
       </li>
     </ul>
@@ -37,26 +40,26 @@ be too — or be specific enough to win.
 
 ## Class names
 
-| Class                       | Applied to                                                        |
-| --------------------------- | ----------------------------------------------------------------- |
-| `html-tree`                 | The root `ul`.                                                    |
-| `html-tree-common`          | Every element the widget creates.                                 |
-| `html-tree-element`         | The `div` that wraps a node's toggler and title.                  |
-| `html-tree-title`           | The `span` with the node name.                                    |
-| `html-tree-folder`          | An `li` for a node that has children.                             |
-| `html-tree-closed`          | A closed folder — on the `li` and on its toggler.                 |
-| `html-tree-toggler`         | The open/close button.                                            |
-| `html-tree-toggler-left`    | The toggler when `buttonLeft` is true (the default).              |
-| `html-tree-toggler-right`   | The toggler when `buttonLeft` is false.                           |
-| `html-tree-title-folder`    | The title of a folder node.                                       |
-| `html-tree-selected`        | The `li` of a selected node.                                      |
-| `html-tree-loading`         | A node — or the tree — that is fetching data.                     |
-| `html-tree-rtl`             | The root `ul` when `rtl` is true.                                 |
-| `html-tree-dnd`             | The root `ul` when `dragAndDrop` is true.                          |
-| `html-tree-ghost`           | The drop hint while dragging.                                     |
-| `html-tree-inside`          | The drop hint for a drop *inside* a folder.                       |
-| `html-tree-moving`          | The node that is being dragged.                                   |
-| `html-tree-border`          | The border drawn around a folder that is being dropped into.      |
+| Class                     | Applied to                                                   |
+| ------------------------- | ------------------------------------------------------------ |
+| `html-tree`               | The root `ul`.                                               |
+| `html-tree-common`        | Every element the widget creates.                            |
+| `html-tree-element`       | The `div` that wraps a node's toggler and title.             |
+| `html-tree-title`         | The `span` with the node name.                               |
+| `html-tree-folder`        | An `li` for a node that has children.                        |
+| `html-tree-closed`        | A closed folder — on the `li` and on its toggler.            |
+| `html-tree-toggler`       | The open/close button.                                       |
+| `html-tree-toggler-left`  | The toggler when `buttonLeft` is true (the default).         |
+| `html-tree-toggler-right` | The toggler when `buttonLeft` is false.                      |
+| `html-tree-title-folder`  | The title of a folder node.                                  |
+| `html-tree-selected`      | The `li` of a selected node.                                 |
+| `html-tree-loading`       | A node — or the tree — that is fetching data.                |
+| `html-tree-rtl`           | The root `ul` when `rtl` is true.                            |
+| `html-tree-dnd`           | The root `ul` when `dragAndDrop` is true.                    |
+| `html-tree-ghost`         | The drop hint while dragging.                                |
+| `html-tree-inside`        | The drop hint for a drop _inside_ a folder.                  |
+| `html-tree-moving`        | The node that is being dragged.                              |
+| `html-tree-border`        | The border drawn around a folder that is being dropped into. |
 
 ## Overriding styles
 
