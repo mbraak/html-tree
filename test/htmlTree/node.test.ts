@@ -1,4 +1,3 @@
-import "jest-extended";
 import { Node } from "htmlTree/node";
 
 import exampleData from "../support/exampleData";
