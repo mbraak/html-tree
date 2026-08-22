@@ -3247,9 +3247,8 @@ var HtmlTree = (function () {
         if (this._selectNodeHandler.isNodeSelected(node)) {
           if (selectOptions.mustToggle) {
             this._deselectCurrentNode();
-            this._triggerEvent("tree.select", {
-              node: null,
-              previous_node: node
+            this._triggerEvent("tree.deselect", {
+              node
             });
           }
         } else {

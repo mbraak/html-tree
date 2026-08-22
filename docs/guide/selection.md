@@ -1,7 +1,8 @@
 # Selection
 
 Clicking a node selects it. The selected node gets the `html-tree-selected` class, and the tree
-dispatches [`tree.select`](../reference/events#tree-select).
+dispatches [`tree.select`](../reference/events#tree-select). Clicking the selected node deselects it,
+which dispatches [`tree.deselect`](../reference/events#tree-deselect).
 
 <TreeDemo demo="basic" events />
 

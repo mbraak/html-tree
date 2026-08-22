@@ -175,43 +175,105 @@ describe("events", () => {
       );
     });
 
-    it("fires tree.select with node is null when the node was selected", async () => {
+    it("does not fire tree.select when the node is deselected", async () => {
       const tree = createHtmlTree({ data: exampleData });
 
-      const node1 = tree.getNodeByNameMustExist("node1");
-      tree.selectNode(node1);
+      tree.selectNode(tree.getNodeByNameMustExist("node1"));
 
       const onSelect = listenToEvent("tree.select");
 
       await userEvent.click(screen.getByRole("treeitem", { name: "node1" }));
 
-      expect(onSelect).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({
-          node: null,
-          previous_node: node1,
-        }),
-      );
+      expect(onSelect).not.toHaveBeenCalled();
     });
 
-    // The detail of tree.select is a union: `node` is null on a deselection,
-    // and `previous_node` is only set then.
-    it("narrows the detail on the node property", async () => {
-      createHtmlTree({ data: exampleData });
+    it("fires tree.select with the node that was deselected", async () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      tree.selectNode(node1);
 
       const selections: string[] = [];
 
       htmlElement.addEventListener("tree.select", (e) => {
         selections.push(
-          e.detail.node
-            ? e.detail.node.name
-            : `-${e.detail.previous_node.name}`,
+          `${e.detail.node.name} instead of ${e.detail.deselected_node?.name ?? "-"}`,
         );
       });
 
-      await userEvent.click(screen.getByRole("treeitem", { name: "node1" }));
+      await userEvent.click(screen.getByRole("treeitem", { name: "node2" }));
+
+      expect(selections).toStrictEqual(["node2 instead of node1"]);
+    });
+  });
+
+  describe("tree.deselect", () => {
+    it("fires tree.deselect when the selected node is clicked again", async () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      tree.selectNode(node1);
+
+      const onDeselect = listenToEvent("tree.deselect");
+
       await userEvent.click(screen.getByRole("treeitem", { name: "node1" }));
 
-      expect(selections).toStrictEqual(["node1", "-node1"]);
+      expect(onDeselect).toHaveBeenCalledExactlyOnceWith({ node: node1 });
+    });
+
+    it("fires tree.deselect when selectNode toggles the node off", () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      tree.selectNode(node1);
+
+      const onDeselect = listenToEvent("tree.deselect");
+
+      tree.selectNode(node1);
+
+      expect(onDeselect).toHaveBeenCalledExactlyOnceWith({ node: node1 });
+    });
+
+    it("does not fire tree.deselect when mustToggle is false", () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      tree.selectNode(node1);
+
+      const onDeselect = listenToEvent("tree.deselect");
+
+      tree.selectNode(node1, { mustToggle: false });
+
+      expect(onDeselect).not.toHaveBeenCalled();
+    });
+
+    it("does not fire tree.deselect when another node is selected", async () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      tree.selectNode(tree.getNodeByNameMustExist("node1"));
+
+      const onDeselect = listenToEvent("tree.deselect");
+
+      await userEvent.click(screen.getByRole("treeitem", { name: "node2" }));
+
+      expect(onDeselect).not.toHaveBeenCalled();
+    });
+
+    it("fires tree.deselect instead of tree.select", async () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      tree.selectNode(tree.getNodeByNameMustExist("node1"));
+
+      const names: string[] = [];
+      for (const eventName of ["tree.deselect", "tree.select"] as const) {
+        htmlElement.addEventListener(eventName, () => {
+          names.push(eventName);
+        });
+      }
+
+      await userEvent.click(screen.getByRole("treeitem", { name: "node1" }));
+
+      expect(names).toStrictEqual(["tree.deselect"]);
     });
   });
 

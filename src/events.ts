@@ -34,6 +34,9 @@ export interface TreeEvents {
         click_event: MouseEvent;
         node: Node;
     };
+    "tree.deselect": {
+        node: Node;
+    };
     "tree.init": undefined;
     "tree.load_data": {
         parent_node: Node | undefined;
@@ -51,20 +54,11 @@ export interface TreeEvents {
         node: Node;
     };
     "tree.refresh": undefined;
-    "tree.select": TreeSelectDetail;
+    "tree.select": {
+        deselected_node: Node | null;
+        node: Node;
+    };
 }
-
-export type TreeSelectDetail =
-    | {
-          // A node is selected.
-          deselected_node: Node | null;
-          node: Node;
-      }
-    | {
-          // The selected node is deselected.
-          node: null;
-          previous_node: Node;
-      };
 
 type TreeEventMap = {
     [Name in TreeEventName]: TreeEvent<Name>;

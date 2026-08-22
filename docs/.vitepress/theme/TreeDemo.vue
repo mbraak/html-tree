@@ -21,6 +21,7 @@ const EVENT_NAMES = [
   "tree.dblclick",
   "tree.contextmenu",
   "tree.select",
+  "tree.deselect",
   "tree.open",
   "tree.close",
   "tree.move",
@@ -56,9 +57,10 @@ const describe = (name: string, detail: unknown): string => {
   }
 
   if (name === "tree.select") {
-    return values.node
-      ? `node: ${values.node.name}`
-      : `deselected: ${values.previous_node?.name ?? ""}`;
+    const deselected = values.deselected_node;
+    return deselected
+      ? `node: ${values.node.name}, was: ${deselected.name}`
+      : `node: ${values.node.name}`;
   }
 
   if (name === "tree.loading_data") {
