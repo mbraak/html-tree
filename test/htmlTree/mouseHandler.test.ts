@@ -11,6 +11,8 @@ import MouseHandler from "htmlTree/mouseHandler";
 import { Node } from "htmlTree/node";
 import { vi } from "vitest";
 
+import defaultClassNames from "../support/classNames";
+
 interface CreateMouseHandlerParams {
     element: HTMLElement;
     getMouseDelay?: GetMouseDelay;
@@ -37,6 +39,7 @@ const createMouseHandler = ({
     triggerEvent = vi.fn(),
 }: CreateMouseHandlerParams) => {
     return new MouseHandler({
+        classNames: defaultClassNames,
         element,
         getMouseDelay,
         getNode,

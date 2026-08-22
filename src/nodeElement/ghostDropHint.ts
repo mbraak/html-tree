@@ -1,12 +1,20 @@
+import type { ClassNames } from "../classNames";
 import type { DropHint } from "../dragAndDropHandler/types";
 import type { Node, Position } from "../node";
 
 class GhostDropHint implements DropHint {
+    private classNames: ClassNames;
     private element: HTMLElement;
     private ghost: HTMLElement;
     private node: Node;
 
-    constructor(node: Node, element: HTMLElement, position: Position) {
+    constructor(
+        node: Node,
+        element: HTMLElement,
+        position: Position,
+        classNames: ClassNames,
+    ) {
+        this.classNames = classNames;
         this.element = element;
         this.node = node;
         this.ghost = this.createGhostElement();
@@ -35,15 +43,17 @@ class GhostDropHint implements DropHint {
     }
 
     private createGhostElement() {
+        const { circle, common, ghost: ghostClass, line } = this.classNames;
+
         const ghost = document.createElement("li");
-        ghost.className = "html-tree-common html-tree-ghost";
+        ghost.className = `${common} ${ghostClass}`;
 
         const circleSpan = document.createElement("span");
-        circleSpan.className = "html-tree-common html-tree-circle";
+        circleSpan.className = `${common} ${circle}`;
         ghost.append(circleSpan);
 
         const lineSpan = document.createElement("span");
-        lineSpan.className = "html-tree-common html-tree-line";
+        lineSpan.className = `${common} ${line}`;
         ghost.append(lineSpan);
 
         return ghost;
@@ -59,7 +69,7 @@ class GhostDropHint implements DropHint {
 
     private moveInside(): void {
         this.element.after(this.ghost);
-        this.ghost.classList.add("html-tree-inside");
+        this.ghost.classList.add(this.classNames.inside);
     }
 
     private moveInsideOpenFolder(): void {

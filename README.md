@@ -81,7 +81,9 @@ new HtmlTree({
 | `autoEscape`      | `true`               | Escape node names. Set to `false` to render html in a name                        |
 | `autoOpen`        | `false`              | `true` opens everything, a number opens that many levels (`0` is the first level) |
 | `buttonLeft`      | `true`               | Put the open/close button left of the title                                       |
+| `classPrefix`     | `"html-tree"`        | The prefix of all css classes                                                     |
 | `closedIcon`      | `►` (`◄` in rtl)     | Html string or element                                                            |
+| `commonClassName` | `"html-tree-common"` | The class that every element gets                                                 |
 | `data`            |                      | The nodes to display                                                              |
 | `dataFilter`      |                      | Transforms the response of `dataUrl` into node data                               |
 | `dataUrl`         | `data-url` attribute | Url, or a function returning a url                                                |
@@ -97,6 +99,7 @@ new HtmlTree({
 | `slide`           | `true`               | Animate opening and closing                                                       |
 | `startDndDelay`   | `300`                | Milliseconds to hold before a drag starts                                         |
 | `tabIndex`        | `0`                  | Tab index of the tree element                                                     |
+| `treeClassName`   | `"html-tree"`        | The class of the root `ul`                                                        |
 | `useContextMenu`  | `true`               | Fire `tree.contextmenu` on right click                                            |
 
 ### Callbacks

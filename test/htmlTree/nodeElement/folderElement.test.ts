@@ -6,6 +6,7 @@ import FolderElement from "htmlTree/nodeElement/folderElement";
 import GhostDropHint from "htmlTree/nodeElement/ghostDropHint";
 import { vi } from "vitest";
 
+import defaultClassNames from "../../support/classNames";
 import { getTreeButton, getTreeListElement } from "../../support/queries";
 
 interface CreateFolderElementParams {
@@ -34,6 +35,7 @@ const createFolderElement = ({
     const renderer = new ElementsRenderer({
         autoEscape: true,
         buttonLeft: false,
+        classNames: defaultClassNames,
         dragAndDrop: false,
         getTree: () => tree,
         htmlElement: treeElement,
@@ -52,6 +54,7 @@ const createFolderElement = ({
     const triggerEvent = vi.fn();
 
     const folderElement = new FolderElement({
+        classNames: defaultClassNames,
         closedIconElement,
         getScrollLeft: () => 0,
         node: folderNode,

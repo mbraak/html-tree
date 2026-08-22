@@ -1,5 +1,8 @@
+import type { ClassNames } from "../classNames";
+
 interface DragElementParams {
     autoEscape: boolean;
+    classNames: ClassNames;
     nodeName: string;
     offsetX: number;
     offsetY: number;
@@ -13,6 +16,7 @@ class DragElement {
 
     constructor({
         autoEscape,
+        classNames,
         nodeName,
         offsetX,
         offsetY,
@@ -21,7 +25,7 @@ class DragElement {
         this.offsetX = offsetX;
         this.offsetY = offsetY;
 
-        this.element = this.createElement(nodeName, autoEscape);
+        this.element = this.createElement(nodeName, autoEscape, classNames);
 
         treeElement.appendChild(this.element);
     }
@@ -35,9 +39,13 @@ class DragElement {
         this.element.remove();
     }
 
-    private createElement(nodeName: string, autoEscape: boolean) {
+    private createElement(
+        nodeName: string,
+        autoEscape: boolean,
+        classNames: ClassNames,
+    ) {
         const element = document.createElement("span");
-        element.classList.add("html-tree-title", "html-tree-dragging");
+        element.classList.add(classNames.title, classNames.dragging);
 
         if (autoEscape) {
             element.textContent = nodeName;

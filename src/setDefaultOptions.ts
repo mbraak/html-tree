@@ -1,5 +1,6 @@
 import type { HtmlTreeOptions } from "./options";
 
+import { DEFAULT_CLASS_PREFIX } from "./classNames";
 import { Node } from "./node";
 
 const defaults: HtmlTreeOptions = {
@@ -7,9 +8,11 @@ const defaults: HtmlTreeOptions = {
   autoEscape: true,
   autoOpen: false, // true / false / int (open n levels starting at 0)
   buttonLeft: true,
+  classPrefix: DEFAULT_CLASS_PREFIX, // the prefix of all css classes
   // The symbol to use for a closed node - ► BLACK RIGHT-POINTING POINTER
   // http://www.fileformat.info/info/unicode/char/25ba/index.htm
   closedIcon: undefined,
+  commonClassName: undefined, // the class of every element; the default is "<classPrefix>-common"
   data: undefined,
   dataFilter: undefined,
   dataUrl: undefined,
@@ -38,6 +41,7 @@ const defaults: HtmlTreeOptions = {
   slide: true, // must display slide animation?
   startDndDelay: 300, // The delay for starting dnd (in milliseconds)
   tabIndex: 0,
+  treeClassName: undefined, // the class of the root element; the default is classPrefix
   useContextMenu: true,
 };
 

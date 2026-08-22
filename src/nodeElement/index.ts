@@ -1,3 +1,4 @@
+import type { ClassNames } from "../classNames";
 import type { DropHint } from "../dragAndDropHandler/types";
 import type { GetScrollLeft } from "../methodTypes";
 import type { Node, Position } from "../node";
@@ -6,6 +7,7 @@ import BorderDropHint from "./borderDropHint";
 import GhostDropHint from "./ghostDropHint";
 
 export interface NodeElementParams {
+    classNames: ClassNames;
     getScrollLeft: GetScrollLeft;
     node: Node;
     tabIndex?: number;
@@ -15,16 +17,19 @@ export interface NodeElementParams {
 class NodeElement {
     public element: HTMLElement;
     public node: Node;
+    protected classNames: ClassNames;
     private getScrollLeft: GetScrollLeft;
     private tabIndex?: number;
     private treeElement: HTMLElement;
 
     constructor({
+        classNames,
         getScrollLeft,
         node,
         tabIndex,
         treeElement,
     }: NodeElementParams) {
+        this.classNames = classNames;
         this.getScrollLeft = getScrollLeft;
         this.node = node;
         this.tabIndex = tabIndex;
@@ -37,14 +42,23 @@ class NodeElement {
 
     public addDropHint(position: Position): DropHint {
         if (this.mustShowBorderDropHint(position)) {
-            return new BorderDropHint(this.element, this.getScrollLeft());
+            return new BorderDropHint(
+                this.element,
+                this.getScrollLeft(),
+                this.classNames,
+            );
         } else {
-            return new GhostDropHint(this.node, this.element, position);
+            return new GhostDropHint(
+                this.node,
+                this.element,
+                position,
+                this.classNames,
+            );
         }
     }
 
     public deselect(): void {
-        this.element.classList.remove("html-tree-selected");
+        this.element.classList.remove(this.classNames.selected);
 
         const titleSpan = this.getTitleSpan();
         titleSpan.removeAttribute("tabindex");
@@ -54,7 +68,7 @@ class NodeElement {
     }
 
     public select(mustSetFocus: boolean): void {
-        this.element.classList.add("html-tree-selected");
+        this.element.classList.add(this.classNames.selected);
 
         const titleSpan = this.getTitleSpan();
         const tabIndex = this.tabIndex;
@@ -73,7 +87,7 @@ class NodeElement {
 
     protected getTitleSpan(): HTMLSpanElement {
         return this.element.querySelector(
-            ":scope > .html-tree-element > span.html-tree-title",
+            `:scope > .${this.classNames.element} > span.${this.classNames.title}`,
         ) as HTMLSpanElement;
     }
 

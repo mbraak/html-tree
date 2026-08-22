@@ -1,6 +1,8 @@
 import { Node } from "htmlTree/node";
 import GhostDropHint from "htmlTree/nodeElement/ghostDropHint";
 
+import defaultClassNames from "../../support/classNames";
+
 describe("GhostDropHint", () => {
     beforeEach(() => {
         document.body.innerHTML = "";
@@ -11,7 +13,7 @@ describe("GhostDropHint", () => {
         document.body.append(nodeElement);
 
         const node = new Node();
-        new GhostDropHint(node, nodeElement, "after");
+        new GhostDropHint(node, nodeElement, "after", defaultClassNames);
 
         expect(nodeElement.nextSibling).toHaveClass("html-tree-ghost");
         expect(nodeElement.previousSibling).toBeNull();
@@ -23,7 +25,7 @@ describe("GhostDropHint", () => {
         document.body.append(nodeElement);
 
         const node = new Node();
-        new GhostDropHint(node, nodeElement, "before");
+        new GhostDropHint(node, nodeElement, "before", defaultClassNames);
 
         expect(nodeElement.previousSibling).toHaveClass("html-tree-ghost");
         expect(nodeElement.nextSibling).toBeNull();
@@ -42,7 +44,7 @@ describe("GhostDropHint", () => {
         childNode.element = childElement;
         node.addChild(childNode);
 
-        new GhostDropHint(node, nodeElement, "inside");
+        new GhostDropHint(node, nodeElement, "inside", defaultClassNames);
 
         expect(nodeElement.previousSibling).toBeNull();
         expect(nodeElement.nextSibling).toBeNull();
@@ -57,7 +59,7 @@ describe("GhostDropHint", () => {
         const node = new Node();
         node.addChild(new Node());
 
-        new GhostDropHint(node, nodeElement, "inside");
+        new GhostDropHint(node, nodeElement, "inside", defaultClassNames);
 
         expect(nodeElement.nextSibling).toHaveClass("html-tree-ghost");
         expect(nodeElement.previousSibling).toBeNull();

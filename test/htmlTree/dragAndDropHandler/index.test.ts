@@ -12,6 +12,7 @@ import NodeElement from "htmlTree/nodeElement";
 import triggerCustomEvent from "htmlTree/triggerCustomEvent";
 import { vi } from "vitest";
 
+import defaultClassNames from "../../support/classNames";
 import { generateHtmlElementsForTree } from "../../support/testUtil";
 
 interface CreateDragAndDropHandlerParams {
@@ -47,6 +48,7 @@ const createDragAndDropHandler = ({
     const getNodeElementForNode = vi.fn(
         (node: Node) =>
             new NodeElement({
+                classNames: defaultClassNames,
                 getScrollLeft,
                 node,
                 treeElement,
@@ -71,6 +73,7 @@ const createDragAndDropHandler = ({
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (resultNode) {
             return new NodeElement({
+                classNames: defaultClassNames,
                 getScrollLeft,
                 node: resultNode,
                 treeElement,
@@ -81,6 +84,7 @@ const createDragAndDropHandler = ({
     });
 
     const dragAndDropHandler = new DragAndDropHandler({
+        classNames: defaultClassNames,
         getNodeElement,
         getNodeElementForNode,
         getScrollLeft,

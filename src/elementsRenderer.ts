@@ -1,3 +1,4 @@
+import type { ClassNames } from "./classNames";
 import type { GetTree, IsNodeSelected } from "./methodTypes";
 import type { Node } from "./node";
 import type { IconElement, OnCreateLi } from "./options";
@@ -7,6 +8,7 @@ import { getBoolString } from "./util";
 interface ElementsRendererParams {
     autoEscape: boolean;
     buttonLeft: boolean;
+    classNames: ClassNames;
     closedIcon?: IconElement;
     dragAndDrop: boolean;
     getTree: GetTree;
@@ -25,6 +27,7 @@ export default class ElementsRenderer {
     public openedIconElement?: HTMLElement | Text;
     private autoEscape: boolean;
     private buttonLeft: boolean;
+    private classNames: ClassNames;
     private dragAndDrop: boolean;
     private getTree: GetTree;
     private htmlElement: HTMLElement;
@@ -38,6 +41,7 @@ export default class ElementsRenderer {
     constructor({
         autoEscape,
         buttonLeft,
+        classNames,
         closedIcon,
         dragAndDrop,
         getTree,
@@ -52,6 +56,7 @@ export default class ElementsRenderer {
     }: ElementsRendererParams) {
         this.autoEscape = autoEscape;
         this.buttonLeft = buttonLeft;
+        this.classNames = classNames;
         this.dragAndDrop = dragAndDrop;
         this.getTree = getTree;
         this.htmlElement = htmlElement;
@@ -150,12 +155,12 @@ export default class ElementsRenderer {
 
         // li
         const li = document.createElement("li");
-        li.className = `html-tree-common ${folderClasses}`;
+        li.className = `${this.classNames.common} ${folderClasses}`;
         li.setAttribute("role", "none");
 
         // div
         const div = document.createElement("div");
-        div.className = "html-tree-element html-tree-common";
+        div.className = `${this.classNames.element} ${this.classNames.common}`;
         div.setAttribute("role", "none");
 
         li.appendChild(div);
@@ -217,10 +222,10 @@ export default class ElementsRenderer {
         level: number,
         isSelected: boolean,
     ): HTMLLIElement {
-        const liClasses = ["html-tree-common"];
+        const liClasses = [this.classNames.common];
 
         if (isSelected) {
-            liClasses.push("html-tree-selected");
+            liClasses.push(this.classNames.selected);
         }
 
         const classString = liClasses.join(" ");
@@ -232,7 +237,7 @@ export default class ElementsRenderer {
 
         // div
         const div = document.createElement("div");
-        div.className = "html-tree-element html-tree-common";
+        div.className = `${this.classNames.element} ${this.classNames.common}`;
         div.setAttribute("role", "none");
 
         li.appendChild(div);
@@ -257,13 +262,13 @@ export default class ElementsRenderer {
     ): HTMLSpanElement {
         const titleSpan = document.createElement("span");
 
-        let classes = "html-tree-title html-tree-common";
+        let classes = `${this.classNames.title} ${this.classNames.common}`;
 
         if (isFolder) {
-            classes += " html-tree-title-folder";
+            classes += ` ${this.classNames.titleFolder}`;
         }
 
-        classes += ` html-tree-title-button-${this.buttonLeft ? "left" : "right"}`;
+        classes += ` ${this.buttonLeft ? this.classNames.titleButtonLeft : this.classNames.titleButtonRight}`;
 
         titleSpan.className = classes;
 
@@ -294,20 +299,20 @@ export default class ElementsRenderer {
             classString = "";
             role = "group";
         } else {
-            classString = "html-tree";
+            classString = this.classNames.tree;
             role = "tree";
 
             if (this.rtl) {
-                classString += " html-tree-rtl";
+                classString += ` ${this.classNames.rtl}`;
             }
         }
 
         if (this.dragAndDrop) {
-            classString += " html-tree-dnd";
+            classString += ` ${this.classNames.dnd}`;
         }
 
         const ul = document.createElement("ul");
-        ul.className = `html-tree-common ${classString}`;
+        ul.className = `${this.classNames.common} ${classString}`;
 
         ul.setAttribute("role", role);
 
@@ -315,34 +320,34 @@ export default class ElementsRenderer {
     }
 
     private getButtonClasses(node: Node): string {
-        const classes = ["html-tree-toggler", "html-tree-common"];
+        const classes = [this.classNames.toggler, this.classNames.common];
 
         if (!node.is_open) {
-            classes.push("html-tree-closed");
+            classes.push(this.classNames.closed);
         }
 
         if (this.buttonLeft) {
-            classes.push("html-tree-toggler-left");
+            classes.push(this.classNames.togglerLeft);
         } else {
-            classes.push("html-tree-toggler-right");
+            classes.push(this.classNames.togglerRight);
         }
 
         return classes.join(" ");
     }
 
     private getFolderClasses(node: Node, isSelected: boolean): string {
-        const classes = ["html-tree-folder"];
+        const classes = [this.classNames.folder];
 
         if (!node.is_open) {
-            classes.push("html-tree-closed");
+            classes.push(this.classNames.closed);
         }
 
         if (isSelected) {
-            classes.push("html-tree-selected");
+            classes.push(this.classNames.selected);
         }
 
         if (node.is_loading) {
-            classes.push("html-tree-loading");
+            classes.push(this.classNames.loading);
         }
 
         return classes.join(" ");
