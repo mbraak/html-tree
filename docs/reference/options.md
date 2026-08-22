@@ -310,7 +310,7 @@ The `Node` class is not exposed on the global `HtmlTree`, so this option needs t
 
 ### overrideTriggerEventProvider
 
-- Type: `(element: HTMLElement, eventName: string, values?: Record<string, unknown>) => boolean`
+- Type: `(element: HTMLElement, eventName: TreeEventName, values?: TreeEvents[TreeEventName]) => boolean`
 - Default: dispatches a cancelable, bubbling `CustomEvent`
 
 Replaces how [events](./events) are dispatched. It must return whether the event was *not*
