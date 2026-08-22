@@ -120,6 +120,30 @@ The duration of the slide animation: `"fast"` is 200ms, `"slow"` is 600ms, a num
 Called after the `li` of a node is created, so you can add to it. See
 [Styling](../guide/styling#customizing-the-markup).
 
+### classPrefix
+
+- Type: `string`
+- Default: `"html-tree"`
+
+The prefix of the css classes the widget puts on the elements it creates: with `"my-tree"` a title
+gets `my-tree-title` instead of `html-tree-title`. The bundled stylesheet uses the default prefix, so
+change it only if you bring your own css. See
+[Styling](../guide/styling#changing-the-class-names).
+
+### commonClassName
+
+- Type: `string`
+- Default: `"<classPrefix>-common"`
+
+The class that every element of the widget gets.
+
+### treeClassName
+
+- Type: `string`
+- Default: the value of `classPrefix`
+
+The class of the root `ul`.
+
 ## Selection
 
 ### selectable

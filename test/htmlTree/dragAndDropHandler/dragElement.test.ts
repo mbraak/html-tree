@@ -1,11 +1,14 @@
 import DragElement from "htmlTree/dragAndDropHandler/dragElement";
 
+import defaultClassNames from "../../support/classNames";
+
 describe("DragElement", () => {
     it("creates an element with autoEscape is true", () => {
         const treeElement = document.createElement("div");
 
         new DragElement({
             autoEscape: true,
+            classNames: defaultClassNames,
             nodeName: "abc &amp; def",
             offsetX: 0,
             offsetY: 0,
@@ -26,6 +29,7 @@ describe("DragElement", () => {
 
         new DragElement({
             autoEscape: false,
+            classNames: defaultClassNames,
             nodeName: "abc &amp; def",
             offsetX: 0,
             offsetY: 0,

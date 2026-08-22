@@ -20,7 +20,45 @@ limitations under the License.
 var HtmlTree = (function () {
     'use strict';
 
+    const DEFAULT_CLASS_PREFIX = "html-tree";
+
+    /* Create the class names that the widget puts on the elements it creates.
+     * They are all derived from classPrefix, except for the class of the root
+     * element and the class that every element gets, which have an option of
+     * their own.
+     */
+    const createClassNames = ({
+      classPrefix,
+      commonClassName,
+      treeClassName
+    }) => ({
+      border: `${classPrefix}-border`,
+      circle: `${classPrefix}-circle`,
+      closed: `${classPrefix}-closed`,
+      common: commonClassName ?? `${classPrefix}-common`,
+      dnd: `${classPrefix}-dnd`,
+      dragging: `${classPrefix}-dragging`,
+      element: `${classPrefix}-element`,
+      folder: `${classPrefix}-folder`,
+      ghost: `${classPrefix}-ghost`,
+      inside: `${classPrefix}-inside`,
+      line: `${classPrefix}-line`,
+      loading: `${classPrefix}-loading`,
+      moving: `${classPrefix}-moving`,
+      rtl: `${classPrefix}-rtl`,
+      selected: `${classPrefix}-selected`,
+      title: `${classPrefix}-title`,
+      titleButtonLeft: `${classPrefix}-title-button-left`,
+      titleButtonRight: `${classPrefix}-title-button-right`,
+      titleFolder: `${classPrefix}-title-folder`,
+      toggler: `${classPrefix}-toggler`,
+      togglerLeft: `${classPrefix}-toggler-left`,
+      togglerRight: `${classPrefix}-toggler-right`,
+      tree: treeClassName ?? classPrefix
+    });
+
     class DataLoader {
+      _classNames;
       _dataFilter;
       _loadData;
       _onLoadFailed;
@@ -28,6 +66,7 @@ var HtmlTree = (function () {
       _treeElement;
       _triggerEvent;
       constructor({
+        classNames,
         dataFilter,
         loadData,
         onLoadFailed,
@@ -35,6 +74,7 @@ var HtmlTree = (function () {
         treeElement,
         triggerEvent
       }) {
+        this._classNames = classNames;
         this._dataFilter = dataFilter;
         this._loadData = loadData;
         this._onLoadFailed = onLoadFailed;
@@ -66,7 +106,7 @@ var HtmlTree = (function () {
         void this._submitRequest(url, handleSuccess, handleError);
       }
       _addLoadingClass(element) {
-        element.classList.add("html-tree-loading");
+        element.classList.add(this._classNames.loading);
       }
       _getDomElement(parentNode) {
         if (parentNode?.element) {
@@ -93,7 +133,7 @@ var HtmlTree = (function () {
         }
       }
       _removeLoadingClass(element) {
-        element.classList.remove("html-tree-loading");
+        element.classList.remove(this._classNames.loading);
       }
       async _submitRequest(url, handleSuccess, handleError) {
         const headers = {
@@ -151,6 +191,7 @@ var HtmlTree = (function () {
       _offsetY;
       constructor({
         autoEscape,
+        classNames,
         nodeName,
         offsetX,
         offsetY,
@@ -158,7 +199,7 @@ var HtmlTree = (function () {
       }) {
         this._offsetX = offsetX;
         this._offsetY = offsetY;
-        this._element = this._createElement(nodeName, autoEscape);
+        this._element = this._createElement(nodeName, autoEscape, classNames);
         treeElement.appendChild(this._element);
       }
       move(pageX, pageY) {
@@ -168,9 +209,9 @@ var HtmlTree = (function () {
       remove() {
         this._element.remove();
       }
-      _createElement(nodeName, autoEscape) {
+      _createElement(nodeName, autoEscape, classNames) {
         const element = document.createElement("span");
-        element.classList.add("html-tree-title", "html-tree-dragging");
+        element.classList.add(classNames.title, classNames.dragging);
         if (autoEscape) {
           element.textContent = nodeName;
         } else {
@@ -364,6 +405,7 @@ var HtmlTree = (function () {
       hoveredArea;
       isDragging;
       _autoEscape;
+      _classNames;
       _dragElement;
       _getNodeElement;
       _getNodeElementForNode;
@@ -384,6 +426,7 @@ var HtmlTree = (function () {
       _triggerEvent;
       constructor({
         autoEscape,
+        classNames,
         getNodeElement,
         getNodeElementForNode,
         getScrollLeft,
@@ -401,6 +444,7 @@ var HtmlTree = (function () {
         triggerEvent
       }) {
         this._autoEscape = autoEscape;
+        this._classNames = classNames;
         this._getNodeElement = getNodeElement;
         this._getNodeElementForNode = getNodeElementForNode;
         this._getScrollLeft = getScrollLeft;
@@ -486,13 +530,14 @@ var HtmlTree = (function () {
         const node = this.currentItem.node;
         this._dragElement = new DragElement({
           autoEscape: this._autoEscape ?? true,
+          classNames: this._classNames,
           nodeName: node.name,
           offsetX: positionInfo.pageX - left,
           offsetY: positionInfo.pageY - top,
           treeElement: this._treeElement
         });
         this.isDragging = true;
-        this.currentItem.element.classList.add("html-tree-moving");
+        this.currentItem.element.classList.add(this._classNames.moving);
         return true;
       }
       mouseStop(positionInfo) {
@@ -503,7 +548,7 @@ var HtmlTree = (function () {
         this._removeHitAreas();
         const currentItem = this.currentItem;
         if (this.currentItem) {
-          this.currentItem.element.classList.remove("html-tree-moving");
+          this.currentItem.element.classList.remove(this._classNames.moving);
           this.currentItem = null;
         }
         this.isDragging = false;
@@ -521,7 +566,7 @@ var HtmlTree = (function () {
           this._generateHitAreas(currentNode);
           this.currentItem = this._getNodeElementForNode(currentNode);
           if (this.isDragging) {
-            this.currentItem.element.classList.add("html-tree-moving");
+            this.currentItem.element.classList.add(this._classNames.moving);
           }
         }
       }
@@ -666,6 +711,7 @@ var HtmlTree = (function () {
       openedIconElement;
       _autoEscape;
       _buttonLeft;
+      _classNames;
       _dragAndDrop;
       _getTree;
       _htmlElement;
@@ -678,6 +724,7 @@ var HtmlTree = (function () {
       constructor({
         autoEscape,
         buttonLeft,
+        classNames,
         closedIcon,
         dragAndDrop,
         getTree,
@@ -692,6 +739,7 @@ var HtmlTree = (function () {
       }) {
         this._autoEscape = autoEscape;
         this._buttonLeft = buttonLeft;
+        this._classNames = classNames;
         this._dragAndDrop = dragAndDrop;
         this._getTree = getTree;
         this._htmlElement = htmlElement;
@@ -763,12 +811,12 @@ var HtmlTree = (function () {
 
         // li
         const li = document.createElement("li");
-        li.className = `html-tree-common ${folderClasses}`;
+        li.className = `${this._classNames.common} ${folderClasses}`;
         li.setAttribute("role", "none");
 
         // div
         const div = document.createElement("div");
-        div.className = "html-tree-element html-tree-common";
+        div.className = `${this._classNames.element} ${this._classNames.common}`;
         div.setAttribute("role", "none");
         li.appendChild(div);
 
@@ -807,9 +855,9 @@ var HtmlTree = (function () {
         return li;
       }
       _createNodeLi(node, level, isSelected) {
-        const liClasses = ["html-tree-common"];
+        const liClasses = [this._classNames.common];
         if (isSelected) {
-          liClasses.push("html-tree-selected");
+          liClasses.push(this._classNames.selected);
         }
         const classString = liClasses.join(" ");
 
@@ -820,7 +868,7 @@ var HtmlTree = (function () {
 
         // div
         const div = document.createElement("div");
-        div.className = "html-tree-element html-tree-common";
+        div.className = `${this._classNames.element} ${this._classNames.common}`;
         div.setAttribute("role", "none");
         li.appendChild(div);
 
@@ -831,11 +879,11 @@ var HtmlTree = (function () {
       }
       _createTitleSpan(nodeName, isSelected, isFolder, level) {
         const titleSpan = document.createElement("span");
-        let classes = "html-tree-title html-tree-common";
+        let classes = `${this._classNames.title} ${this._classNames.common}`;
         if (isFolder) {
-          classes += " html-tree-title-folder";
+          classes += ` ${this._classNames.titleFolder}`;
         }
-        classes += ` html-tree-title-button-${this._buttonLeft ? "left" : "right"}`;
+        classes += ` ${this._buttonLeft ? this._classNames.titleButtonLeft : this._classNames.titleButtonRight}`;
         titleSpan.className = classes;
         if (isSelected) {
           const tabIndex = this._tabIndex;
@@ -858,42 +906,42 @@ var HtmlTree = (function () {
           classString = "";
           role = "group";
         } else {
-          classString = "html-tree";
+          classString = this._classNames.tree;
           role = "tree";
           if (this._rtl) {
-            classString += " html-tree-rtl";
+            classString += ` ${this._classNames.rtl}`;
           }
         }
         if (this._dragAndDrop) {
-          classString += " html-tree-dnd";
+          classString += ` ${this._classNames.dnd}`;
         }
         const ul = document.createElement("ul");
-        ul.className = `html-tree-common ${classString}`;
+        ul.className = `${this._classNames.common} ${classString}`;
         ul.setAttribute("role", role);
         return ul;
       }
       _getButtonClasses(node) {
-        const classes = ["html-tree-toggler", "html-tree-common"];
+        const classes = [this._classNames.toggler, this._classNames.common];
         if (!node.is_open) {
-          classes.push("html-tree-closed");
+          classes.push(this._classNames.closed);
         }
         if (this._buttonLeft) {
-          classes.push("html-tree-toggler-left");
+          classes.push(this._classNames.togglerLeft);
         } else {
-          classes.push("html-tree-toggler-right");
+          classes.push(this._classNames.togglerRight);
         }
         return classes.join(" ");
       }
       _getFolderClasses(node, isSelected) {
-        const classes = ["html-tree-folder"];
+        const classes = [this._classNames.folder];
         if (!node.is_open) {
-          classes.push("html-tree-closed");
+          classes.push(this._classNames.closed);
         }
         if (isSelected) {
-          classes.push("html-tree-selected");
+          classes.push(this._classNames.selected);
         }
         if (node.is_loading) {
-          classes.push("html-tree-loading");
+          classes.push(this._classNames.loading);
         }
         return classes.join(" ");
       }
@@ -1024,6 +1072,7 @@ var HtmlTree = (function () {
     });
 
     class MouseHandler {
+      _classNames;
       _element;
       _getMouseDelay;
       _getNode;
@@ -1040,6 +1089,7 @@ var HtmlTree = (function () {
       _triggerEvent;
       _useContextMenu;
       constructor({
+        classNames,
         element,
         getMouseDelay,
         getNode,
@@ -1052,6 +1102,7 @@ var HtmlTree = (function () {
         triggerEvent,
         useContextMenu
       }) {
+        this._classNames = classNames;
         this._element = element;
         this._getMouseDelay = getMouseDelay;
         this._getNode = getNode;
@@ -1090,7 +1141,7 @@ var HtmlTree = (function () {
         this._removeMouseMoveEventListeners();
       }
       _getClickTarget(element) {
-        const button = element.closest(".html-tree-toggler");
+        const button = element.closest(`.${this._classNames.toggler}`);
         if (button) {
           const node = this._getNode(button);
           if (node) {
@@ -1100,7 +1151,7 @@ var HtmlTree = (function () {
             };
           }
         } else {
-          const treeElement = element.closest(".html-tree-element");
+          const treeElement = element.closest(`.${this._classNames.element}`);
           if (treeElement) {
             const node = this._getNode(treeElement);
             if (node) {
@@ -1143,7 +1194,7 @@ var HtmlTree = (function () {
         if (!e.target) {
           return;
         }
-        const div = e.target.closest("ul.html-tree .html-tree-element");
+        const div = e.target.closest(`ul.${this._classNames.tree} .${this._classNames.element}`);
         if (div) {
           const node = this._getNode(div);
           if (node) {
@@ -1833,8 +1884,8 @@ var HtmlTree = (function () {
 
     class BorderDropHint {
       _hint;
-      constructor(element, scrollLeft) {
-        const div = element.querySelector(":scope > .html-tree-element");
+      constructor(element, scrollLeft, classNames) {
+        const div = element.querySelector(`:scope > .${classNames.element}`);
         if (!div) {
           this._hint = undefined;
           return;
@@ -1842,7 +1893,7 @@ var HtmlTree = (function () {
         const width = Math.max(element.offsetWidth + scrollLeft - 4, 0);
         const height = Math.max(element.clientHeight - 4, 0);
         const hint = document.createElement("span");
-        hint.className = "html-tree-border";
+        hint.className = classNames.border;
         hint.style.width = `${width}px`;
         hint.style.height = `${height}px`;
         this._hint = hint;
@@ -1854,10 +1905,12 @@ var HtmlTree = (function () {
     }
 
     class GhostDropHint {
+      _classNames;
       _element;
       _ghost;
       _node;
-      constructor(node, element, position) {
+      constructor(node, element, position, classNames) {
+        this._classNames = classNames;
         this._element = element;
         this._node = node;
         this._ghost = this._createGhostElement();
@@ -1882,13 +1935,19 @@ var HtmlTree = (function () {
         this._ghost.remove();
       }
       _createGhostElement() {
+        const {
+          circle,
+          common,
+          ghost: ghostClass,
+          line
+        } = this._classNames;
         const ghost = document.createElement("li");
-        ghost.className = "html-tree-common html-tree-ghost";
+        ghost.className = `${common} ${ghostClass}`;
         const circleSpan = document.createElement("span");
-        circleSpan.className = "html-tree-common html-tree-circle";
+        circleSpan.className = `${common} ${circle}`;
         ghost.append(circleSpan);
         const lineSpan = document.createElement("span");
-        lineSpan.className = "html-tree-common html-tree-line";
+        lineSpan.className = `${common} ${line}`;
         ghost.append(lineSpan);
         return ghost;
       }
@@ -1900,7 +1959,7 @@ var HtmlTree = (function () {
       }
       _moveInside() {
         this._element.after(this._ghost);
-        this._ghost.classList.add("html-tree-inside");
+        this._ghost.classList.add(this._classNames.inside);
       }
       _moveInsideOpenFolder() {
         const childElement = this._node.children[0]?.element;
@@ -1913,15 +1972,18 @@ var HtmlTree = (function () {
     class NodeElement {
       element;
       node;
+      _classNames;
       _getScrollLeft;
       _tabIndex;
       _treeElement;
       constructor({
+        classNames,
         getScrollLeft,
         node,
         tabIndex,
         treeElement
       }) {
+        this._classNames = classNames;
         this._getScrollLeft = getScrollLeft;
         this.node = node;
         this._tabIndex = tabIndex;
@@ -1931,20 +1993,20 @@ var HtmlTree = (function () {
       }
       addDropHint(position) {
         if (this._mustShowBorderDropHint(position)) {
-          return new BorderDropHint(this.element, this._getScrollLeft());
+          return new BorderDropHint(this.element, this._getScrollLeft(), this._classNames);
         } else {
-          return new GhostDropHint(this.node, this.element, position);
+          return new GhostDropHint(this.node, this.element, position, this._classNames);
         }
       }
       deselect() {
-        this.element.classList.remove("html-tree-selected");
+        this.element.classList.remove(this._classNames.selected);
         const titleSpan = this._getTitleSpan();
         titleSpan.removeAttribute("tabindex");
         titleSpan.setAttribute("aria-selected", "false");
         titleSpan.blur();
       }
       select(mustSetFocus) {
-        this.element.classList.add("html-tree-selected");
+        this.element.classList.add(this._classNames.selected);
         const titleSpan = this._getTitleSpan();
         const tabIndex = this._tabIndex;
 
@@ -1958,7 +2020,7 @@ var HtmlTree = (function () {
         }
       }
       _getTitleSpan() {
-        return this.element.querySelector(":scope > .html-tree-element > span.html-tree-title");
+        return this.element.querySelector(`:scope > .${this._classNames.element} > span.${this._classNames.title}`);
       }
       _getUl() {
         return this.element.querySelector(":scope > ul");
@@ -2010,6 +2072,7 @@ var HtmlTree = (function () {
       _openedIconElement;
       _triggerEvent;
       constructor({
+        classNames,
         closedIconElement,
         getScrollLeft,
         node,
@@ -2019,6 +2082,7 @@ var HtmlTree = (function () {
         triggerEvent
       }) {
         super({
+          classNames,
           getScrollLeft,
           node,
           tabIndex,
@@ -2034,7 +2098,7 @@ var HtmlTree = (function () {
         }
         this.node.is_open = false;
         const button = this._getButton();
-        button.classList.add("html-tree-closed");
+        button.classList.add(this._classNames.closed);
         button.innerHTML = "";
         const closedIconElement = this._closedIconElement;
         if (closedIconElement) {
@@ -2042,7 +2106,7 @@ var HtmlTree = (function () {
           button.appendChild(icon);
         }
         const doClose = () => {
-          this.element.classList.add("html-tree-closed");
+          this.element.classList.add(this._classNames.closed);
           const titleSpan = this._getTitleSpan();
           titleSpan.setAttribute("aria-expanded", "false");
           this._triggerEvent("tree.close", {
@@ -2063,7 +2127,7 @@ var HtmlTree = (function () {
         }
         this.node.is_open = true;
         const button = this._getButton();
-        button.classList.remove("html-tree-closed");
+        button.classList.remove(this._classNames.closed);
         button.innerHTML = "";
         const openedIconElement = this._openedIconElement;
         if (openedIconElement) {
@@ -2071,7 +2135,7 @@ var HtmlTree = (function () {
           button.appendChild(icon);
         }
         const doOpen = () => {
-          this.element.classList.remove("html-tree-closed");
+          this.element.classList.remove(this._classNames.closed);
           const titleSpan = this._getTitleSpan();
           titleSpan.setAttribute("aria-expanded", "true");
           if (onFinished) {
@@ -2093,7 +2157,7 @@ var HtmlTree = (function () {
         return !this.node.is_open && position === "inside";
       }
       _getButton() {
-        return this.element.querySelector(":scope > .html-tree-element > a.html-tree-toggler");
+        return this.element.querySelector(`:scope > .${this._classNames.element} > a.${this._classNames.toggler}`);
       }
     }
 
@@ -2683,9 +2747,13 @@ var HtmlTree = (function () {
       autoOpen: false,
       // true / false / int (open n levels starting at 0)
       buttonLeft: true,
+      classPrefix: DEFAULT_CLASS_PREFIX,
+      // the prefix of all css classes
       // The symbol to use for a closed node - ► BLACK RIGHT-POINTING POINTER
       // http://www.fileformat.info/info/unicode/char/25ba/index.htm
       closedIcon: undefined,
+      commonClassName: undefined,
+      // the class of every element; the default is "<classPrefix>-common"
       data: undefined,
       dataFilter: undefined,
       dataUrl: undefined,
@@ -2721,6 +2789,8 @@ var HtmlTree = (function () {
       startDndDelay: 300,
       // The delay for starting dnd (in milliseconds)
       tabIndex: 0,
+      treeClassName: undefined,
+      // the class of the root element; the default is classPrefix
       useContextMenu: true
     };
     const setDefaultOptions = (htmlElement, inputOptions) => {
@@ -2775,6 +2845,7 @@ var HtmlTree = (function () {
 
     class HtmlTree {
       tree;
+      _classNames;
       _dataLoader;
       _dndHandler;
       _htmlElement;
@@ -2795,6 +2866,7 @@ var HtmlTree = (function () {
       }) {
         this._htmlElement = htmlElement;
         this._options = setDefaultOptions(htmlElement, options);
+        this._classNames = createClassNames(this._options);
         this._triggerEventProvider = overrideTriggerEventProvider ?? triggerCustomEvent;
         this._isInitialized = false;
         this.tree = new Node({}, true);
@@ -2824,6 +2896,7 @@ var HtmlTree = (function () {
           slide,
           tabIndex
         } = this._options;
+        const classNames = this._classNames;
         const closeNode = this.closeNode.bind(this);
         const getNodeElement = this._getNodeElement.bind(this);
         const getNodeElementForNode = this._getNodeElementForNode.bind(this);
@@ -2848,6 +2921,7 @@ var HtmlTree = (function () {
         const removeFromSelection = selectNodeHandler.removeFromSelection.bind(selectNodeHandler);
         const getMouseDelay = () => this._options.startDndDelay ?? 0;
         const dataLoader = new DataLoader({
+          classNames,
           dataFilter,
           loadData,
           onLoadFailed,
@@ -2874,6 +2948,7 @@ var HtmlTree = (function () {
         const getScrollLeft = scrollHandler.getScrollLeft.bind(scrollHandler);
         const dndHandler = new DragAndDropHandler({
           autoEscape,
+          classNames,
           getNodeElement,
           getNodeElementForNode,
           getScrollLeft,
@@ -2901,6 +2976,7 @@ var HtmlTree = (function () {
         const renderer = new ElementsRenderer({
           autoEscape,
           buttonLeft,
+          classNames,
           closedIcon,
           dragAndDrop,
           getTree,
@@ -2919,6 +2995,7 @@ var HtmlTree = (function () {
         const onMouseStart = this._mouseStart.bind(this);
         const onMouseStop = this._mouseStop.bind(this);
         const mouseHandler = new MouseHandler({
+          classNames,
           element: treeElement,
           getMouseDelay,
           getNode,
@@ -2997,7 +3074,7 @@ var HtmlTree = (function () {
 
       // Return the tree node for an HTMl element.
       getNode(element) {
-        const liElement = element.closest("li.html-tree-common");
+        const liElement = element.closest(`li.${this._classNames.common}`);
         if (liElement) {
           return this._nodeMap.get(liElement) ?? null;
         } else {
@@ -3227,6 +3304,7 @@ var HtmlTree = (function () {
         this._refreshElements(node);
       }
       _createFolderElement(node) {
+        const classNames = this._classNames;
         const closedIconElement = this._renderer.closedIconElement;
         const getScrollLeft = this._scrollHandler.getScrollLeft.bind(this._scrollHandler);
         const openedIconElement = this._renderer.openedIconElement;
@@ -3234,6 +3312,7 @@ var HtmlTree = (function () {
         const treeElement = this._htmlElement;
         const triggerEvent = this._triggerEvent.bind(this);
         return new FolderElement({
+          classNames,
           closedIconElement,
           getScrollLeft,
           node,
@@ -3244,10 +3323,12 @@ var HtmlTree = (function () {
         });
       }
       _createNodeElement(node) {
+        const classNames = this._classNames;
         const getScrollLeft = this._scrollHandler.getScrollLeft.bind(this._scrollHandler);
         const tabIndex = this._options.tabIndex;
         const treeElement = this._htmlElement;
         return new NodeElement({
+          classNames,
           getScrollLeft,
           node,
           tabIndex,

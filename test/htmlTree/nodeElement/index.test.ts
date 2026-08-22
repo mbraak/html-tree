@@ -5,6 +5,7 @@ import NodeElement from "htmlTree/nodeElement";
 import BorderDropHint from "htmlTree/nodeElement/borderDropHint";
 import GhostDropHint from "htmlTree/nodeElement/ghostDropHint";
 
+import defaultClassNames from "../../support/classNames";
 import { getTreeListElement } from "../../support/queries";
 
 interface CreateNodeElementParams {
@@ -23,6 +24,7 @@ const createNodeElement = ({ tabIndex }: CreateNodeElementParams = {}) => {
     const renderer = new ElementsRenderer({
         autoEscape: true,
         buttonLeft: false,
+        classNames: defaultClassNames,
         dragAndDrop: false,
         getTree: () => tree,
         htmlElement: treeElement,
@@ -33,6 +35,7 @@ const createNodeElement = ({ tabIndex }: CreateNodeElementParams = {}) => {
     renderer.renderFromRoot();
 
     const nodeElement = new NodeElement({
+        classNames: defaultClassNames,
         getScrollLeft: () => 0,
         node,
         tabIndex,
@@ -60,6 +63,7 @@ describe("init", () => {
         const getScrollLeft = () => 0;
 
         const nodeElement = new NodeElement({
+            classNames: defaultClassNames,
             getScrollLeft,
             node,
             treeElement,
@@ -76,6 +80,7 @@ describe("init", () => {
         const getScrollLeft = () => 0;
 
         const nodeElement = new NodeElement({
+            classNames: defaultClassNames,
             getScrollLeft,
             node,
             treeElement,
@@ -91,6 +96,7 @@ describe("init", () => {
         const node = new Node();
 
         const nodeElement = new NodeElement({
+            classNames: defaultClassNames,
             getScrollLeft: () => 0,
             node,
             treeElement,

@@ -18,6 +18,7 @@ class FolderElement extends NodeElement {
     private triggerEvent: TriggerEvent;
 
     constructor({
+        classNames,
         closedIconElement,
         getScrollLeft,
         node,
@@ -27,6 +28,7 @@ class FolderElement extends NodeElement {
         triggerEvent,
     }: FolderElementParams) {
         super({
+            classNames,
             getScrollLeft,
             node,
             tabIndex,
@@ -46,7 +48,7 @@ class FolderElement extends NodeElement {
         this.node.is_open = false;
 
         const button = this.getButton();
-        button.classList.add("html-tree-closed");
+        button.classList.add(this.classNames.closed);
         button.innerHTML = "";
 
         const closedIconElement = this.closedIconElement;
@@ -57,7 +59,7 @@ class FolderElement extends NodeElement {
         }
 
         const doClose = (): void => {
-            this.element.classList.add("html-tree-closed");
+            this.element.classList.add(this.classNames.closed);
 
             const titleSpan = this.getTitleSpan();
             titleSpan.setAttribute("aria-expanded", "false");
@@ -89,7 +91,7 @@ class FolderElement extends NodeElement {
         this.node.is_open = true;
 
         const button = this.getButton();
-        button.classList.remove("html-tree-closed");
+        button.classList.remove(this.classNames.closed);
         button.innerHTML = "";
 
         const openedIconElement = this.openedIconElement;
@@ -100,7 +102,7 @@ class FolderElement extends NodeElement {
         }
 
         const doOpen = (): void => {
-            this.element.classList.remove("html-tree-closed");
+            this.element.classList.remove(this.classNames.closed);
 
             const titleSpan = this.getTitleSpan();
             titleSpan.setAttribute("aria-expanded", "true");
@@ -130,7 +132,7 @@ class FolderElement extends NodeElement {
 
     private getButton(): HTMLLinkElement {
         return this.element.querySelector(
-            ":scope > .html-tree-element > a.html-tree-toggler",
+            `:scope > .${this.classNames.element} > a.${this.classNames.toggler}`,
         ) as HTMLLinkElement;
     }
 }

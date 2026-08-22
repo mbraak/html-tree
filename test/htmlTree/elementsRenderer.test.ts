@@ -6,6 +6,7 @@ import { screen } from "@testing-library/dom";
 import ElementsRenderer from "htmlTree/elementsRenderer";
 import { Node } from "htmlTree/node";
 
+import defaultClassNames from "../support/classNames";
 import exampleData from "../support/exampleData";
 import { getTreeButton, getTreeListElement } from "../support/queries";
 
@@ -48,6 +49,7 @@ const createRenderer = ({
     const renderer = new ElementsRenderer({
         autoEscape,
         buttonLeft,
+        classNames: defaultClassNames,
         closedIcon,
         dragAndDrop,
         getTree: getTree ?? (() => tree),

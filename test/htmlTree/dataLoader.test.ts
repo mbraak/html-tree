@@ -8,6 +8,8 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { vi } from "vitest";
 
+import defaultClassNames from "../support/classNames";
+
 describe("loadFromUrl", () => {
     const server = setupServer();
 
@@ -55,6 +57,7 @@ describe("loadFromUrl", () => {
         const triggerEvent = vi.fn<TriggerEvent>();
 
         const dataLoader = new DataLoader({
+            classNames: defaultClassNames,
             dataFilter,
             loadData,
             onLoadFailed,

@@ -1,3 +1,4 @@
+import type { ClassNames } from "./classNames";
 import type { TriggerEvent } from "./methodTypes";
 import type { PositionInfo } from "./mouseUtils";
 import type { Node } from "./node";
@@ -18,6 +19,7 @@ interface ClickTarget {
 }
 
 interface MouseHandlerParams {
+    classNames: ClassNames;
     element: HTMLElement;
     getMouseDelay: () => number;
     getNode: GetNode;
@@ -32,6 +34,7 @@ interface MouseHandlerParams {
 }
 
 class MouseHandler {
+    private classNames: ClassNames;
     private element: HTMLElement;
     private getMouseDelay: GetMouseDelay;
     private getNode: GetNode;
@@ -57,6 +60,7 @@ class MouseHandler {
     private triggerEvent: TriggerEvent;
     private useContextMenu: boolean;
     constructor({
+        classNames,
         element,
         getMouseDelay,
         getNode,
@@ -69,6 +73,7 @@ class MouseHandler {
         triggerEvent,
         useContextMenu,
     }: MouseHandlerParams) {
+        this.classNames = classNames;
         this.element = element;
         this.getMouseDelay = getMouseDelay;
         this.getNode = getNode;
@@ -115,7 +120,9 @@ class MouseHandler {
         this.removeMouseMoveEventListeners();
     }
     private getClickTarget(element: HTMLElement): ClickTarget | null {
-        const button = element.closest<HTMLElement>(".html-tree-toggler");
+        const button = element.closest<HTMLElement>(
+            `.${this.classNames.toggler}`,
+        );
 
         if (button) {
             const node = this.getNode(button);
@@ -127,8 +134,9 @@ class MouseHandler {
                 };
             }
         } else {
-            const treeElement =
-                element.closest<HTMLElement>(".html-tree-element");
+            const treeElement = element.closest<HTMLElement>(
+                `.${this.classNames.element}`,
+            );
 
             if (treeElement) {
                 const node = this.getNode(treeElement);
@@ -180,7 +188,7 @@ class MouseHandler {
         }
 
         const div = (e.target as HTMLElement).closest<HTMLElement>(
-            "ul.html-tree .html-tree-element",
+            `ul.${this.classNames.tree} .${this.classNames.element}`,
         );
 
         if (div) {

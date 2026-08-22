@@ -1,3 +1,4 @@
+import type { ClassNames } from "./classNames";
 import type { HandleFinishedLoading } from "./dataLoader";
 import type { OnFinishOpenNode } from "./methodTypes";
 import type { PositionInfo } from "./mouseUtils";
@@ -5,6 +6,7 @@ import type { NodeData, NodeId, Position } from "./node";
 import type { HtmlTreeOptions } from "./options";
 import type { SavedState } from "./saveStateHandler";
 
+import createClassNames from "./classNames";
 import DataLoader from "./dataLoader";
 import { DragAndDropHandler } from "./dragAndDropHandler";
 import ElementsRenderer from "./elementsRenderer";
@@ -52,6 +54,7 @@ interface HtmlTreeParams extends Partial<HtmlTreeOptions> {
 export default class HtmlTree {
   public tree: Node;
 
+  private classNames: ClassNames;
   private dataLoader: DataLoader;
   private dndHandler: DragAndDropHandler;
   private htmlElement: HTMLElement;
@@ -69,6 +72,7 @@ export default class HtmlTree {
   constructor({ htmlElement, overrideTriggerEventProvider, ...options }: HtmlTreeParams) {
     this.htmlElement = htmlElement;
     this.options = setDefaultOptions(htmlElement, options);
+    this.classNames = createClassNames(this.options);
     this.triggerEventProvider = overrideTriggerEventProvider ?? triggerCustomEvent;
 
     this.isInitialized = false;
@@ -101,6 +105,7 @@ export default class HtmlTree {
       tabIndex,
     } = this.options;
 
+    const classNames = this.classNames;
     const closeNode = this.closeNode.bind(this);
     const getNodeElement = this.getNodeElement.bind(this);
     const getNodeElementForNode = this.getNodeElementForNode.bind(this);
@@ -132,6 +137,7 @@ export default class HtmlTree {
     const getMouseDelay = () => this.options.startDndDelay ?? 0;
 
     const dataLoader = new DataLoader({
+      classNames,
       dataFilter,
       loadData,
       onLoadFailed,
@@ -162,6 +168,7 @@ export default class HtmlTree {
 
     const dndHandler = new DragAndDropHandler({
       autoEscape,
+      classNames,
       getNodeElement,
       getNodeElementForNode,
       getScrollLeft,
@@ -191,6 +198,7 @@ export default class HtmlTree {
     const renderer = new ElementsRenderer({
       autoEscape,
       buttonLeft,
+      classNames,
       closedIcon,
       dragAndDrop,
       getTree,
@@ -211,6 +219,7 @@ export default class HtmlTree {
     const onMouseStop = this.mouseStop.bind(this);
 
     const mouseHandler = new MouseHandler({
+      classNames,
       element: treeElement,
       getMouseDelay,
       getNode,
@@ -320,7 +329,9 @@ export default class HtmlTree {
 
   // Return the tree node for an HTMl element.
   public getNode(element: HTMLElement): Node | null {
-    const liElement = element.closest<HTMLElement>("li.html-tree-common");
+    const liElement = element.closest<HTMLElement>(
+      `li.${this.classNames.common}`,
+    );
 
     if (liElement) {
       return this.nodeMap.get(liElement) ?? null;
@@ -622,6 +633,7 @@ export default class HtmlTree {
   }
 
   private createFolderElement(node: Node) {
+    const classNames = this.classNames;
     const closedIconElement = this.renderer.closedIconElement;
     const getScrollLeft = this.scrollHandler.getScrollLeft.bind(
       this.scrollHandler,
@@ -632,6 +644,7 @@ export default class HtmlTree {
     const triggerEvent = this.triggerEvent.bind(this);
 
     return new FolderElement({
+      classNames,
       closedIconElement,
       getScrollLeft,
       node,
@@ -643,6 +656,7 @@ export default class HtmlTree {
   }
 
   private createNodeElement(node: Node) {
+    const classNames = this.classNames;
     const getScrollLeft = this.scrollHandler.getScrollLeft.bind(
       this.scrollHandler,
     );
@@ -650,6 +664,7 @@ export default class HtmlTree {
     const treeElement = this.htmlElement;
 
     return new NodeElement({
+      classNames,
       getScrollLeft,
       node,
       tabIndex,

@@ -1,3 +1,4 @@
+import type { ClassNames } from "./classNames";
 import type { LoadData, TriggerEvent } from "./methodTypes";
 import type { Node, NodeData } from "./node";
 import type { DataFilter, OnLoadFailed, OnLoading } from "./options";
@@ -6,6 +7,7 @@ import type RequestUrl from "./requestUrl";
 export type HandleFinishedLoading = () => void;
 
 interface DataLoaderParams {
+    classNames: ClassNames;
     dataFilter?: DataFilter;
     loadData: LoadData;
     onLoadFailed?: OnLoadFailed;
@@ -17,6 +19,7 @@ interface DataLoaderParams {
 type HandleSuccess = (data: NodeData[]) => void;
 
 export default class DataLoader {
+    private classNames: ClassNames;
     private dataFilter?: DataFilter;
     private loadData: LoadData;
     private onLoadFailed?: OnLoadFailed;
@@ -25,6 +28,7 @@ export default class DataLoader {
     private triggerEvent: TriggerEvent;
 
     constructor({
+        classNames,
         dataFilter,
         loadData,
         onLoadFailed,
@@ -32,6 +36,7 @@ export default class DataLoader {
         treeElement,
         triggerEvent,
     }: DataLoaderParams) {
+        this.classNames = classNames;
         this.dataFilter = dataFilter;
         this.loadData = loadData;
         this.onLoadFailed = onLoadFailed;
@@ -75,7 +80,7 @@ export default class DataLoader {
     }
 
     private addLoadingClass(element: HTMLElement): void {
-        element.classList.add("html-tree-loading");
+        element.classList.add(this.classNames.loading);
     }
 
     private getDomElement(parentNode?: Node): HTMLElement {
@@ -111,7 +116,7 @@ export default class DataLoader {
     }
 
     private removeLoadingClass(element: HTMLElement): void {
-        element.classList.remove("html-tree-loading");
+        element.classList.remove(this.classNames.loading);
     }
 
     private async submitRequest(

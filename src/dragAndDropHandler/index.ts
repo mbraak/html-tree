@@ -1,3 +1,4 @@
+import type { ClassNames } from "../classNames";
 import type {
     GetScrollLeft,
     GetTree,
@@ -30,6 +31,7 @@ interface Dimensions {
 
 interface DragAndDropHandlerParams {
     autoEscape?: boolean;
+    classNames: ClassNames;
     getNodeElement: GetNodeElement;
     getNodeElementForNode: GetNodeElementForNode;
     getScrollLeft: GetScrollLeft;
@@ -57,6 +59,7 @@ export class DragAndDropHandler {
     public isDragging: boolean;
 
     private autoEscape?: boolean;
+    private classNames: ClassNames;
     private dragElement: DragElement | null;
     private getNodeElement: GetNodeElement;
     private getNodeElementForNode: GetNodeElementForNode;
@@ -78,6 +81,7 @@ export class DragAndDropHandler {
 
     constructor({
         autoEscape,
+        classNames,
         getNodeElement,
         getNodeElementForNode,
         getScrollLeft,
@@ -95,6 +99,7 @@ export class DragAndDropHandler {
         triggerEvent,
     }: DragAndDropHandlerParams) {
         this.autoEscape = autoEscape;
+        this.classNames = classNames;
         this.getNodeElement = getNodeElement;
         this.getNodeElementForNode = getNodeElementForNode;
         this.getScrollLeft = getScrollLeft;
@@ -204,6 +209,7 @@ export class DragAndDropHandler {
 
         this.dragElement = new DragElement({
             autoEscape: this.autoEscape ?? true,
+            classNames: this.classNames,
             nodeName: node.name,
             offsetX: positionInfo.pageX - left,
             offsetY: positionInfo.pageY - top,
@@ -211,7 +217,7 @@ export class DragAndDropHandler {
         });
 
         this.isDragging = true;
-        this.currentItem.element.classList.add("html-tree-moving");
+        this.currentItem.element.classList.add(this.classNames.moving);
 
         return true;
     }
@@ -226,7 +232,7 @@ export class DragAndDropHandler {
         const currentItem = this.currentItem;
 
         if (this.currentItem) {
-            this.currentItem.element.classList.remove("html-tree-moving");
+            this.currentItem.element.classList.remove(this.classNames.moving);
             this.currentItem = null;
         }
 
@@ -250,7 +256,7 @@ export class DragAndDropHandler {
             this.currentItem = this.getNodeElementForNode(currentNode);
 
             if (this.isDragging) {
-                this.currentItem.element.classList.add("html-tree-moving");
+                this.currentItem.element.classList.add(this.classNames.moving);
             }
         }
     }

@@ -2,13 +2,14 @@ import type { Node, NodeData } from "htmlTree/node";
 import type { HtmlTreeOptions } from "htmlTree/options";
 
 import { screen, waitFor } from "@testing-library/dom";
+import { userEvent } from "@testing-library/user-event";
 import HtmlTree from "htmlTree";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { vi } from "vitest";
 
 import exampleData from "../support/exampleData";
-import { getTreeButton } from "../support/queries";
+import { getTreeButton, getTreeListElement } from "../support/queries";
 
 const server = setupServer();
 
@@ -203,6 +204,57 @@ describe("options", () => {
         });
     });
 
+    describe("classPrefix", () => {
+        it("renders the elements with the prefix", () => {
+            createHtmlTree({
+                classPrefix: "my-tree",
+                data: exampleData,
+            });
+
+            const treeItem = screen.getByRole("treeitem", { name: "node1" });
+            const listElement = getTreeListElement(treeItem);
+            const ulElement = listElement.parentElement as HTMLElement; // eslint-disable-line testing-library/no-node-access
+
+            expect(ulElement).toHaveClass("my-tree", "my-tree-common");
+            expect(listElement).toHaveClass(
+                "my-tree-closed",
+                "my-tree-common",
+                "my-tree-folder",
+            );
+            expect(treeItem).toHaveClass(
+                "my-tree-common",
+                "my-tree-title",
+                "my-tree-title-button-left",
+                "my-tree-title-folder",
+            );
+            expect(htmlElement.innerHTML).not.toContain("html-tree");
+        });
+
+        it("opens a folder when its toggler is clicked", async () => {
+            const tree = createHtmlTree({
+                classPrefix: "my-tree",
+                data: exampleData,
+                slide: false,
+            });
+
+            const treeItem = screen.getByRole("treeitem", { name: "node1" });
+            const toggler = treeItem.previousSibling as HTMLElement; // eslint-disable-line testing-library/no-node-access
+
+            expect(toggler).toHaveClass(
+                "my-tree-common",
+                "my-tree-toggler",
+                "my-tree-toggler-left",
+            );
+
+            await userEvent.click(toggler);
+
+            expect(tree.getNodeByNameMustExist("node1").is_open).toBeTrue();
+            expect(getTreeListElement(treeItem)).not.toHaveClass(
+                "my-tree-closed",
+            );
+        });
+    });
+
     describe("closedIcon", () => {
         it("renders a string", () => {
             createHtmlTree({
@@ -255,6 +307,33 @@ describe("options", () => {
             const button = getTreeButton(treeItem);
 
             expect(button).toHaveTextContent("►");
+        });
+    });
+
+    describe("commonClassName", () => {
+        it("overrides the class of every element", () => {
+            createHtmlTree({
+                commonClassName: "my-common",
+                data: exampleData,
+            });
+
+            const treeItem = screen.getByRole("treeitem", { name: "node1" });
+
+            expect(treeItem).toHaveClass("html-tree-title", "my-common");
+            expect(treeItem).not.toHaveClass("html-tree-common");
+        });
+
+        it("selects a node when it is clicked", async () => {
+            createHtmlTree({
+                commonClassName: "my-common",
+                data: exampleData,
+            });
+
+            const treeItem = screen.getByRole("treeitem", { name: "node1" });
+
+            await userEvent.click(treeItem);
+
+            expect(treeItem).toBeAriaSelected();
         });
     });
 
@@ -639,6 +718,22 @@ describe("options", () => {
                     name: "parent1",
                 }),
             ]);
+        });
+    });
+
+    describe("treeClassName", () => {
+        it("overrides the class of the root element", () => {
+            createHtmlTree({
+                data: exampleData,
+                treeClassName: "my-tree",
+            });
+
+            const treeItem = screen.getByRole("treeitem", { name: "node1" });
+            const ulElement = getTreeListElement(treeItem)
+                .parentElement as HTMLElement; // eslint-disable-line testing-library/no-node-access
+
+            expect(ulElement).toHaveClass("html-tree-common", "my-tree");
+            expect(ulElement).not.toHaveClass("html-tree");
         });
     });
 });

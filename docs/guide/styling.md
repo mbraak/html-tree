@@ -61,6 +61,61 @@ be too — or be specific enough to win.
 | `html-tree-moving`        | The node that is being dragged.                              |
 | `html-tree-border`        | The border drawn around a folder that is being dropped into. |
 
+## Changing the class names
+
+All classes start with `html-tree`. The `classPrefix` option changes that prefix:
+
+```js
+new HtmlTree({
+  classPrefix: "my-tree",
+  data,
+  htmlElement,
+});
+```
+
+The markup from the top of this page then looks like this:
+
+```html
+<ul class="my-tree-common my-tree" role="tree">
+  <li class="my-tree-common my-tree-folder" role="none">
+    <div class="my-tree-element my-tree-common" role="none">
+      <a class="my-tree-toggler my-tree-common my-tree-toggler-left">►</a>
+      <span
+        class="my-tree-title my-tree-common my-tree-title-folder my-tree-title-button-left"
+        role="treeitem"
+        >parent</span
+      >
+    </div>
+    <ul class="my-tree-common" role="group">
+      <li class="my-tree-common" role="none">
+        <div class="my-tree-element my-tree-common" role="none">
+          <span class="my-tree-title my-tree-common my-tree-title-button-left"
+            >child</span
+          >
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+Two of the classes are not `<prefix>-<something>`, so they have an option of their own:
+`treeClassName` for the class of the root `ul` — `classPrefix` by default — and `commonClassName` for
+the class that every element gets — `<classPrefix>-common` by default.
+
+```js
+new HtmlTree({
+  commonClassName: "tree-node",
+  data,
+  htmlElement,
+  treeClassName: "tree",
+});
+```
+
+Note that `html_tree.css` has the default prefix baked in: a tree with another prefix is unstyled
+until you provide your own css. Take `css/html_tree.postcss` as the starting point — replacing
+`html-tree` in it with your prefix gives you the same stylesheet for your class names.
+
 ## Overriding styles
 
 Selection colors, for example:

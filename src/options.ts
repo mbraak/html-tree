@@ -12,7 +12,9 @@ export interface HtmlTreeOptions {
   autoEscape: boolean;
   autoOpen: boolean | number;
   buttonLeft: boolean;
+  classPrefix: string;
   closedIcon?: IconElement;
+  commonClassName?: string;
   data?: NodeData[];
   dataFilter?: DataFilter;
   dataUrl?: DataUrl;
@@ -39,6 +41,7 @@ export interface HtmlTreeOptions {
   slide: boolean;
   startDndDelay?: number;
   tabIndex?: number;
+  treeClassName?: string;
   useContextMenu: boolean;
 }
 
