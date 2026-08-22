@@ -84,26 +84,38 @@ suppressed.
 
 ## tree.select
 
-Dispatched when the selection changes.
+Dispatched when a node is selected. A deselection is [`tree.deselect`](#tree-deselect) instead, so
+`node` is always a node here.
 
-| `detail`          | Type           | When                                             |
-| ----------------- | -------------- | ------------------------------------------------ |
-| `node`            | `Node \| null` | The selected node; `null` when it was deselected. |
-| `deselected_node` | `Node \| null` | The node that was selected before, if any.        |
-| `previous_node`   | `Node`         | Only on deselection: the node that was selected.  |
-
-The `detail` is either the one or the other: `deselected_node` is set when a node is selected, and
-`previous_node` when the selection is cleared.
+| `detail`          | Type           | When                                       |
+| ----------------- | -------------- | ------------------------------------------ |
+| `node`            | `Node`         | The node that is now selected.             |
+| `deselected_node` | `Node \| null` | The node that was selected before, if any. |
 
 ```js
 element.addEventListener("tree.select", (e) => {
-  if (e.detail.node) {
-    console.log("selected", e.detail.node.name);
-  } else {
-    console.log("deselected", e.detail.previous_node.name);
-  }
+  console.log("selected", e.detail.node.name);
 });
 ```
+
+## tree.deselect
+
+Dispatched when the selected node is deselected, which happens when it is clicked again or passed to
+`selectNode` again. No `tree.select` is dispatched for it.
+
+| `detail` | Type   |
+| -------- | ------ |
+| `node`   | `Node` |
+
+```js
+element.addEventListener("tree.deselect", (e) => {
+  console.log("deselected", e.detail.node.name);
+});
+```
+
+Selecting another node does not dispatch it — that is a `tree.select` with the previous node in
+`deselected_node`. It is also not dispatched with `mustToggle: false`, or by `selectNode(null)`,
+`removeFromSelection`, `removeNode`, `loadData` and restoring a saved state.
 
 ## tree.open
 
@@ -168,15 +180,15 @@ element.addEventListener("tree.click", (e) => {
 
 This works on elements, on `document` and on `window`, in any file that imports `html-tree`.
 
-The `detail` of `tree.select` is a union of the two shapes above, so it is narrowed by `node`:
+Each event has its own `detail`, so a listener only sees the properties of the event it listens to:
 
 ```ts
 element.addEventListener("tree.select", (e) => {
-  if (e.detail.node) {
-    console.log("selected", e.detail.node.name, "instead of", e.detail.deselected_node);
-  } else {
-    console.log("deselected", e.detail.previous_node.name);
-  }
+  console.log("selected", e.detail.node.name, "instead of", e.detail.deselected_node);
+});
+
+element.addEventListener("tree.deselect", (e) => {
+  console.log("deselected", e.detail.node.name);
 });
 ```
 

@@ -1,6 +1,6 @@
 import type { ClassNames } from "./classNames";
 import type { HandleFinishedLoading } from "./dataLoader";
-import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents, TreeSelectDetail } from "./events";
+import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "./events";
 import type { OnFinishOpenNode } from "./methodTypes";
 import type { PositionInfo } from "./mouseUtils";
 import type { NodeData, NodeId, Position } from "./node";
@@ -42,7 +42,6 @@ export type {
   TreeEvent,
   TreeEventName,
   TreeEvents,
-  TreeSelectDetail,
 };
 
 export interface SelectNodeOptions {
@@ -568,10 +567,7 @@ export default class HtmlTree {
     if (this.selectNodeHandler.isNodeSelected(node)) {
       if (selectOptions.mustToggle) {
         this.deselectCurrentNode();
-        this.triggerEvent("tree.select", {
-          node: null,
-          previous_node: node,
-        });
+        this.triggerEvent("tree.deselect", { node });
       }
     } else {
       const deselectedNode = this.getSelectedNode() || null;

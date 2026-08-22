@@ -135,7 +135,8 @@ element.addEventListener("tree.select", (e) => {
 | `tree.click`        | `node`, `click_event`                                                                                    |
 | `tree.dblclick`     | `node`, `click_event`                                                                                    |
 | `tree.contextmenu`  | `node`, `click_event`                                                                                    |
-| `tree.select`       | `node` (`null` when deselected), `deselected_node` or `previous_node`                                    |
+| `tree.select`       | `node`, `deselected_node`                                                                                |
+| `tree.deselect`     | `node`                                                                                                   |
 | `tree.open`         | `node`                                                                                                   |
 | `tree.close`        | `node`                                                                                                   |
 | `tree.move`         | `move_info` with `moved_node`, `target_node`, `position`, `previous_parent`, `do_move`, `original_event` |
