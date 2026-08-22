@@ -1,3 +1,4 @@
+import type { TreeEventName, TreeEvents } from "./events";
 import type { Node, NodeData, NodeId } from "./node";
 
 export type AddToSelection = (node: Node) => void;
@@ -35,7 +36,7 @@ export type RemoveFromSelection = (node: Node) => void;
 export type SelectNode = (node: Node) => void;
 
 // Trigger an event. Return if the event is processed (true) or cancelled (false).
-export type TriggerEvent = (
-    eventName: string,
-    values?: Record<string, unknown>,
+export type TriggerEvent = <Name extends TreeEventName>(
+    eventName: Name,
+    values?: TreeEvents[Name],
 ) => boolean;

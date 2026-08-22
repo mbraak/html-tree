@@ -1,5 +1,6 @@
 import type { ClassNames } from "./classNames";
 import type { HandleFinishedLoading } from "./dataLoader";
+import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents, TreeSelectDetail } from "./events";
 import type { OnFinishOpenNode } from "./methodTypes";
 import type { PositionInfo } from "./mouseUtils";
 import type { NodeData, NodeId, Position } from "./node";
@@ -31,12 +32,17 @@ import __version__ from "./version";
 export type {
   HandleFinishedLoading,
   HtmlTreeOptions,
+  MoveInfo,
   Node,
   NodeData,
   NodeId,
   OnFinishOpenNode,
   Position,
   SavedState,
+  TreeEvent,
+  TreeEventName,
+  TreeEvents,
+  TreeSelectDetail,
 };
 
 export interface SelectNodeOptions {
@@ -44,7 +50,11 @@ export interface SelectNodeOptions {
   mustToggle?: boolean;
 }
 
-export type TriggerEventProvider = (element: HTMLElement, eventName: string, values?: Record<string, unknown>) => boolean;
+export type TriggerEventProvider = (
+  element: HTMLElement,
+  eventName: TreeEventName,
+  values?: TreeEvents[TreeEventName],
+) => boolean;
 
 interface HtmlTreeParams extends Partial<HtmlTreeOptions> {
   htmlElement: HTMLElement;
@@ -1095,7 +1105,7 @@ export default class HtmlTree {
     this.nodeMap.set(element, node);
   }
 
-  private triggerEvent(eventName: string, values?: Record<string, unknown>): boolean {
+  private triggerEvent<Name extends TreeEventName>(eventName: Name, values?: TreeEvents[Name]): boolean {
     return this.triggerEventProvider(this.htmlElement, eventName, values)
   }
 }

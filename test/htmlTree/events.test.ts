@@ -1,3 +1,4 @@
+import type { TreeEventName, TreeEvents } from "htmlTree/events";
 import type { HtmlTreeOptions } from "htmlTree/options";
 
 import { screen, waitFor } from "@testing-library/dom";
@@ -20,11 +21,12 @@ describe("events", () => {
   };
 
   // Listen to a tree event; the listener is called with the values of the event.
-  const listenToEvent = (eventName: string) => {
-    const listener = vi.fn();
+  const listenToEvent = <Name extends TreeEventName>(eventName: Name) => {
+    const listener = vi.fn<(detail: TreeEvents[Name]) => void>();
 
     htmlElement.addEventListener(eventName, (e) => {
-      listener((e as CustomEvent).detail);
+      // The detail of a generic event name is the union of all details.
+      listener(e.detail as TreeEvents[Name]);
     });
 
     return listener;
@@ -189,6 +191,27 @@ describe("events", () => {
           previous_node: node1,
         }),
       );
+    });
+
+    // The detail of tree.select is a union: `node` is null on a deselection,
+    // and `previous_node` is only set then.
+    it("narrows the detail on the node property", async () => {
+      createHtmlTree({ data: exampleData });
+
+      const selections: string[] = [];
+
+      htmlElement.addEventListener("tree.select", (e) => {
+        selections.push(
+          e.detail.node
+            ? e.detail.node.name
+            : `-${e.detail.previous_node.name}`,
+        );
+      });
+
+      await userEvent.click(screen.getByRole("treeitem", { name: "node1" }));
+      await userEvent.click(screen.getByRole("treeitem", { name: "node1" }));
+
+      expect(selections).toStrictEqual(["node1", "-node1"]);
     });
   });
 

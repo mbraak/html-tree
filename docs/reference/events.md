@@ -92,6 +92,9 @@ Dispatched when the selection changes.
 | `deselected_node` | `Node \| null` | The node that was selected before, if any.        |
 | `previous_node`   | `Node`         | Only on deselection: the node that was selected.  |
 
+The `detail` is either the one or the other: `deselected_node` is set when a node is selected, and
+`previous_node` when the selection is cleared.
+
 ```js
 element.addEventListener("tree.select", (e) => {
   if (e.detail.node) {
@@ -152,6 +155,49 @@ Dispatched when a request starts and when it finishes.
 ## tree.refresh
 
 Dispatched after the tree has been re-rendered. No `detail`.
+
+## Types
+
+The package types the events by their name, so in TypeScript the `detail` needs no cast:
+
+```ts
+element.addEventListener("tree.click", (e) => {
+  console.log(e.detail.node.name, e.detail.click_event.button);
+});
+```
+
+This works on elements, on `document` and on `window`, in any file that imports `html-tree`.
+
+The `detail` of `tree.select` is a union of the two shapes above, so it is narrowed by `node`:
+
+```ts
+element.addEventListener("tree.select", (e) => {
+  if (e.detail.node) {
+    console.log("selected", e.detail.node.name, "instead of", e.detail.deselected_node);
+  } else {
+    console.log("deselected", e.detail.previous_node.name);
+  }
+});
+```
+
+The types are also exported, for a listener that is written separately:
+
+```ts
+import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "html-tree";
+
+// TreeEvent<Name> is the CustomEvent, TreeEvents[Name] is its detail.
+const onMove = (e: TreeEvent<"tree.move">): void => {
+  const moveInfo: MoveInfo = e.detail.move_info;
+  console.log(moveInfo.moved_node.name);
+};
+
+element.addEventListener("tree.move", onMove);
+
+// TreeEventName is the name of any event: "tree.click" | "tree.close" | ...
+const log = <Name extends TreeEventName>(name: Name, detail: TreeEvents[Name]) => {
+  console.log(name, detail);
+};
+```
 
 ## Dispatching events differently
 
