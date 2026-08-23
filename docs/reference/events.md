@@ -38,7 +38,7 @@ element.addEventListener("tree.init", () => {
 No `detail`.
 
 With inline `data`, the tree is rendered inside the constructor, so this event has already fired by
-the time the constructor returns. Add the listener to the element *before* creating the tree:
+the time the constructor returns. Add the listener to the element _before_ creating the tree:
 
 ```js
 const element = document.getElementById("tree1");
@@ -54,10 +54,10 @@ const tree = new HtmlTree({ data, htmlElement: element });
 
 Dispatched when a node title is clicked.
 
-| `detail`      | Type         |
-| ------------- | ------------ |
-| `node`        | `Node`       |
-| `click_event` | `MouseEvent` |
+| `detail`        | Type         |
+| --------------- | ------------ |
+| `node`          | `Node`       |
+| `originalEvent` | `MouseEvent` |
 
 Call `preventDefault()` to stop the tree from selecting the node:
 
@@ -77,20 +77,20 @@ Dispatched when a node title is double clicked. Same `detail` as `tree.click`.
 Dispatched on a right click on a node, unless `useContextMenu` is `false`. The browser's own menu is
 suppressed.
 
-| `detail`      | Type         |
-| ------------- | ------------ |
-| `node`        | `Node`       |
-| `click_event` | `MouseEvent` |
+| `detail`        | Type         |
+| --------------- | ------------ |
+| `node`          | `Node`       |
+| `originalEvent` | `MouseEvent` |
 
 ## tree.select
 
 Dispatched when a node is selected. A deselection is [`tree.deselect`](#tree-deselect) instead, so
 `node` is always a node here.
 
-| `detail`          | Type           | When                                       |
-| ----------------- | -------------- | ------------------------------------------ |
-| `node`            | `Node`         | The node that is now selected.             |
-| `deselected_node` | `Node \| null` | The node that was selected before, if any. |
+| `detail`         | Type           | When                                       |
+| ---------------- | -------------- | ------------------------------------------ |
+| `node`           | `Node`         | The node that is now selected.             |
+| `deselectedNode` | `Node \| null` | The node that was selected before, if any. |
 
 ```js
 element.addEventListener("tree.select", (e) => {
@@ -114,7 +114,7 @@ element.addEventListener("tree.deselect", (e) => {
 ```
 
 Selecting another node does not dispatch it — that is a `tree.select` with the previous node in
-`deselected_node`. It is also not dispatched with `mustToggle: false`, or by `selectNode(null)`,
+`deselectedNode`. It is also not dispatched with `mustToggle: false`, or by `selectNode(null)`,
 `removeFromSelection`, `removeNode`, `loadData` and restoring a saved state.
 
 ## tree.open
@@ -133,14 +133,14 @@ Dispatched when a folder is closed, after the animation. Same `detail` as `tree.
 
 Dispatched when a node is dropped after a drag.
 
-| `detail`                     | Type                              |
-| ---------------------------- | --------------------------------- |
-| `move_info.moved_node`       | `Node`                            |
-| `move_info.target_node`      | `Node`                            |
-| `move_info.position`         | `"before" \| "after" \| "inside"` |
-| `move_info.previous_parent`  | `Node \| null`                    |
-| `move_info.original_event`   | `Event`                           |
-| `move_info.do_move`          | `() => void`                      |
+| `detail`                    | Type                              |
+| --------------------------- | --------------------------------- |
+| `move_info.moved_node`      | `Node`                            |
+| `move_info.target_node`     | `Node`                            |
+| `move_info.position`        | `"before" \| "after" \| "inside"` |
+| `move_info.previous_parent` | `Node \| null`                    |
+| `move_info.original_event`  | `Event`                           |
+| `move_info.do_move`         | `() => void`                      |
 
 Call `preventDefault()` to keep the tree as it is, and `move_info.do_move()` to apply the move later.
 See [Drag and drop](../guide/drag-and-drop#reacting-to-a-move).
@@ -149,10 +149,10 @@ See [Drag and drop](../guide/drag-and-drop#reacting-to-a-move).
 
 Dispatched when data is loaded into the tree, both from the `data` option and from a url.
 
-| `detail`      | Type                | Notes                                                     |
-| ------------- | ------------------- | --------------------------------------------------------- |
-| `tree_data`   | `NodeData[] \| null` |                                                          |
-| `parent_node` | `Node \| undefined` | The node whose children were replaced, if it was a subtree. |
+| `detail`      | Type                 | Notes                                                       |
+| ------------- | -------------------- | ----------------------------------------------------------- |
+| `tree_data`   | `NodeData[] \| null` |                                                             |
+| `parent_node` | `Node \| undefined`  | The node whose children were replaced, if it was a subtree. |
 
 ## tree.loading_data
 
@@ -174,7 +174,7 @@ The package types the events by their name, so in TypeScript the `detail` needs 
 
 ```ts
 element.addEventListener("tree.click", (e) => {
-  console.log(e.detail.node.name, e.detail.click_event.button);
+  console.log(e.detail.node.name, e.detail.originalEvent.button);
 });
 ```
 
@@ -184,7 +184,12 @@ Each event has its own `detail`, so a listener only sees the properties of the e
 
 ```ts
 element.addEventListener("tree.select", (e) => {
-  console.log("selected", e.detail.node.name, "instead of", e.detail.deselected_node);
+  console.log(
+    "selected",
+    e.detail.node.name,
+    "instead of",
+    e.detail.deselectedNode,
+  );
 });
 
 element.addEventListener("tree.deselect", (e) => {
@@ -206,7 +211,10 @@ const onMove = (e: TreeEvent<"tree.move">): void => {
 element.addEventListener("tree.move", onMove);
 
 // TreeEventName is the name of any event: "tree.click" | "tree.close" | ...
-const log = <Name extends TreeEventName>(name: Name, detail: TreeEvents[Name]) => {
+const log = <Name extends TreeEventName>(
+  name: Name,
+  detail: TreeEvents[Name],
+) => {
   console.log(name, detail);
 };
 ```

@@ -20,19 +20,19 @@ export type TreeEventName = keyof TreeEvents;
 // `undefined` means that the event has no `detail`.
 export interface TreeEvents {
     "tree.click": {
-        click_event: MouseEvent;
         node: Node;
+        originalEvent: MouseEvent;
     };
     "tree.close": {
         node: Node;
     };
     "tree.contextmenu": {
-        click_event: MouseEvent;
         node: Node;
+        originalEvent: MouseEvent;
     };
     "tree.dblclick": {
-        click_event: MouseEvent;
         node: Node;
+        originalEvent: MouseEvent;
     };
     "tree.deselect": {
         node: Node;
@@ -55,7 +55,7 @@ export interface TreeEvents {
     };
     "tree.refresh": undefined;
     "tree.select": {
-        deselected_node: Node | null;
+        deselectedNode: Node | null;
         node: Node;
     };
 }
@@ -66,9 +66,9 @@ type TreeEventMap = {
 
 // Type `addEventListener("tree.select", ...)` on elements, the document and the window.
 declare global {
-    interface DocumentEventMap extends TreeEventMap {}
+    interface DocumentEventMap extends TreeEventMap { }
 
-    interface HTMLElementEventMap extends TreeEventMap {}
+    interface HTMLElementEventMap extends TreeEventMap { }
 
-    interface WindowEventMap extends TreeEventMap {}
+    interface WindowEventMap extends TreeEventMap { }
 }

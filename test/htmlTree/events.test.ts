@@ -169,7 +169,7 @@ describe("events", () => {
 
       expect(onSelect).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({
-          deselected_node: null,
+          deselectedNode: null,
           node: node1,
         }),
       );
@@ -197,7 +197,7 @@ describe("events", () => {
 
       htmlElement.addEventListener("tree.select", (e) => {
         selections.push(
-          `${e.detail.node.name} instead of ${e.detail.deselected_node?.name ?? "-"}`,
+          `${e.detail.node.name} instead of ${e.detail.deselectedNode?.name ?? "-"}`,
         );
       });
 

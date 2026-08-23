@@ -575,7 +575,7 @@ export default class HtmlTree {
       this.addToSelection(node, selectOptions.mustSetFocus);
 
       this.triggerEvent("tree.select", {
-        deselected_node: deselectedNode,
+        deselectedNode: deselectedNode,
         node,
       });
       this.openParents(node);
