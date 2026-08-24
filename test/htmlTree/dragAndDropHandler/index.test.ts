@@ -1,3 +1,4 @@
+import type { MoveInfo, TreeEvent } from "htmlTree/events";
 import type { GetScrollLeft, GetTree, OpenNode } from "htmlTree/methodTypes";
 import type {
     DragMethod,
@@ -467,13 +468,13 @@ describe("DragAndDropHandler", () => {
             expect(triggerEvent).toHaveBeenCalledExactlyOnceWith(
                 "tree.move",
                 expect.objectContaining({
-                    move_info: {
-                        do_move: expect.any(Function) as unknown,
-                        moved_node: node1,
-                        original_event: dragPositionInfo.originalEvent,
+                    moveInfo: {
+                        doMove: expect.any(Function) as unknown,
+                        movedNode: node1,
+                        originalEvent: dragPositionInfo.originalEvent,
                         position: "inside",
-                        previous_parent: tree,
-                        target_node: node2,
+                        previousParent: tree,
+                        targetNode: node2,
                     },
                 }),
             );

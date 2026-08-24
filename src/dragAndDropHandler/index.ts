@@ -356,13 +356,13 @@ export class DragAndDropHandler {
             };
 
             if (this.triggerEvent("tree.move", {
-                move_info: {
-                    do_move: doMove,
-                    moved_node: movedNode,
-                    original_event: positionInfo.originalEvent,
+                moveInfo: {
+                    doMove,
+                    movedNode,
+                    originalEvent: positionInfo.originalEvent,
                     position,
-                    previous_parent: previousParent,
-                    target_node: targetNode,
+                    previousParent,
+                    targetNode,
                 },
             })) {
                 doMove();

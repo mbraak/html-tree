@@ -47,7 +47,7 @@ new HtmlTree({
 });
 ```
 
-In this tree, that `onCanMoveTo` is in effect: a node can only be dropped *into* a folder, and the
+In this tree, that `onCanMoveTo` is in effect: a node can only be dropped _into_ a folder, and the
 line between two nodes never appears.
 
 <TreeDemo demo="dragIntoFoldersOnly" />
@@ -56,15 +56,15 @@ A move that both hooks allow is applied by the tree itself.
 
 ## Reacting to a move
 
-The `tree.move` event fires when a node is dropped. Its `move_info` describes the move:
+The `tree.move` event fires when a node is dropped. Its `moveInfo` describes the move:
 
 ```js
 element.addEventListener("tree.move", (e) => {
-  const info = e.detail.move_info;
+  const info = e.detail.moveInfo;
 
-  console.log("moved", info.moved_node.name);
-  console.log("relative to", info.target_node.name, "at", info.position);
-  console.log("out of", info.previous_parent.name);
+  console.log("moved", info.movedNode.name);
+  console.log("relative to", info.targetNode.name, "at", info.position);
+  console.log("out of", info.previousParent.name);
 });
 ```
 
@@ -72,13 +72,13 @@ This is the place to tell the server:
 
 ```js
 element.addEventListener("tree.move", (e) => {
-  const info = e.detail.move_info;
+  const info = e.detail.moveInfo;
 
   void fetch("/move-node/", {
     body: JSON.stringify({
-      node: info.moved_node.id,
+      node: info.movedNode.id,
       position: info.position,
-      target: info.target_node.id,
+      target: info.targetNode.id,
     }),
     headers: { "Content-Type": "application/json" },
     method: "POST",
@@ -86,18 +86,18 @@ element.addEventListener("tree.move", (e) => {
 });
 ```
 
-Call `preventDefault()` to stop the tree from applying the move, and `move_info.do_move()` to apply
+Call `preventDefault()` to stop the tree from applying the move, and `moveInfo.doMove()` to apply
 it later — for instance after the server has confirmed it:
 
 ```js
 element.addEventListener("tree.move", (e) => {
-  const info = e.detail.move_info;
+  const info = e.detail.moveInfo;
 
   e.preventDefault();
 
   void fetch("/move-node/", { method: "POST" /* ... */ }).then((response) => {
     if (response.ok) {
-      info.do_move();
+      info.doMove();
     }
   });
 });

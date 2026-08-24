@@ -133,16 +133,16 @@ Dispatched when a folder is closed, after the animation. Same `detail` as `tree.
 
 Dispatched when a node is dropped after a drag.
 
-| `detail`                    | Type                              |
-| --------------------------- | --------------------------------- |
-| `move_info.moved_node`      | `Node`                            |
-| `move_info.target_node`     | `Node`                            |
-| `move_info.position`        | `"before" \| "after" \| "inside"` |
-| `move_info.previous_parent` | `Node \| null`                    |
-| `move_info.original_event`  | `Event`                           |
-| `move_info.do_move`         | `() => void`                      |
+| `detail`                  | Type                              |
+| ------------------------- | --------------------------------- |
+| `moveInfo.movedNode`      | `Node`                            |
+| `moveInfo.targetNode`     | `Node`                            |
+| `moveInfo.position`       | `"before" \| "after" \| "inside"` |
+| `moveInfo.previousParent` | `Node \| null`                    |
+| `moveInfo.originalEvent`  | `Event`                           |
+| `moveInfo.doMove`         | `() => void`                      |
 
-Call `preventDefault()` to keep the tree as it is, and `move_info.do_move()` to apply the move later.
+Call `preventDefault()` to keep the tree as it is, and `moveInfo.doMove()` to apply the move later.
 See [Drag and drop](../guide/drag-and-drop#reacting-to-a-move).
 
 ## tree.load_data
@@ -204,8 +204,8 @@ import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "html-tree";
 
 // TreeEvent<Name> is the CustomEvent, TreeEvents[Name] is its detail.
 const onMove = (e: TreeEvent<"tree.move">): void => {
-  const moveInfo: MoveInfo = e.detail.move_info;
-  console.log(moveInfo.moved_node.name);
+  const moveInfo: MoveInfo = e.detail.moveInfo;
+  console.log(moveInfo.movedNode.name);
 };
 
 element.addEventListener("tree.move", onMove);

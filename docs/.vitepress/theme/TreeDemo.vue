@@ -52,8 +52,8 @@ const describe = (name: string, detail: unknown): string => {
   const values = detail as Record<string, any>;
 
   if (name === "tree.move") {
-    const info = values.move_info;
-    return `${info.moved_node.name} → ${info.position} ${info.target_node.name}`;
+    const info = values.moveInfo;
+    return `${info.movedNode.name} → ${info.position} ${info.targetNode.name}`;
   }
 
   if (name === "tree.select") {

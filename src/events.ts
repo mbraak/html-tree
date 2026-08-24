@@ -1,12 +1,12 @@
 import type { Node, NodeData, Position } from "./node";
 
 export interface MoveInfo {
-    do_move: () => void;
-    moved_node: Node;
-    original_event: Event;
+    doMove: () => void;
+    movedNode: Node;
+    originalEvent: Event;
     position: Position;
-    previous_parent: Node | null;
-    target_node: Node;
+    previousParent: Node | null;
+    targetNode: Node;
 }
 
 // The CustomEvent of a tree event, for example `TreeEvent<"tree.select">`.
@@ -48,7 +48,7 @@ export interface TreeEvents {
         node: Node | null;
     };
     "tree.move": {
-        move_info: MoveInfo;
+        moveInfo: MoveInfo;
     };
     "tree.open": {
         node: Node;
