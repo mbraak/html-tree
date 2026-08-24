@@ -39,8 +39,8 @@ export interface TreeEvents {
     };
     "tree.init": undefined;
     "tree.load_data": {
-        parent_node: Node | undefined;
-        tree_data: NodeData[] | null;
+        parentNode: Node | undefined;
+        treeData: NodeData[] | null;
     };
     "tree.loading_data": {
         element: HTMLElement;

@@ -149,10 +149,10 @@ See [Drag and drop](../guide/drag-and-drop#reacting-to-a-move).
 
 Dispatched when data is loaded into the tree, both from the `data` option and from a url.
 
-| `detail`      | Type                 | Notes                                                       |
-| ------------- | -------------------- | ----------------------------------------------------------- |
-| `tree_data`   | `NodeData[] \| null` |                                                             |
-| `parent_node` | `Node \| undefined`  | The node whose children were replaced, if it was a subtree. |
+| `detail`     | Type                 | Notes                                                       |
+| ------------ | -------------------- | ----------------------------------------------------------- |
+| `treeData`   | `NodeData[] \| null` |                                                             |
+| `parentNode` | `Node \| undefined`  | The node whose children were replaced, if it was a subtree. |
 
 ## tree.loading_data
 

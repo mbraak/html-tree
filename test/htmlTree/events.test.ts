@@ -206,7 +206,7 @@ describe("events", () => {
       createHtmlTree({ data: exampleData });
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ parent_node: undefined, tree_data: exampleData }),
+        expect.objectContaining({ parentNode: undefined, treeData: exampleData }),
       );
     });
 
@@ -221,7 +221,7 @@ describe("events", () => {
       tree.loadData(childData, node1);
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ parent_node: node1, tree_data: childData }),
+        expect.objectContaining({ parentNode: node1, treeData: childData }),
       );
     });
   });

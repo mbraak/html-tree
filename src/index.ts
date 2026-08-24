@@ -417,8 +417,8 @@ export default class HtmlTree {
     }
 
     this.triggerEvent("tree.load_data", {
-      parent_node: parentNode,
-      tree_data: data,
+      parentNode,
+      treeData: data,
     });
   }
 
