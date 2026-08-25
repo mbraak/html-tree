@@ -424,6 +424,19 @@ describe("options", () => {
 
             expect(tree.getSelectedNode()).toBeFalse();
         });
+
+        it("loads the data and doesn't select a node when saveState is false", async () => {
+            localStorage.setItem("tree", '{"selected_node":[124]}');
+
+            const tree = createHtmlTree({
+                dataUrl: "/tree/",
+                saveState: false,
+            });
+
+            await screen.findByRole("treeitem", { name: "node1" });
+
+            expect(tree.getSelectedNode()).toBeFalse();
+        });
     });
 
     describe("data-url in html", () => {
@@ -684,6 +697,33 @@ describe("options", () => {
                     name: "node1",
                     open: true,
                     selected: true,
+                }),
+                expect.objectContaining({
+                    name: "node2",
+                    open: false,
+                    selected: false,
+                }),
+            ]);
+        });
+
+        it("doesn't restore the state when saveState is false", () => {
+            localStorage.setItem(
+                "tree",
+                '{"open_nodes":[123],"selected_node":[123]}',
+            );
+
+            createHtmlTree({
+                animationSpeed: 0,
+                autoOpen: false,
+                data: exampleData,
+                saveState: false,
+            });
+
+            expect(htmlElement).toHaveTreeStructure([
+                expect.objectContaining({
+                    name: "node1",
+                    open: false,
+                    selected: false,
                 }),
                 expect.objectContaining({
                     name: "node2",
