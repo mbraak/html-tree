@@ -1,3 +1,4 @@
+import type { TreeEvent } from "htmlTree/events";
 import type { GetScrollLeft, GetTree, OpenNode } from "htmlTree/methodTypes";
 import type {
     DragMethod,
@@ -575,6 +576,71 @@ describe("DragAndDropHandler", () => {
             dragAndDropHandler.mouseStop(dragPositionInfo);
 
             expect(mockMoveNode).not.toHaveBeenCalled();
+        });
+
+        it("calls tree.moveNode when do_move is called later", () => {
+            const tree = new Node(null, true);
+            const node1 = new Node({ name: "node1" });
+            tree.addChild(node1);
+            const node2 = new Node({ name: "node2" });
+            tree.addChild(node2);
+
+            const mockMoveNode = vi.spyOn(tree, "moveNode");
+
+            const { dragAndDropHandler, treeElement } =
+                createDragAndDropHandler({
+                    tree,
+                });
+
+            const doMoveFunctions: (() => void)[] = [];
+
+            treeElement.addEventListener("tree.move", (e) => {
+                e.preventDefault();
+                doMoveFunctions.push(
+                    (e as TreeEvent<"tree.move">).detail.move_info.do_move,
+                );
+            });
+
+            // Capture
+            const positionInfo = {
+                originalEvent: new Event("click"),
+                pageX: 10,
+                pageY: 10,
+                target: node1.element as HTMLElement,
+            };
+
+            dragAndDropHandler.mouseCapture(positionInfo);
+
+            // Start
+            dragAndDropHandler.mouseStart(positionInfo);
+
+            // Drag
+            const dragPositionInfo = {
+                originalEvent: new Event("mousemove"),
+                pageX: 15,
+                pageY: 30,
+                target: node2.element as HTMLElement,
+            };
+
+            dragAndDropHandler.mouseDrag(dragPositionInfo);
+
+            // Stop; the move is not applied because the event is cancelled
+            dragAndDropHandler.mouseStop(dragPositionInfo);
+
+            expect(mockMoveNode).not.toHaveBeenCalled();
+            expect(node1.parent).toBe(tree);
+
+            // Perform the move later
+            expect(doMoveFunctions).toHaveLength(1);
+
+            doMoveFunctions[0]?.();
+
+            expect(mockMoveNode).toHaveBeenCalledExactlyOnceWith(
+                node1,
+                node2,
+                "inside",
+            );
+            expect(node1.parent).toBe(node2);
         });
 
         it("calls onDragStop when there is no hovered area", () => {
