@@ -172,8 +172,8 @@ class MouseHandler {
 
             case "label": {
                 if (this.triggerEvent("tree.click", {
-                    click_event: e,
                     node: clickTarget.node,
+                    originalEvent: e,
                 })) {
                     this.onClickTitle(clickTarget.node);
                 }
@@ -198,8 +198,8 @@ class MouseHandler {
                 e.stopPropagation();
 
                 this.triggerEvent("tree.contextmenu", {
-                    click_event: e,
                     node,
+                    originalEvent: e,
                 });
                 return false;
             }
@@ -217,8 +217,8 @@ class MouseHandler {
 
         if (clickTarget?.type === "label") {
             this.triggerEvent("tree.dblclick", {
-                click_event: e,
                 node: clickTarget.node,
+                originalEvent: e,
             });
         }
     };

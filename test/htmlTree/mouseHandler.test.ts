@@ -129,8 +129,8 @@ describe("handleClick", () => {
         label.dispatchEvent(event);
 
         expect(triggerEvent).toHaveBeenCalledExactlyOnceWith("tree.click", {
-            click_event: event,
             node,
+            originalEvent: event,
         });
         expect(onClickTitle).toHaveBeenCalledExactlyOnceWith(node);
     });
@@ -198,8 +198,8 @@ describe("handleContextmenu", () => {
         nodeElement.dispatchEvent(event);
 
         expect(triggerEvent).toHaveBeenCalledExactlyOnceWith("tree.contextmenu", {
-            click_event: event,
             node,
+            originalEvent: event,
         });
     });
 
@@ -267,8 +267,8 @@ describe("handleDblclick", () => {
         label.dispatchEvent(event);
 
         expect(triggerEvent).toHaveBeenCalledExactlyOnceWith("tree.dblclick", {
-            click_event: event,
             node,
+            originalEvent: event,
         });
     });
 

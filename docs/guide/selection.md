@@ -58,10 +58,10 @@ ctrl-click to add to the selection, wire it up yourself:
 
 ```js
 element.addEventListener("tree.click", (e) => {
-  const { click_event: clickEvent, node } = e.detail;
+  const { originalEvent, node } = e.detail;
 
-  if (clickEvent.ctrlKey || clickEvent.metaKey) {
-    clickEvent.preventDefault(); // stop the default single selection
+  if (originalEvent.ctrlKey || originalEvent.metaKey) {
+    originalEvent.preventDefault(); // stop the default single selection
     if (tree.isNodeSelected(node)) {
       tree.removeFromSelection(node);
     } else {
@@ -92,12 +92,12 @@ Only the folders in this tree can be selected; clicking a leaf does nothing:
 Keyboard support is on by default (`keyboardSupport: true`) and works when the focus is on the
 tree:
 
-| Key           | Action                                                                  |
-| ------------- | ----------------------------------------------------------------------- |
-| `ArrowDown`   | Select the next visible node.                                           |
-| `ArrowUp`     | Select the previous visible node.                                       |
-| `ArrowRight`  | Open a closed folder, or move to the first child of an open folder.     |
-| `ArrowLeft`   | Close an open folder, or move to the parent.                            |
+| Key          | Action                                                              |
+| ------------ | ------------------------------------------------------------------- |
+| `ArrowDown`  | Select the next visible node.                                       |
+| `ArrowUp`    | Select the previous visible node.                                   |
+| `ArrowRight` | Open a closed folder, or move to the first child of an open folder. |
+| `ArrowLeft`  | Close an open folder, or move to the parent.                        |
 
 The tree element is focusable through `tabIndex`, which defaults to `0`. Set it to `-1` to keep
 the tree out of the tab order, or to another value to place it explicitly.

@@ -44,7 +44,7 @@ const mockLayout = (htmlElement: HTMLElement) => {
       const childListElement = isClosed
         ? null
         : // eslint-disable-next-line testing-library/no-node-access
-          listItemElement.querySelector<HTMLElement>(":scope > ul");
+        listItemElement.querySelector<HTMLElement>(":scope > ul");
 
       return [
         listItemElement,
@@ -183,18 +183,18 @@ describe("drag and drop", () => {
     const listener = vi.fn<(moveInfo: MoveInfo) => void>();
 
     htmlElement.addEventListener("tree.move", (e) => {
-      listener(e.detail.move_info);
+      listener(e.detail.moveInfo);
     });
 
     await dragAndDropNode("node1", 25);
 
     expect(listener).toHaveBeenCalledExactlyOnceWith({
-      do_move: expect.any(Function) as unknown,
-      moved_node: tree.getNodeByNameMustExist("node1"),
-      original_event: expect.any(MouseEvent) as unknown,
+      doMove: expect.any(Function) as unknown,
+      movedNode: tree.getNodeByNameMustExist("node1"),
+      originalEvent: expect.any(MouseEvent) as unknown,
       position: "inside",
-      previous_parent: tree.getTree(),
-      target_node: tree.getNodeByNameMustExist("node2"),
+      previousParent: tree.getTree(),
+      targetNode: tree.getNodeByNameMustExist("node2"),
     });
   });
 
@@ -220,7 +220,7 @@ describe("drag and drop", () => {
 
     htmlElement.addEventListener("tree.move", (e) => {
       e.preventDefault();
-      doMoveFunctions.push(e.detail.move_info.do_move);
+      doMoveFunctions.push(e.detail.moveInfo.doMove);
     });
 
     await dragAndDropNode("node1", 25);

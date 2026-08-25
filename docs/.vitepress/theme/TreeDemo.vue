@@ -52,8 +52,8 @@ const describe = (name: string, detail: unknown): string => {
   const values = detail as Record<string, any>;
 
   if (name === "tree.move") {
-    const info = values.move_info;
-    return `${info.moved_node.name} → ${info.position} ${info.target_node.name}`;
+    const info = values.moveInfo;
+    return `${info.movedNode.name} → ${info.position} ${info.targetNode.name}`;
   }
 
   if (name === "tree.select") {
@@ -69,8 +69,8 @@ const describe = (name: string, detail: unknown): string => {
   }
 
   if (name === "tree.load_data") {
-    const count = Array.isArray(values.tree_data) ? values.tree_data.length : 0;
-    const target = values.parent_node ? values.parent_node.name : "tree";
+    const count = Array.isArray(values.treeData) ? values.treeData.length : 0;
+    const target = values.parentNode ? values.parentNode.name : "tree";
     return `${target}: ${count} node(s)`;
   }
 
@@ -100,7 +100,10 @@ const addNode = () => {
   }
 
   error.value = null;
-  const node = tree.value?.appendNode({ name: `new node ${nextKey++}` }, parent);
+  const node = tree.value?.appendNode(
+    { name: `new node ${nextKey++}` },
+    parent,
+  );
   tree.value?.openNode(parent);
   tree.value?.selectNode(node);
 };

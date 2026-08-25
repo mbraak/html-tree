@@ -468,13 +468,13 @@ describe("DragAndDropHandler", () => {
             expect(triggerEvent).toHaveBeenCalledExactlyOnceWith(
                 "tree.move",
                 expect.objectContaining({
-                    move_info: {
-                        do_move: expect.any(Function) as unknown,
-                        moved_node: node1,
-                        original_event: dragPositionInfo.originalEvent,
+                    moveInfo: {
+                        doMove: expect.any(Function) as unknown,
+                        movedNode: node1,
+                        originalEvent: dragPositionInfo.originalEvent,
                         position: "inside",
-                        previous_parent: tree,
-                        target_node: node2,
+                        previousParent: tree,
+                        targetNode: node2,
                     },
                 }),
             );
@@ -597,7 +597,7 @@ describe("DragAndDropHandler", () => {
             treeElement.addEventListener("tree.move", (e) => {
                 e.preventDefault();
                 doMoveFunctions.push(
-                    (e as TreeEvent<"tree.move">).detail.move_info.do_move,
+                    (e as TreeEvent<"tree.move">).detail.moveInfo.doMove,
                 );
             });
 

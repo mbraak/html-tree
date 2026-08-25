@@ -417,8 +417,8 @@ export default class HtmlTree {
     }
 
     this.triggerEvent("tree.load_data", {
-      parent_node: parentNode,
-      tree_data: data,
+      parentNode,
+      treeData: data,
     });
   }
 
@@ -575,7 +575,7 @@ export default class HtmlTree {
       this.addToSelection(node, selectOptions.mustSetFocus);
 
       this.triggerEvent("tree.select", {
-        deselected_node: deselectedNode,
+        deselectedNode: deselectedNode,
         node,
       });
       this.openParents(node);

@@ -1,12 +1,12 @@
 import type { Node, NodeData, Position } from "./node";
 
 export interface MoveInfo {
-    do_move: () => void;
-    moved_node: Node;
-    original_event: Event;
+    doMove: () => void;
+    movedNode: Node;
+    originalEvent: Event;
     position: Position;
-    previous_parent: Node | null;
-    target_node: Node;
+    previousParent: Node | null;
+    targetNode: Node;
 }
 
 // The CustomEvent of a tree event, for example `TreeEvent<"tree.select">`.
@@ -20,27 +20,27 @@ export type TreeEventName = keyof TreeEvents;
 // `undefined` means that the event has no `detail`.
 export interface TreeEvents {
     "tree.click": {
-        click_event: MouseEvent;
         node: Node;
+        originalEvent: MouseEvent;
     };
     "tree.close": {
         node: Node;
     };
     "tree.contextmenu": {
-        click_event: MouseEvent;
         node: Node;
+        originalEvent: MouseEvent;
     };
     "tree.dblclick": {
-        click_event: MouseEvent;
         node: Node;
+        originalEvent: MouseEvent;
     };
     "tree.deselect": {
         node: Node;
     };
     "tree.init": undefined;
     "tree.load_data": {
-        parent_node: Node | undefined;
-        tree_data: NodeData[] | null;
+        parentNode: Node | undefined;
+        treeData: NodeData[] | null;
     };
     "tree.loading_data": {
         element: HTMLElement;
@@ -48,14 +48,14 @@ export interface TreeEvents {
         node: Node | null;
     };
     "tree.move": {
-        move_info: MoveInfo;
+        moveInfo: MoveInfo;
     };
     "tree.open": {
         node: Node;
     };
     "tree.refresh": undefined;
     "tree.select": {
-        deselected_node: Node | null;
+        deselectedNode: Node | null;
         node: Node;
     };
 }
@@ -66,9 +66,9 @@ type TreeEventMap = {
 
 // Type `addEventListener("tree.select", ...)` on elements, the document and the window.
 declare global {
-    interface DocumentEventMap extends TreeEventMap {}
+    interface DocumentEventMap extends TreeEventMap { }
 
-    interface HTMLElementEventMap extends TreeEventMap {}
+    interface HTMLElementEventMap extends TreeEventMap { }
 
-    interface WindowEventMap extends TreeEventMap {}
+    interface WindowEventMap extends TreeEventMap { }
 }

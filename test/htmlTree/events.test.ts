@@ -61,6 +61,24 @@ describe("events", () => {
       );
     });
 
+    it("fires tree.click with the original mouse event", async () => {
+      createHtmlTree({ data: exampleData });
+
+      let originalEvent: MouseEvent | undefined;
+
+      htmlElement.addEventListener("tree.click", (e) => {
+        originalEvent = e.detail.originalEvent;
+      });
+
+      const treeItem = screen.getByRole("treeitem", { name: "node1" });
+
+      await userEvent.click(treeItem);
+
+      expect(originalEvent).toBeInstanceOf(MouseEvent);
+      expect(originalEvent?.type).toBe("click");
+      expect(treeItem).toContainElement(originalEvent?.target as HTMLElement);
+    });
+
     it("doesn't select the node when the event is cancelled", async () => {
       const tree = createHtmlTree({ data: exampleData });
 
@@ -91,6 +109,24 @@ describe("events", () => {
         expect.objectContaining({ node: node1 }),
       );
     });
+
+    it("fires tree.contextmenu with the original mouse event", async () => {
+      createHtmlTree({ data: exampleData });
+
+      let originalEvent: MouseEvent | undefined;
+
+      htmlElement.addEventListener("tree.contextmenu", (e) => {
+        originalEvent = e.detail.originalEvent;
+      });
+
+      const treeItem = screen.getByRole("treeitem", { name: "node1" });
+
+      await userEvent.pointer({ keys: "[MouseRight]", target: treeItem });
+
+      expect(originalEvent).toBeInstanceOf(MouseEvent);
+      expect(originalEvent?.type).toBe("contextmenu");
+      expect(treeItem).toContainElement(originalEvent?.target as HTMLElement);
+    });
   });
 
   describe("tree.dblclick", () => {
@@ -108,6 +144,24 @@ describe("events", () => {
       expect(onDoubleClick).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({ node: node1 }),
       );
+    });
+
+    it("fires tree.dblclick with the original mouse event", async () => {
+      createHtmlTree({ data: exampleData });
+
+      let originalEvent: MouseEvent | undefined;
+
+      htmlElement.addEventListener("tree.dblclick", (e) => {
+        originalEvent = e.detail.originalEvent;
+      });
+
+      const treeItem = screen.getByRole("treeitem", { name: "node1" });
+
+      await userEvent.dblClick(treeItem);
+
+      expect(originalEvent).toBeInstanceOf(MouseEvent);
+      expect(originalEvent?.type).toBe("dblclick");
+      expect(treeItem).toContainElement(originalEvent?.target as HTMLElement);
     });
   });
 
@@ -152,7 +206,22 @@ describe("events", () => {
       createHtmlTree({ data: exampleData });
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ tree_data: exampleData }),
+        expect.objectContaining({ parentNode: undefined, treeData: exampleData }),
+      );
+    });
+
+    it("fires tree.load_data with the parent node when data is loaded in a node", () => {
+      const tree = createHtmlTree({ data: exampleData });
+
+      const onLoadData = listenToEvent("tree.load_data");
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      const childData = [{ id: 200, name: "child4" }];
+
+      tree.loadData(childData, node1);
+
+      expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({ parentNode: node1, treeData: childData }),
       );
     });
   });
@@ -169,7 +238,7 @@ describe("events", () => {
 
       expect(onSelect).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({
-          deselected_node: null,
+          deselectedNode: null,
           node: node1,
         }),
       );
@@ -197,7 +266,7 @@ describe("events", () => {
 
       htmlElement.addEventListener("tree.select", (e) => {
         selections.push(
-          `${e.detail.node.name} instead of ${e.detail.deselected_node?.name ?? "-"}`,
+          `${e.detail.node.name} instead of ${e.detail.deselectedNode?.name ?? "-"}`,
         );
       });
 
