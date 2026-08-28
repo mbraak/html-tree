@@ -94,20 +94,10 @@ You can also react in javascript, with the `tree.loading_data` event:
 ```js
 element.addEventListener("tree.loading_data", (e) => {
   const { isLoading, node } = e.detail;
-  console.log(node ? node.name : "the tree", isLoading ? "is loading" : "is done");
-});
-```
-
-Or with the `onLoading` option, which is called with the same information plus the element that is
-loading:
-
-```js
-new HtmlTree({
-  dataUrl: "/my-tree/",
-  htmlElement,
-  onLoading: (isLoading, node, element) => {
-    element.classList.toggle("my-spinner", isLoading);
-  },
+  console.log(
+    node ? node.name : "the tree",
+    isLoading ? "is loading" : "is done",
+  );
 });
 ```
 

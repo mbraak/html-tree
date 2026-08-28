@@ -269,14 +269,6 @@ Write the state, as a json string, to somewhere other than `localStorage`.
 
 ## Loading
 
-### onLoading
-
-- Type: `(isLoading: boolean, node: Node | undefined, element: HTMLElement) => void`
-- Default: `undefined`
-
-Called when a request starts and when it finishes. `node` is undefined for the initial load, and
-`element` is the element that is loading.
-
 ### onLoadFailed
 
 - Type: `(response: Response) => void`
@@ -299,7 +291,9 @@ import { Node } from "html-tree/lib/node.js";
 
 class MyNode extends Node {
   fullName() {
-    return this.getParent() ? `${this.getParent().name}/${this.name}` : this.name;
+    return this.getParent()
+      ? `${this.getParent().name}/${this.name}`
+      : this.name;
   }
 }
 
@@ -313,7 +307,7 @@ The `Node` class is not exposed on the global `HtmlTree`, so this option needs t
 - Type: `(element: HTMLElement, eventName: TreeEventName, values?: TreeEvents[TreeEventName]) => boolean`
 - Default: dispatches a cancelable, bubbling `CustomEvent`
 
-Replaces how [events](./events) are dispatched. It must return whether the event was *not*
+Replaces how [events](./events) are dispatched. It must return whether the event was _not_
 cancelled. This exists for tests and for integrating with another event system.
 
 ## Changing an option later

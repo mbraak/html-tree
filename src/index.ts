@@ -103,7 +103,6 @@ export default class HtmlTree {
       onGetStateFromStorage,
       onIsMoveHandle,
       onLoadFailed,
-      onLoading,
       onSetStateFromStorage,
       openedIcon,
       openFolderDelay,
@@ -150,7 +149,6 @@ export default class HtmlTree {
       dataFilter,
       loadData,
       onLoadFailed,
-      onLoading,
       treeElement,
       triggerEvent,
     });
@@ -330,6 +328,7 @@ export default class HtmlTree {
   public deinit(): void {
     this.htmlElement.textContent = '';
 
+    this.dataLoader.deinit();
     this.keyHandler.deinit();
     this.mouseHandler.deinit();
 

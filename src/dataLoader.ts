@@ -1,7 +1,7 @@
 import type { ClassNames } from "./classNames";
 import type { LoadData, TriggerEvent } from "./methodTypes";
 import type { Node, NodeData } from "./node";
-import type { DataFilter, OnLoadFailed, OnLoading } from "./options";
+import type { DataFilter, OnLoadFailed } from "./options";
 import type RequestUrl from "./requestUrl";
 
 export type HandleFinishedLoading = () => void;
@@ -11,19 +11,16 @@ interface DataLoaderParams {
     dataFilter?: DataFilter;
     loadData: LoadData;
     onLoadFailed?: OnLoadFailed;
-    onLoading?: OnLoading;
     treeElement: HTMLElement;
     triggerEvent: TriggerEvent;
 }
 
-type HandleSuccess = (data: NodeData[]) => void;
-
 export default class DataLoader {
+    private abortController: AbortController;
     private classNames: ClassNames;
     private dataFilter?: DataFilter;
     private loadData: LoadData;
     private onLoadFailed?: OnLoadFailed;
-    private onLoading?: OnLoading;
     private treeElement: HTMLElement;
     private triggerEvent: TriggerEvent;
 
@@ -32,17 +29,21 @@ export default class DataLoader {
         dataFilter,
         loadData,
         onLoadFailed,
-        onLoading,
         treeElement,
         triggerEvent,
     }: DataLoaderParams) {
+        this.abortController = new AbortController();
         this.classNames = classNames;
         this.dataFilter = dataFilter;
         this.loadData = loadData;
         this.onLoadFailed = onLoadFailed;
-        this.onLoading = onLoading;
         this.treeElement = treeElement;
         this.triggerEvent = triggerEvent;
+    }
+
+    // Abort pending requests; no more data is loaded and no more events are triggered.
+    public deinit(): void {
+        this.abortController.abort();
     }
 
     public loadFromUrl(
@@ -59,24 +60,35 @@ export default class DataLoader {
             this.notifyLoading(false, element, parentNode);
         };
 
-        const handleSuccess = (data: NodeData[]): void => {
-            stopLoading();
-            this.loadData(this.parseData(data), parentNode);
+        const handleResponse = async (response: Response): Promise<void> => {
+            if (response.ok) {
+                const data = (await response.json()) as NodeData[];
 
-            if (onFinished && typeof onFinished === "function") {
-                onFinished();
+                stopLoading();
+                this.loadData(this.parseData(data), parentNode);
+
+                if (onFinished && typeof onFinished === "function") {
+                    onFinished();
+                }
+            } else {
+                stopLoading();
+
+                if (this.onLoadFailed) {
+                    this.onLoadFailed(response);
+                }
             }
         };
 
-        const handleError = (response: Response): void => {
-            stopLoading();
+        void this.submitRequest(url)
+            .then(handleResponse)
+            .catch((error: unknown) => {
+                if (this.abortController.signal.aborted) {
+                    // The request was aborted by deinit.
+                    return;
+                }
 
-            if (this.onLoadFailed) {
-                this.onLoadFailed(response);
-            }
-        };
-
-        void this.submitRequest(url, handleSuccess, handleError);
+                throw error;
+            });
     }
 
     private addLoadingClass(element: HTMLElement): void {
@@ -96,10 +108,6 @@ export default class DataLoader {
         element: HTMLElement,
         node?: Node,
     ): void {
-        if (this.onLoading) {
-            this.onLoading(isLoading, node, element);
-        }
-
         this.triggerEvent("tree.loading_data", {
             element,
             isLoading,
@@ -119,22 +127,12 @@ export default class DataLoader {
         element.classList.remove(this.classNames.loading);
     }
 
-    private async submitRequest(
-        url: RequestUrl,
-        handleSuccess: HandleSuccess,
-        handleError: OnLoadFailed,
-    ): Promise<void> {
+    private submitRequest(url: RequestUrl): Promise<Response> {
         const headers = { "Content-Type": "application/json" };
+        const signal = this.abortController.signal;
 
         url.setSearchParam("_", Date.now().toString());
 
-        const response = await fetch(url.toString(), { headers });
-
-        if (response.ok) {
-            const data = await response.json() as NodeData[];
-            handleSuccess(data);
-        } else {
-            handleError(response);
-        }
+        return fetch(url.toString(), { headers, signal });
     }
 }
