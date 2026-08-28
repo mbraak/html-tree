@@ -52,7 +52,6 @@ describe("loadFromUrl", () => {
     const createDataLoader = (dataFilter?: DataFilter) => {
         const loadData = vi.fn();
         const onLoadFailed = vi.fn();
-        const onLoading = vi.fn();
         const treeElement = document.createElement("div");
         const triggerEvent = vi.fn<TriggerEvent>();
 
@@ -61,12 +60,11 @@ describe("loadFromUrl", () => {
             dataFilter,
             loadData,
             onLoadFailed,
-            onLoading,
             treeElement,
             triggerEvent,
         });
 
-        return { dataLoader, loadData, onLoadFailed, onLoading, treeElement, triggerEvent };
+        return { dataLoader, loadData, onLoadFailed, treeElement, triggerEvent };
     }
 
     it("calls loadData with the parsed json data", async () => {
@@ -145,31 +143,6 @@ describe("loadFromUrl", () => {
                     isLoading: false,
                     node: null
                 }
-            );
-        });
-    });
-
-    it("calls onLoading", async () => {
-        setupResponse();
-
-        const { dataLoader, onLoading, treeElement } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
-
-        await waitFor(() => {
-            expect(onLoading).toHaveBeenNthCalledWith(
-                1,
-                true,
-                undefined,
-                treeElement
-            );
-        });
-
-        await waitFor(() => {
-            expect(onLoading).toHaveBeenNthCalledWith(
-                2,
-                false,
-                undefined,
-                treeElement
             );
         });
     });

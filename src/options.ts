@@ -30,7 +30,6 @@ export interface HtmlTreeOptions {
   onGetStateFromStorage?: OnGetStateFromStorage;
   onIsMoveHandle?: OnIsMoveHandle;
   onLoadFailed?: OnLoadFailed;
-  onLoading?: OnLoading;
   onSetStateFromStorage?: OnSetStateFromStorage;
   openedIcon?: IconElement;
   openFolderDelay: false | number;
@@ -62,12 +61,6 @@ export type OnGetStateFromStorage = (() => string) | undefined;
 export type OnIsMoveHandle = (el: HTMLElement) => boolean;
 
 export type OnLoadFailed = (response: Response) => void;
-
-export type OnLoading = (
-  isLoading: boolean,
-  node: Node | undefined,
-  element: HTMLElement,
-) => void;
 
 export type OnSetStateFromStorage = ((data: string) => void) | undefined;
 

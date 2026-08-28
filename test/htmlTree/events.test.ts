@@ -391,7 +391,7 @@ describe("events", () => {
       http.get("/tree/", () => HttpResponse.json(exampleData)),
     );
 
-    beforeEach(() => {
+    beforeAll(() => {
       server.listen();
     });
 
@@ -426,42 +426,24 @@ describe("events", () => {
         );
       });
     });
-  });
 
-  describe("onLoading", () => {
-    const server = setupServer(
-      http.get("/tree/", () => HttpResponse.json(exampleData)),
-    );
+    it("doesn't fire tree.loading_data when deinit is called while the data is loading", async () => {
+      const onLoading = listenToEvent("tree.loading_data");
 
-    beforeEach(() => {
-      server.listen();
-    });
+      const tree = createHtmlTree({ dataUrl: "/tree/" });
 
-    afterAll(() => {
-      server.close();
-    });
+      expect(onLoading).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({ isLoading: true }),
+      );
 
-    it("calls onLoading", async () => {
-      const onLoading = vi.fn();
+      tree.deinit();
 
-      createHtmlTree({ dataUrl: "/tree/", onLoading });
+      // Wait for the pending request to settle.
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
-      await waitFor(() => {
-        expect(onLoading).toHaveBeenNthCalledWith(
-          1,
-          true,
-          undefined,
-          htmlElement,
-        );
-      });
-      await waitFor(() => {
-        expect(onLoading).toHaveBeenNthCalledWith(
-          2,
-          false,
-          undefined,
-          htmlElement,
-        );
-      });
+      expect(onLoading).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({ isLoading: true }),
+      );
     });
   });
 });
