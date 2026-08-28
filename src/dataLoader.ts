@@ -15,8 +15,6 @@ interface DataLoaderParams {
     triggerEvent: TriggerEvent;
 }
 
-type HandleSuccess = (data: NodeData[]) => void;
-
 export default class DataLoader {
     private abortController: AbortController;
     private classNames: ClassNames;
@@ -62,24 +60,35 @@ export default class DataLoader {
             this.notifyLoading(false, element, parentNode);
         };
 
-        const handleSuccess = (data: NodeData[]): void => {
-            stopLoading();
-            this.loadData(this.parseData(data), parentNode);
+        const handleResponse = async (response: Response): Promise<void> => {
+            if (response.ok) {
+                const data = (await response.json()) as NodeData[];
 
-            if (onFinished && typeof onFinished === "function") {
-                onFinished();
+                stopLoading();
+                this.loadData(this.parseData(data), parentNode);
+
+                if (onFinished && typeof onFinished === "function") {
+                    onFinished();
+                }
+            } else {
+                stopLoading();
+
+                if (this.onLoadFailed) {
+                    this.onLoadFailed(response);
+                }
             }
         };
 
-        const handleError = (response: Response): void => {
-            stopLoading();
+        void this.submitRequest(url)
+            .then(handleResponse)
+            .catch((error: unknown) => {
+                if (this.abortController.signal.aborted) {
+                    // The request was aborted by deinit.
+                    return;
+                }
 
-            if (this.onLoadFailed) {
-                this.onLoadFailed(response);
-            }
-        };
-
-        void this.submitRequest(url, handleSuccess, handleError);
+                throw error;
+            });
     }
 
     private addLoadingClass(element: HTMLElement): void {
@@ -118,34 +127,12 @@ export default class DataLoader {
         element.classList.remove(this.classNames.loading);
     }
 
-    private async submitRequest(
-        url: RequestUrl,
-        handleSuccess: HandleSuccess,
-        handleError: OnLoadFailed,
-    ): Promise<void> {
+    private submitRequest(url: RequestUrl): Promise<Response> {
         const headers = { "Content-Type": "application/json" };
         const signal = this.abortController.signal;
 
         url.setSearchParam("_", Date.now().toString());
 
-        let response;
-
-        try {
-            response = await fetch(url.toString(), { headers, signal });
-        } catch (error) {
-            if (signal.aborted) {
-                // The request was aborted by deinit.
-                return;
-            }
-
-            throw error;
-        }
-
-        if (response.ok) {
-            const data = await response.json() as NodeData[];
-            handleSuccess(data);
-        } else {
-            handleError(response);
-        }
+        return fetch(url.toString(), { headers, signal });
     }
 }
