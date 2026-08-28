@@ -808,7 +808,7 @@ describe("methods", () => {
 
       const tree = createHtmlTree({ data: [] });
 
-      tree.loadDataFromUrl("/tree/");
+      await tree.loadDataFromUrl("/tree/");
       await screen.findByText("node1");
 
       expect(htmlElement).toHaveTreeStructure([
@@ -825,7 +825,7 @@ describe("methods", () => {
       const tree = createHtmlTree({ data: ["initial1", "initial2"] });
 
       const parentNode = tree.getNodeByNameMustExist("initial1");
-      tree.loadDataFromUrl("/tree/", parentNode);
+      await tree.loadDataFromUrl("/tree/", parentNode);
       await screen.findByText("new1");
 
       expect(htmlElement).toHaveTreeStructure([
@@ -848,7 +848,7 @@ describe("methods", () => {
       const tree = createHtmlTree({ data: [] });
 
       tree.setOption("dataUrl", "/tree/");
-      tree.loadDataFromUrl();
+      await tree.loadDataFromUrl();
       await screen.findByText("node1");
 
       expect(htmlElement).toHaveTreeStructure([
@@ -872,7 +872,7 @@ describe("methods", () => {
         expect.objectContaining({ name: "node2" }),
       ]);
 
-      tree.loadDataFromUrl();
+      await tree.loadDataFromUrl();
       await screen.findByText("node1");
 
       expect(htmlElement).toHaveTreeStructure([
@@ -881,7 +881,7 @@ describe("methods", () => {
       ]);
     });
 
-    it("calls onFinished with an onFinished parameter", async () => {
+    it("returns a promise that resolves when the data is loaded", async () => {
       server.use(
         http.get("/tree2/", () => HttpResponse.json(exampleData)),
       );
@@ -892,13 +892,7 @@ describe("methods", () => {
       const node1 = tree.getNodeByNameMustExist("node1");
       tree.removeNode(node1);
 
-      const handleFinished = vi.fn();
-
-      tree.loadDataFromUrl(undefined, undefined, handleFinished);
-
-      await waitFor(() => {
-        expect(handleFinished).toHaveBeenCalledExactlyOnceWith();
-      });
+      await tree.loadDataFromUrl();
 
       expect(htmlElement).toHaveTreeStructure([
         expect.objectContaining({ name: "node1" }),
@@ -906,12 +900,10 @@ describe("methods", () => {
       ]);
     });
 
-    it("doesn't load the data when there is no url", () => {
+    it("doesn't load the data when there is no url", async () => {
       const tree = createHtmlTree({ data: exampleData });
 
-      expect(() => {
-        tree.loadDataFromUrl();
-      }).not.toThrow();
+      await expect(tree.loadDataFromUrl()).resolves.toBeUndefined();
 
       expect(htmlElement).toHaveTreeStructure([
         expect.objectContaining({ name: "node1" }),

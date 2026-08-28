@@ -4,8 +4,6 @@ import type { Node, NodeData } from "./node";
 import type { DataFilter, OnLoadFailed } from "./options";
 import type RequestUrl from "./requestUrl";
 
-export type HandleFinishedLoading = () => void;
-
 interface DataLoaderParams {
     classNames: ClassNames;
     dataFilter?: DataFilter;
@@ -41,16 +39,14 @@ export default class DataLoader {
         this.triggerEvent = triggerEvent;
     }
 
-    // Abort pending requests; no more data is loaded and no more events are triggered.
     public deinit(): void {
         this.abortController.abort();
     }
 
-    public loadFromUrl(
+    public async loadFromUrl(
         url: RequestUrl,
         parentNode?: Node,
-        onFinished?: HandleFinishedLoading,
-    ): void {
+    ): Promise<void> {
         const element = this.getDomElement(parentNode);
         this.addLoadingClass(element);
         this.notifyLoading(true, element, parentNode);
@@ -66,10 +62,6 @@ export default class DataLoader {
 
                 stopLoading();
                 this.loadData(this.parseData(data), parentNode);
-
-                if (onFinished && typeof onFinished === "function") {
-                    onFinished();
-                }
             } else {
                 stopLoading();
 
@@ -79,7 +71,7 @@ export default class DataLoader {
             }
         };
 
-        void this.submitRequest(url)
+        return this.submitRequest(url)
             .then(handleResponse)
             .catch((error: unknown) => {
                 if (this.abortController.signal.aborted) {

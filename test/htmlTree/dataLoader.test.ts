@@ -1,7 +1,6 @@
 import type { TriggerEvent } from "htmlTree/methodTypes";
 import type { DataFilter } from "htmlTree/options";
 
-import { waitFor } from "@testing-library/dom";
 import DataLoader from "htmlTree/dataLoader";
 import RequestUrl from "htmlTree/requestUrl";
 import { http, HttpResponse } from "msw";
@@ -71,80 +70,70 @@ describe("loadFromUrl", () => {
         setupResponse();
 
         const { dataLoader, loadData } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
+        await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        await waitFor(() => {
-            expect(loadData).toHaveBeenCalledExactlyOnceWith({ key1: "value1" }, undefined);
-        });
+        expect(loadData).toHaveBeenCalledExactlyOnceWith({ key1: "value1" }, undefined);
     });
 
-    it("calls onFinished", async () => {
+    it("returns a promise that resolves after the data is loaded", async () => {
         setupResponse();
 
-        const onFinished = vi.fn();
+        const { dataLoader, loadData } = createDataLoader();
+        const promise = dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        const { dataLoader, } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"), undefined, onFinished);
+        expect(loadData).not.toHaveBeenCalled();
 
-        await waitFor(() => {
-            expect(onFinished).toHaveBeenCalledExactlyOnceWith();
-        });
+        await promise;
+
+        expect(loadData).toHaveBeenCalledExactlyOnceWith({ key1: "value1" }, undefined);
     });
 
     it("calls onLoadFailed with a 404 error", async () => {
         setupErrorResponse(404);
 
         const { dataLoader, onLoadFailed } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
+        await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        await waitFor(() => {
-            expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ status: 404 })
-            );
-        });
+        expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ status: 404 })
+        );
     });
 
     it("calls onLoadFailed with a 500 error", async () => {
         setupErrorResponse(500);
 
         const { dataLoader, onLoadFailed } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
+        await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        await waitFor(() => {
-            expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ status: 500 })
-            );
-        });
+        expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ status: 500 })
+        );
     });
 
     it("triggers tree.loading_data events", async () => {
         setupResponse();
 
         const { dataLoader, treeElement, triggerEvent } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
+        await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        await waitFor(() => {
-            expect(triggerEvent).toHaveBeenNthCalledWith(
-                1,
-                "tree.loading_data",
-                {
-                    element: treeElement,
-                    isLoading: true,
-                    node: null
-                }
-            );
-        });
-        await waitFor(() => {
-            expect(triggerEvent).toHaveBeenNthCalledWith(
-                2,
-                "tree.loading_data",
-                {
-                    element: treeElement,
-                    isLoading: false,
-                    node: null
-                }
-            );
-        });
+        expect(triggerEvent).toHaveBeenNthCalledWith(
+            1,
+            "tree.loading_data",
+            {
+                element: treeElement,
+                isLoading: true,
+                node: null
+            }
+        );
+        expect(triggerEvent).toHaveBeenNthCalledWith(
+            2,
+            "tree.loading_data",
+            {
+                element: treeElement,
+                isLoading: false,
+                node: null
+            }
+        );
     });
 
     it("calls dataFilter", async () => {
@@ -153,11 +142,9 @@ describe("loadFromUrl", () => {
         const dataFilter = () => ["changed"]
 
         const { dataLoader, loadData } = createDataLoader(dataFilter);
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
+        await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        await waitFor(() => {
-            expect(loadData).toHaveBeenCalledExactlyOnceWith(["changed"], undefined);
-        });
+        expect(loadData).toHaveBeenCalledExactlyOnceWith(["changed"], undefined);
     });
 
     it("adds a parameter with a timestamp to force the response not to be cached", async () => {
@@ -174,17 +161,15 @@ describe("loadFromUrl", () => {
         );
 
         const { dataLoader } = createDataLoader();
-        dataLoader.loadFromUrl(new RequestUrl("/test"));
+        await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        await waitFor(() => {
-            const url = new URL(requestUrl);
+        const url = new URL(requestUrl);
 
-            expect(url.pathname).toBe("/test");
+        expect(url.pathname).toBe("/test");
 
-            const cacheBuster = url.searchParams.get('_');
+        const cacheBuster = url.searchParams.get('_');
 
-            expect(cacheBuster).toBeString();
-            expect(cacheBuster).not.toBeEmpty();
-        });
+        expect(cacheBuster).toBeString();
+        expect(cacheBuster).not.toBeEmpty();
     });
 });
