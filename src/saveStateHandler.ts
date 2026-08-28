@@ -67,6 +67,10 @@ export default class SaveStateHandler {
     }
 
     public getNodeIdToBeSelected(): NodeId | null {
+        if (!this.saveStateOption) {
+            return null;
+        }
+
         const state = this.getStateFromStorage();
 
         if (state?.selected_node) {
@@ -109,6 +113,10 @@ export default class SaveStateHandler {
     }
 
     public getStateFromStorage(): null | SavedState {
+        if (!this.saveStateOption) {
+            return null;
+        }
+
         const jsonData = this.loadFromStorage();
 
         if (jsonData) {
@@ -119,6 +127,10 @@ export default class SaveStateHandler {
     }
 
     public saveState(): void {
+        if (!this.saveStateOption) {
+            return;
+        }
+
         const state = JSON.stringify(this.getState());
 
         if (this.onSetStateFromStorage) {

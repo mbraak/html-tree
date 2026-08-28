@@ -8,32 +8,82 @@ import type {
     RefreshElements,
     RemoveFromSelection,
 } from "htmlTree/methodTypes";
+import type {
+    OnGetStateFromStorage,
+    OnSetStateFromStorage,
+} from "htmlTree/options";
 
 import { Node } from "htmlTree/node";
 import SaveStateHandler from "htmlTree/saveStateHandler";
 import { vi } from "vitest";
 
+interface CreateSaveStateHandlerParams {
+    addToSelection?: AddToSelection;
+    getNodeById?: GetNodeById;
+    getSelectedNodes?: GetSelectedNodes;
+    getTree?: GetTree;
+    onGetStateFromStorage?: OnGetStateFromStorage;
+    onSetStateFromStorage?: OnSetStateFromStorage;
+    openNode?: OpenNode;
+    refreshElements?: RefreshElements;
+    removeFromSelection?: RemoveFromSelection;
+    saveState?: boolean | string;
+}
+
 const createSaveStateHandler = ({
     addToSelection = vi.fn<AddToSelection>(),
     getNodeById = vi.fn<GetNodeById>(),
-    getSelectedNodes = vi.fn<GetSelectedNodes>(),
+    getSelectedNodes = vi.fn<GetSelectedNodes>(() => []),
+    getTree = vi.fn<GetTree>(),
+    onGetStateFromStorage,
+    onSetStateFromStorage,
     openNode = vi.fn<OpenNode>(),
     refreshElements = vi.fn<RefreshElements>(),
     removeFromSelection = vi.fn<RemoveFromSelection>(),
-}) => {
-    const getTree = vi.fn<GetTree>();
-
-    return new SaveStateHandler({
+    saveState = true,
+}: CreateSaveStateHandlerParams) =>
+    new SaveStateHandler({
         addToSelection,
         getNodeById,
         getSelectedNodes,
         getTree,
+        onGetStateFromStorage,
+        onSetStateFromStorage,
         openNode,
         refreshElements,
         removeFromSelection,
-        saveState: true,
+        saveState,
     });
-};
+
+describe("getNodeIdToBeSelected", () => {
+    afterEach(() => {
+        localStorage.clear();
+    });
+
+    it("returns the first selected node id from the state in local storage", () => {
+        localStorage.setItem("tree", '{"selected_node":[123,124]}');
+
+        const saveStateHandler = createSaveStateHandler({});
+
+        expect(saveStateHandler.getNodeIdToBeSelected()).toBe(123);
+    });
+
+    it("returns null when the state doesn't contain a selected node", () => {
+        localStorage.setItem("tree", "{}");
+
+        const saveStateHandler = createSaveStateHandler({});
+
+        expect(saveStateHandler.getNodeIdToBeSelected()).toBeNull();
+    });
+
+    it("returns null when saveState is false", () => {
+        localStorage.setItem("tree", '{"selected_node":[123]}');
+
+        const saveStateHandler = createSaveStateHandler({ saveState: false });
+
+        expect(saveStateHandler.getNodeIdToBeSelected()).toBeNull();
+    });
+});
 
 describe("getStateFromStorage", () => {
     afterEach(() => {
@@ -56,6 +106,88 @@ describe("getStateFromStorage", () => {
         expect(saveStateHandler.getStateFromStorage()).toStrictEqual({
             selected_node: [123],
         });
+    });
+
+    it("returns null when saveState is false", () => {
+        localStorage.setItem("tree", '{"selected_node":[123]}');
+
+        const saveStateHandler = createSaveStateHandler({ saveState: false });
+
+        expect(saveStateHandler.getStateFromStorage()).toBeNull();
+    });
+
+    it("reads the state with onGetStateFromStorage when it is set", () => {
+        const onGetStateFromStorage = vi.fn(() => '{"selected_node":[123]}');
+
+        const saveStateHandler = createSaveStateHandler({
+            onGetStateFromStorage,
+        });
+
+        expect(saveStateHandler.getStateFromStorage()).toStrictEqual({
+            selected_node: [123],
+        });
+    });
+});
+
+describe("saveState", () => {
+    afterEach(() => {
+        localStorage.clear();
+    });
+
+    it("saves the state to local storage", () => {
+        const node = new Node({ id: 123 });
+        const getSelectedNodes = vi.fn(() => [node]);
+
+        const saveStateHandler = createSaveStateHandler({ getSelectedNodes });
+        saveStateHandler.saveState();
+
+        expect(localStorage.getItem("tree")).toBe(
+            '{"open_nodes":[],"selected_node":[123]}',
+        );
+    });
+
+    it("uses the saveState option as a key when it is a string", () => {
+        const saveStateHandler = createSaveStateHandler({
+            saveState: "my-state",
+        });
+        saveStateHandler.saveState();
+
+        expect(localStorage.getItem("my-state")).toBe(
+            '{"open_nodes":[],"selected_node":[]}',
+        );
+    });
+
+    it("doesn't save the state when saveState is false", () => {
+        const saveStateHandler = createSaveStateHandler({ saveState: false });
+        saveStateHandler.saveState();
+
+        expect(localStorage.getItem("tree")).toBeNull();
+    });
+
+    it("calls onSetStateFromStorage when it is set", () => {
+        const onSetStateFromStorage = vi.fn();
+
+        const saveStateHandler = createSaveStateHandler({
+            onSetStateFromStorage,
+        });
+        saveStateHandler.saveState();
+
+        expect(onSetStateFromStorage).toHaveBeenCalledExactlyOnceWith(
+            '{"open_nodes":[],"selected_node":[]}',
+        );
+        expect(localStorage.getItem("tree")).toBeNull();
+    });
+
+    it("doesn't call onSetStateFromStorage when saveState is false", () => {
+        const onSetStateFromStorage = vi.fn();
+
+        const saveStateHandler = createSaveStateHandler({
+            onSetStateFromStorage,
+            saveState: false,
+        });
+        saveStateHandler.saveState();
+
+        expect(onSetStateFromStorage).not.toHaveBeenCalled();
     });
 });
 

@@ -534,16 +534,10 @@ export default class HtmlTree {
     node: Node | null,
     optionsParam?: SelectNodeOptions,
   ): void {
-    const saveState = (): void => {
-      if (this.options.saveState) {
-        this.saveStateHandler.saveState();
-      }
-    };
-
     if (!node) {
       // Called with empty node -> deselect current node
       this.deselectCurrentNode();
-      saveState();
+      this.saveStateHandler.saveState();
       return;
     }
     const defaultOptions = { mustSetFocus: true, mustToggle: true };
@@ -581,7 +575,7 @@ export default class HtmlTree {
       this.openParents(node);
     }
 
-    saveState();
+    this.saveStateHandler.saveState();
   }
 
   public setOption(option: string, value: unknown) {
@@ -761,11 +755,7 @@ export default class HtmlTree {
   }
 
   private getNodeIdToBeSelected(): NodeId | null {
-    if (this.options.saveState) {
-      return this.saveStateHandler.getNodeIdToBeSelected();
-    } else {
-      return null;
-    }
+    return this.saveStateHandler.getNodeIdToBeSelected();
   }
 
   private initData(): void {
@@ -970,9 +960,7 @@ export default class HtmlTree {
   }
 
   private saveState(): void {
-    if (this.options.saveState) {
-      this.saveStateHandler.saveState();
-    }
+    this.saveStateHandler.saveState();
   }
 
   private selectCurrentNode(mustSetFocus: boolean): void {
@@ -988,20 +976,16 @@ export default class HtmlTree {
   private setInitialState(): boolean {
     const restoreState = (): [boolean, boolean] => {
       // result: is state restored, must load on demand?
-      if (!this.options.saveState) {
+      const state = this.saveStateHandler.getStateFromStorage();
+
+      if (!state) {
         return [false, false];
       } else {
-        const state = this.saveStateHandler.getStateFromStorage();
+        const mustLoadOnDemand =
+          this.saveStateHandler.setInitialState(state);
 
-        if (!state) {
-          return [false, false];
-        } else {
-          const mustLoadOnDemand =
-            this.saveStateHandler.setInitialState(state);
-
-          // return true: the state is restored
-          return [true, mustLoadOnDemand];
-        }
+        // return true: the state is restored
+        return [true, mustLoadOnDemand];
       }
     };
 
