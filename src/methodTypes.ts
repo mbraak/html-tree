@@ -21,13 +21,10 @@ export type IsNodeSelected = (node: Node) => boolean;
 
 export type LoadData = (data: NodeData[], parentNode?: Node) => void;
 
-export type OnFinishOpenNode = (node: Node) => void;
-
 export type OpenNode = (
     node: Node,
     slide?: boolean,
-    onFinished?: OnFinishOpenNode,
-) => void;
+) => Promise<void>;
 
 export type RefreshElements = (fromNode: Node | null) => void;
 

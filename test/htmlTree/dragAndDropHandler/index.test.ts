@@ -966,7 +966,11 @@ describe("DragAndDropHandler", () => {
             tree.addChild(node2);
             node2.addChild(new Node({ name: "child" }));
 
-            const openNode = vi.fn();
+            const openNode = vi.fn(
+                () => {
+                    return Promise.resolve();
+                }
+            );
 
             const { dragAndDropHandler } = createDragAndDropHandler({
                 openFolderDelay: 100,
@@ -1005,7 +1009,6 @@ describe("DragAndDropHandler", () => {
             expect(openNode).toHaveBeenCalledExactlyOnceWith(
                 node2,
                 false,
-                expect.any(Function),
             );
         });
 

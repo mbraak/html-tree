@@ -402,7 +402,7 @@ export class DragAndDropHandler {
 
     private startOpenFolderTimer(folder: Node): void {
         const openFolder = (): void => {
-            this.openNode(folder, this.slide, () => {
+            void this.openNode(folder, this.slide).then(() => {
                 this.refresh();
                 this.updateDropHint();
             });

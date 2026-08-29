@@ -347,13 +347,13 @@ describe("events", () => {
   });
 
   describe("tree.open and tree.close", () => {
-    it("fires tree.open when a node is opened", () => {
+    it("fires tree.open when a node is opened", async () => {
       const tree = createHtmlTree({ autoOpen: false, data: exampleData });
 
       const onOpen = listenToEvent("tree.open");
 
       const node1 = tree.getNodeByNameMustExist("node1");
-      tree.openNode(node1, false);
+      await tree.openNode(node1, false);
 
       expect(onOpen).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({ node: node1 }),

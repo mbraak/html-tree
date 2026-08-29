@@ -1,5 +1,5 @@
 import type { AnimationSpeed } from "../animation";
-import type { OnFinishOpenNode, TriggerEvent } from "../methodTypes";
+import type { TriggerEvent } from "../methodTypes";
 import type { Position } from "../node";
 import type { NodeElementParams } from "./index";
 
@@ -79,51 +79,51 @@ class FolderElement extends NodeElement {
         }
     }
 
-    public open(
-        onFinished: OnFinishOpenNode | undefined,
+    public async open(
         slide: boolean,
         animationSpeed: AnimationSpeed,
-    ): void {
-        if (this.node.is_open) {
-            return;
-        }
-
-        this.node.is_open = true;
-
-        const button = this.getButton();
-        button.classList.remove(this.classNames.closed);
-        button.innerHTML = "";
-
-        const openedIconElement = this.openedIconElement;
-
-        if (openedIconElement) {
-            const icon = openedIconElement.cloneNode(true);
-            button.appendChild(icon);
-        }
-
-        const doOpen = (): void => {
-            this.element.classList.remove(this.classNames.closed);
-
-            const titleSpan = this.getTitleSpan();
-            titleSpan.setAttribute("aria-expanded", "true");
-
-            if (onFinished) {
-                onFinished(this.node);
+    ): Promise<void> {
+        return new Promise(resolve => {
+            if (this.node.is_open) {
+                resolve();
+                return;
             }
 
-            this.triggerEvent("tree.open", {
-                node: this.node,
-            });
-        };
+            this.node.is_open = true;
 
-        const ul = this.getUl();
+            const button = this.getButton();
+            button.classList.remove(this.classNames.closed);
+            button.innerHTML = "";
 
-        if (slide) {
-            slideDown(ul, animationSpeed, doOpen);
-        } else {
-            ul.style.display = "block";
-            doOpen();
-        }
+            const openedIconElement = this.openedIconElement;
+
+            if (openedIconElement) {
+                const icon = openedIconElement.cloneNode(true);
+                button.appendChild(icon);
+            }
+
+            const doOpen = (): void => {
+                this.element.classList.remove(this.classNames.closed);
+
+                const titleSpan = this.getTitleSpan();
+                titleSpan.setAttribute("aria-expanded", "true");
+
+                this.triggerEvent("tree.open", {
+                    node: this.node,
+                });
+
+                resolve();
+            };
+
+            const ul = this.getUl();
+
+            if (slide) {
+                slideDown(ul, animationSpeed, doOpen);
+            } else {
+                ul.style.display = "block";
+                doOpen();
+            }
+        });
     }
 
     protected mustShowBorderDropHint(position: Position): boolean {

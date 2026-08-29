@@ -1,13 +1,12 @@
 import type { Node } from "htmlTree/node";
 import type { HtmlTreeOptions } from "htmlTree/options";
 
-import { screen, waitFor } from "@testing-library/dom";
+import { screen } from "@testing-library/dom";
 import { userEvent } from "@testing-library/user-event";
 import HtmlTree from "htmlTree";
 import __version__ from "htmlTree/version";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { vi } from "vitest";
 
 import exampleData from "../support/exampleData";
 import { getTreeListElement } from "../support/queries";
@@ -527,11 +526,11 @@ describe("methods", () => {
   });
 
   describe("getState", () => {
-    it("returns the state", () => {
+    it("returns the state", async () => {
       const tree = createHtmlTree({ data: exampleData });
 
       const node1 = tree.getNodeByNameMustExist("node1");
-      tree.openNode(node1, false);
+      await tree.openNode(node1, false);
 
       expect(tree.getState()).toStrictEqual({
         open_nodes: [123],
@@ -541,14 +540,14 @@ describe("methods", () => {
   });
 
   describe("getStateFromStorage", () => {
-    it("returns the state", () => {
+    it("returns the state", async () => {
       const tree = createHtmlTree({
         data: exampleData,
         saveState: true,
       });
 
       const node1 = tree.getNodeByNameMustExist("node1");
-      tree.openNode(node1, false);
+      await tree.openNode(node1, false);
 
       expect(tree.getStateFromStorage()).toStrictEqual({
         open_nodes: [123],
@@ -977,37 +976,22 @@ describe("methods", () => {
   });
 
   describe("openNode", () => {
-    it("opens the node", () => {
+    it("opens the node", async () => {
       const tree = createHtmlTree({
         autoOpen: false,
         data: exampleData,
       });
 
       const node1 = tree.getNodeByNameMustExist("node1");
-      tree.openNode(node1, false);
+      await tree.openNode(node1, false);
 
       const treeItem = screen.getByRole("treeitem", { name: "node1" });
 
       expect(treeItem).toBeAriaExpanded();
     });
 
-    it("calls the function with onFinished parameter", async () => {
-      const tree = createHtmlTree({
-        autoOpen: false,
-        data: exampleData,
-      });
-
-      const node1 = tree.getNodeByNameMustExist("node1");
-      const onFinished = vi.fn();
-
-      tree.openNode(node1, onFinished);
-
-      await waitFor(() => {
-        expect(onFinished).toHaveBeenCalledExactlyOnceWith(node1);
-      });
-    });
-
-    it("handles an empty folder", () => {
+    // eslint-disable-next-line vitest/expect-expect
+    it("handles an empty folder", async () => {
       const tree = createHtmlTree({
         autoOpen: false,
         data: exampleData,
@@ -1016,9 +1000,7 @@ describe("methods", () => {
       const child1 = tree.getNodeByNameMustExist("child1");
       child1.isEmptyFolder = true;
 
-      expect(() => {
-        tree.openNode(child1, false);
-      }).not.toThrow();
+      await tree.openNode(child1, false);
     });
   });
 

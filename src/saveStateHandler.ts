@@ -162,14 +162,12 @@ export default class SaveStateHandler {
         return mustLoadOnDemand;
     }
 
-    public setInitialStateOnDemand(
+    public async setInitialStateOnDemand(
         state: SavedState,
-        cbFinished: () => void,
-    ): void {
-        let loadingCount = 0;
+    ): Promise<void> {
         let nodeIds = state.open_nodes;
 
-        const openNodes = (): void => {
+        const openNodes = async () => {
             if (!nodeIds) {
                 return;
             }
@@ -184,9 +182,9 @@ export default class SaveStateHandler {
                 } else {
                     if (!node.is_loading) {
                         if (node.load_on_demand) {
-                            loadAndOpenNode(node);
+                            await loadAndOpenNode(node);
                         } else {
-                            this.openNode(node, false);
+                            await this.openNode(node, false);
                         }
                     }
                 }
@@ -199,21 +197,14 @@ export default class SaveStateHandler {
                     this.refreshElements(null);
                 }
             }
-
-            if (loadingCount === 0) {
-                cbFinished();
-            }
         };
 
-        const loadAndOpenNode = (node: Node): void => {
-            loadingCount += 1;
-            this.openNode(node, false, () => {
-                loadingCount -= 1;
-                openNodes();
-            });
+        const loadAndOpenNode = async (node: Node) => {
+            await this.openNode(node, false);
+            await openNodes();
         };
 
-        openNodes();
+        await openNodes();
     }
 
     private getKeyName(): string {
