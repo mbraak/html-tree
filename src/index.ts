@@ -118,7 +118,7 @@ export default class HtmlTree {
     const getTree = this.getTree.bind(this);
     const isFocusOnTree = this.isFocusOnTree.bind(this);
     const loadData = this.loadData.bind(this);
-    const openNode = this.openNodeInternal.bind(this);
+    const openNode = this.openNode.bind(this);
     const refreshElements = this.refreshElements.bind(this);
     const refreshHitAreas = this.refreshHitAreas.bind(this);
     const selectNode = this.selectNode.bind(this);
@@ -452,11 +452,45 @@ export default class HtmlTree {
     }
   }
 
-  public openNode(
-    node: Node,
-    slide?: boolean
+  public async openNode(
+    inputNode: Node,
+    inputSlide = false
   ): Promise<void> {
-    return this.openNodeInternal(node, slide);
+    const doOpenNode = async (
+      node: Node,
+      slide: boolean
+    ): Promise<void> => {
+      if (!inputNode.children.length) {
+        return;
+      }
+
+      const folderElement = this.createFolderElement(node);
+
+      await folderElement.open(
+        slide,
+        this.options.animationSpeed,
+      );
+    };
+
+    if (inputNode.isFolder() || inputNode.isEmptyFolder) {
+      if (inputNode.load_on_demand) {
+        await this.loadFolderOnDemand(inputNode, inputSlide);
+      } else {
+        let parent = inputNode.parent;
+
+        while (parent) {
+          // nb: do not open root element
+          if (parent.parent) {
+            await doOpenNode(parent, false);
+          }
+          parent = parent.parent;
+        }
+
+        await doOpenNode(inputNode, inputSlide);
+
+        this.saveState();
+      }
+    }
   }
 
   // Add a node before another node.
@@ -813,7 +847,7 @@ export default class HtmlTree {
 
     await this.loadDataFromUrl(undefined, node);
 
-    await this.openNodeInternal(node, slide);
+    await this.openNode(node, slide);
   }
 
   private loadSubtree(data: NodeData[], parentNode: Node): void {
@@ -861,47 +895,6 @@ export default class HtmlTree {
 
     this.scrollHandler.stopScrolling();
     return this.dndHandler.mouseStop(positionInfo);
-  }
-
-  private async openNodeInternal(
-    inputNode: Node,
-    inputSlide = true,
-  ): Promise<void> {
-    const doOpenNode = async (
-      node: Node,
-      slide: boolean
-    ): Promise<void> => {
-      if (!inputNode.children.length) {
-        return;
-      }
-
-      const folderElement = this.createFolderElement(node);
-
-      await folderElement.open(
-        slide,
-        this.options.animationSpeed,
-      );
-    };
-
-    if (inputNode.isFolder() || inputNode.isEmptyFolder) {
-      if (inputNode.load_on_demand) {
-        await this.loadFolderOnDemand(inputNode, inputSlide);
-      } else {
-        let parent = inputNode.parent;
-
-        while (parent) {
-          // nb: do not open root element
-          if (parent.parent) {
-            await doOpenNode(parent, false);
-          }
-          parent = parent.parent;
-        }
-
-        await doOpenNode(inputNode, inputSlide);
-
-        this.saveState();
-      }
-    }
   }
 
   private openParents(node: Node) {
@@ -1019,7 +1012,7 @@ export default class HtmlTree {
 
         const loadAndOpenNode = (node: Node): void => {
           loadingCount += 1;
-          void this.openNodeInternal(node, false).then(() => {
+          void this.openNode(node, false).then(() => {
             loadingCount -= 1;
             openNodes();
           });
@@ -1034,7 +1027,7 @@ export default class HtmlTree {
 
               return false;
             } else {
-              void this.openNodeInternal(node, false);
+              void this.openNode(node, false);
 
               return level !== maxLevel;
             }
