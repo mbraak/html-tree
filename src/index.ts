@@ -770,7 +770,7 @@ export default class HtmlTree {
 
     if (mustLoadOnDemand) {
       // Load data on demand and then init the tree
-      this.setInitialStateOnDemand(doInit);
+      void this.setInitialStateOnDemand().then(doInit);
     } else {
       doInit();
     }
@@ -995,62 +995,63 @@ export default class HtmlTree {
   }
 
   // Set the initial state for nodes that are loaded on demand
-  // Call cb_finished when done
-  private setInitialStateOnDemand(cbFinished: () => void): void {
-    const restoreState = (): boolean => {
-      const state = this.saveStateHandler.getStateFromStorage();
+  private async setInitialStateOnDemand(): Promise<void> {
+    return new Promise(resolve => {
+      const restoreState = (): boolean => {
+        const state = this.saveStateHandler.getStateFromStorage();
 
-      if (!state) {
-        return false;
-      } else {
-        void this.saveStateHandler.setInitialStateOnDemand(
-          state,
-        ).then(() => {
-          cbFinished();
-        });
+        if (!state) {
+          return false;
+        } else {
+          void this.saveStateHandler.setInitialStateOnDemand(
+            state,
+          ).then(() => {
+            resolve();
+          });
 
-        return true;
-      }
-    };
-
-    const autoOpenNodes = (): void => {
-      const maxLevel = this.getAutoOpenMaxLevel();
-      let loadingCount = 0;
-
-      const loadAndOpenNode = (node: Node): void => {
-        loadingCount += 1;
-        void this.openNodeInternal(node, false).then(() => {
-          loadingCount -= 1;
-          openNodes();
-        });
-      };
-
-      const openNodes = (): void => {
-        this.tree.iterate((node: Node, level: number) => {
-          if (node.load_on_demand) {
-            if (!node.is_loading) {
-              loadAndOpenNode(node);
-            }
-
-            return false;
-          } else {
-            void this.openNodeInternal(node, false);
-
-            return level !== maxLevel;
-          }
-        });
-
-        if (loadingCount === 0) {
-          cbFinished();
+          return true;
         }
       };
 
-      openNodes();
-    };
+      const autoOpenNodes = (): void => {
+        const maxLevel = this.getAutoOpenMaxLevel();
+        let loadingCount = 0;
 
-    if (!restoreState()) {
-      autoOpenNodes();
-    }
+        const loadAndOpenNode = (node: Node): void => {
+          loadingCount += 1;
+          void this.openNodeInternal(node, false).then(() => {
+            loadingCount -= 1;
+            openNodes();
+          });
+        };
+
+        const openNodes = (): void => {
+          this.tree.iterate((node: Node, level: number) => {
+            if (node.load_on_demand) {
+              if (!node.is_loading) {
+                loadAndOpenNode(node);
+              }
+
+              return false;
+            } else {
+              void this.openNodeInternal(node, false);
+
+              return level !== maxLevel;
+            }
+          });
+
+          if (loadingCount === 0) {
+            resolve();
+          }
+        };
+
+        openNodes();
+      };
+
+      if (!restoreState()) {
+        autoOpenNodes();
+      }
+    });
   }
 
   // Set this HTML element to this node in the node map.
