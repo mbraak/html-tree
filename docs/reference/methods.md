@@ -237,11 +237,12 @@ methods.
 - `data`: `NodeData[] | null`
 - `parentNode`: `Node` — replace this node's children instead of the whole tree
 
-### loadDataFromUrl(url?, parentNode?, onFinished?)
+### async loadDataFromUrl(url?, parentNode?)
+
+- Returns: `Promise`
 
 - `url`: `string` — defaults to the `dataUrl` option
 - `parentNode`: `Node`
-- `onFinished`: `() => void`
 
 Fetches data and loads it into the tree, or into `parentNode`.
 

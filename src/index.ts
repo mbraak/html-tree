@@ -1,5 +1,4 @@
 import type { ClassNames } from "./classNames";
-import type { HandleFinishedLoading } from "./dataLoader";
 import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "./events";
 import type { OnFinishOpenNode } from "./methodTypes";
 import type { PositionInfo } from "./mouseUtils";
@@ -30,7 +29,6 @@ import __version__ from "./version";
 // Type only, so that the iife build keeps exposing the HtmlTree class itself
 // as its global, instead of an object of named exports.
 export type {
-  HandleFinishedLoading,
   HtmlTreeOptions,
   MoveInfo,
   Node,
@@ -421,15 +419,14 @@ export default class HtmlTree {
     });
   }
 
-  public loadDataFromUrl(
+  public async loadDataFromUrl(
     inputUrl?: string,
-    parentNode?: Node,
-    onFinished?: HandleFinishedLoading,
-  ): void {
+    parentNode?: Node
+  ): Promise<void> {
     const url = inputUrl ? new RequestUrl(inputUrl) : this.createRequestUrl(parentNode);
 
     if (url) {
-      this.dataLoader.loadFromUrl(url, parentNode, onFinished);
+      await this.dataLoader.loadFromUrl(url, parentNode);
     }
   }
 
@@ -764,7 +761,7 @@ export default class HtmlTree {
       const dataUrl = this.createRequestUrl();
 
       if (dataUrl) {
-        this.loadDataFromUrl();
+        void this.loadDataFromUrl();
       } else {
         this.loadData([]);
       }
@@ -830,16 +827,16 @@ export default class HtmlTree {
     }
   }
 
-  private loadFolderOnDemand(
+  private async loadFolderOnDemand(
     node: Node,
     slide: boolean,
     onFinished?: OnFinishOpenNode,
-  ): void {
+  ): Promise<void> {
     node.is_loading = true;
 
-    this.loadDataFromUrl(undefined, node, () => {
-      this.openNodeInternal(node, slide, onFinished);
-    });
+    await this.loadDataFromUrl(undefined, node);
+
+    this.openNodeInternal(node, slide, onFinished);
   }
 
   private loadSubtree(data: NodeData[], parentNode: Node): void {
@@ -913,7 +910,7 @@ export default class HtmlTree {
 
     if (node.isFolder() || node.isEmptyFolder) {
       if (node.load_on_demand) {
-        this.loadFolderOnDemand(node, slide, onFinished);
+        void this.loadFolderOnDemand(node, slide, onFinished);
       } else {
         let parent = node.parent;
 

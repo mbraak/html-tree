@@ -4,8 +4,6 @@ import type { Node, NodeData } from "./node";
 import type { DataFilter, OnLoadFailed } from "./options";
 import type RequestUrl from "./requestUrl";
 
-export type HandleFinishedLoading = () => void;
-
 interface DataLoaderParams {
     classNames: ClassNames;
     dataFilter?: DataFilter;
@@ -41,22 +39,21 @@ export default class DataLoader {
         this.triggerEvent = triggerEvent;
     }
 
-    // Abort pending requests; no more data is loaded and no more events are triggered.
     public deinit(): void {
         this.abortController.abort();
     }
 
-    public loadFromUrl(
+    public async loadFromUrl(
         url: RequestUrl,
         parentNode?: Node,
-        onFinished?: HandleFinishedLoading,
-    ): void {
-        const element = this.getDomElement(parentNode);
-        this.addLoadingClass(element);
+    ): Promise<void> {
+        const element = parentNode?.element ?? this.treeElement;
+        element.classList.add(this.classNames.loading);
+
         this.notifyLoading(true, element, parentNode);
 
         const stopLoading = (): void => {
-            this.removeLoadingClass(element);
+            element.classList.remove(this.classNames.loading);
             this.notifyLoading(false, element, parentNode);
         };
 
@@ -65,11 +62,10 @@ export default class DataLoader {
                 const data = (await response.json()) as NodeData[];
 
                 stopLoading();
-                this.loadData(this.parseData(data), parentNode);
-
-                if (onFinished && typeof onFinished === "function") {
-                    onFinished();
-                }
+                this.loadData(
+                    this.dataFilter ? this.dataFilter(data) : data,
+                    parentNode
+                );
             } else {
                 stopLoading();
 
@@ -79,7 +75,10 @@ export default class DataLoader {
             }
         };
 
-        void this.submitRequest(url)
+        const signal = this.abortController.signal;
+        url.setSearchParam("_", Date.now().toString());
+
+        return fetch(url.toString(), { headers: { "Content-Type": "application/json" }, signal })
             .then(handleResponse)
             .catch((error: unknown) => {
                 if (this.abortController.signal.aborted) {
@@ -89,18 +88,6 @@ export default class DataLoader {
 
                 throw error;
             });
-    }
-
-    private addLoadingClass(element: HTMLElement): void {
-        element.classList.add(this.classNames.loading);
-    }
-
-    private getDomElement(parentNode?: Node): HTMLElement {
-        if (parentNode?.element) {
-            return parentNode.element;
-        } else {
-            return this.treeElement;
-        }
     }
 
     private notifyLoading(
@@ -113,26 +100,5 @@ export default class DataLoader {
             isLoading,
             node: node ?? null,
         });
-    }
-
-    private parseData(data: NodeData[]): NodeData[] {
-        if (this.dataFilter) {
-            return this.dataFilter(data);
-        } else {
-            return data;
-        }
-    }
-
-    private removeLoadingClass(element: HTMLElement): void {
-        element.classList.remove(this.classNames.loading);
-    }
-
-    private submitRequest(url: RequestUrl): Promise<Response> {
-        const headers = { "Content-Type": "application/json" };
-        const signal = this.abortController.signal;
-
-        url.setSearchParam("_", Date.now().toString());
-
-        return fetch(url.toString(), { headers, signal });
     }
 }

@@ -103,15 +103,14 @@ element.addEventListener("tree.loading_data", (e) => {
 
 ## Loading a subtree yourself
 
-`loadDataFromUrl` fetches into a node on demand, and takes a callback that runs when the data has
-arrived:
+`loadDataFromUrl` fetches into a node on demand, and returns a promise that is resolved when the
+data has arrived:
 
 ```js
 const node = tree.getNodeById(1);
 
-tree.loadDataFromUrl("/my-tree/?node=1", node, () => {
-  tree.openNode(node);
-});
+await tree.loadDataFromUrl("/my-tree/?node=1", node);
+tree.openNode(node);
 ```
 
 `loadData` does the same with data you already have:
