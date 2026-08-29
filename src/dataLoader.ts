@@ -47,12 +47,13 @@ export default class DataLoader {
         url: RequestUrl,
         parentNode?: Node,
     ): Promise<void> {
-        const element = this.getDomElement(parentNode);
-        this.addLoadingClass(element);
+        const element = parentNode?.element ?? this.treeElement;
+        element.classList.add(this.classNames.loading);
+
         this.notifyLoading(true, element, parentNode);
 
         const stopLoading = (): void => {
-            this.removeLoadingClass(element);
+            element.classList.remove(this.classNames.loading);
             this.notifyLoading(false, element, parentNode);
         };
 
@@ -61,7 +62,10 @@ export default class DataLoader {
                 const data = (await response.json()) as NodeData[];
 
                 stopLoading();
-                this.loadData(this.parseData(data), parentNode);
+                this.loadData(
+                    this.dataFilter ? this.dataFilter(data) : data,
+                    parentNode
+                );
             } else {
                 stopLoading();
 
@@ -71,7 +75,10 @@ export default class DataLoader {
             }
         };
 
-        return this.submitRequest(url)
+        const signal = this.abortController.signal;
+        url.setSearchParam("_", Date.now().toString());
+
+        return fetch(url.toString(), { headers: { "Content-Type": "application/json" }, signal })
             .then(handleResponse)
             .catch((error: unknown) => {
                 if (this.abortController.signal.aborted) {
@@ -81,18 +88,6 @@ export default class DataLoader {
 
                 throw error;
             });
-    }
-
-    private addLoadingClass(element: HTMLElement): void {
-        element.classList.add(this.classNames.loading);
-    }
-
-    private getDomElement(parentNode?: Node): HTMLElement {
-        if (parentNode?.element) {
-            return parentNode.element;
-        } else {
-            return this.treeElement;
-        }
     }
 
     private notifyLoading(
@@ -105,26 +100,5 @@ export default class DataLoader {
             isLoading,
             node: node ?? null,
         });
-    }
-
-    private parseData(data: NodeData[]): NodeData[] {
-        if (this.dataFilter) {
-            return this.dataFilter(data);
-        } else {
-            return data;
-        }
-    }
-
-    private removeLoadingClass(element: HTMLElement): void {
-        element.classList.remove(this.classNames.loading);
-    }
-
-    private submitRequest(url: RequestUrl): Promise<Response> {
-        const headers = { "Content-Type": "application/json" };
-        const signal = this.abortController.signal;
-
-        url.setSearchParam("_", Date.now().toString());
-
-        return fetch(url.toString(), { headers, signal });
     }
 }
