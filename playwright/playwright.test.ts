@@ -66,11 +66,12 @@ interface InitTreeOptions {
     dragAndDrop?: boolean;
     onCanMove?: boolean;
     onCanMoveTo?: boolean;
+    rtl?: boolean;
 }
 
 const initTree = async (
     page: Page,
-    { autoOpen, dragAndDrop, onCanMove, onCanMoveTo }: InitTreeOptions,
+    { autoOpen, dragAndDrop, onCanMove, onCanMoveTo, rtl }: InitTreeOptions,
 ) => {
     await page.evaluate(`
         const onCanMove = (node) => node.name !== "Herrerasaurians";
@@ -88,6 +89,7 @@ const initTree = async (
             onCanMove: ${onCanMove ? "onCanMove" : "null"},
             onCanMoveTo: ${onCanMoveTo ? "onCanMoveTo" : "null"},
             openFolderDelay: 100,
+            rtl: ${rtl ?? false},
             startDndDelay: 100
         });
     `);
@@ -184,6 +186,23 @@ test.describe("multiple selection", () => {
             JSON.stringify(htmlTree.getSelectedNodes().map((node) => node.name));
         `);
         expect(JSON.parse(selectedNamesJson)).toEqual(["Ceratopsians"]);
+    });
+});
+
+test.describe("with rtl", () => {
+    test("displays the tree right-to-left", async ({ baseURL, page }) => {
+        await initPage(page, baseURL);
+        await initTree(page, { rtl: true });
+
+        const tree = page.getByRole("tree");
+        await expect(tree).toHaveClass(/html-tree-rtl/);
+        await expect(tree).toHaveCSS("direction", "rtl");
+
+        const structure = await getTreeStructure(page);
+        expectDefaultStructure(structure);
+
+        const screenshot = await page.screenshot();
+        expect(screenshot).toMatchSnapshot();
     });
 });
 
