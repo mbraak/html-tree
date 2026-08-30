@@ -199,21 +199,21 @@ describe("events", () => {
     });
   });
 
-  describe("tree.load_data", () => {
+  describe("tree.set_data", () => {
     it("fires tree.load_data when the tree is initialized with data", () => {
-      const onLoadData = listenToEvent("tree.load_data");
+      const onLoadData = listenToEvent("tree.set_data");
 
       createHtmlTree({ data: exampleData });
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ parentNode: undefined, treeData: exampleData }),
+        expect.objectContaining({ node: undefined, treeData: exampleData }),
       );
     });
 
     it("fires tree.load_data with the parent node when data is loaded in a node", () => {
       const tree = createHtmlTree({ data: exampleData });
 
-      const onLoadData = listenToEvent("tree.load_data");
+      const onLoadData = listenToEvent("tree.set_data");
 
       const node1 = tree.getNodeByNameMustExist("node1");
       const childData = [{ id: 200, name: "child4" }];
@@ -221,7 +221,7 @@ describe("events", () => {
       tree.loadData(childData, node1);
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ parentNode: node1, treeData: childData }),
+        expect.objectContaining({ node: node1, treeData: childData }),
       );
     });
   });
@@ -428,7 +428,10 @@ describe("events", () => {
 
       const tree = createHtmlTree({ dataUrl: "/tree/" });
 
-      expect(onLoading).toHaveBeenCalledOnce();
+      expect(onLoading).toHaveBeenCalledExactlyOnceWith({
+        element: htmlElement,
+        node: undefined
+      });
 
       tree.deinit();
 

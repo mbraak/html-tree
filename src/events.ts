@@ -38,10 +38,6 @@ export interface TreeEvents {
         node: Node;
     };
     "tree.init": undefined;
-    "tree.load_data": {
-        parentNode: Node | undefined;
-        treeData: NodeData[] | null;
-    };
     "tree.loaded_data": {
         element: HTMLElement;
         node?: Node;
@@ -61,6 +57,11 @@ export interface TreeEvents {
         deselectedNode: Node | null;
         node: Node;
     };
+    "tree.set_data": {
+        node?: Node;
+        treeData?: NodeData[];
+    };
+
 }
 
 type TreeEventMap = {

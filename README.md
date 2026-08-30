@@ -128,25 +128,25 @@ element.addEventListener("tree.select", (e) => {
 });
 ```
 
-| Event               | `detail`                                                                                                 |
-| ------------------- | -------------------------------------------------------------------------------------------------------- |
-| `tree.init`         |                                                                                                          |
-| `tree.click`        | `node`, `click_event`                                                                                    |
-| `tree.dblclick`     | `node`, `click_event`                                                                                    |
-| `tree.contextmenu`  | `node`, `click_event`                                                                                    |
-| `tree.select`       | `node`, `deselected_node`                                                                                |
-| `tree.deselect`     | `node`                                                                                                   |
-| `tree.open`         | `node`                                                                                                   |
-| `tree.close`        | `node`                                                                                                   |
-| `tree.move`         | `move_info` with `moved_node`, `target_node`, `position`, `previous_parent`, `do_move`, `original_event` |
-| `tree.refresh`      |                                                                                                          |
-| `tree.load_data`    | `tree_data`, `parent_node`                                                                               |
-| `tree.loading_data` | `node`, `element`                                                                                        |
-| `tree.loaded_data`  | `node`, `element`                                                                                        |
+| Event               | `detail`                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------- |
+| `tree.init`         |                                                                                                   |
+| `tree.click`        | `node`, `originalEvent`                                                                           |
+| `tree.dblclick`     | `node`, `originalEvent`                                                                           |
+| `tree.contextmenu`  | `node`, `originalEvent`                                                                           |
+| `tree.select`       | `node`, `deselectedNode`                                                                          |
+| `tree.deselect`     | `node`                                                                                            |
+| `tree.open`         | `node`                                                                                            |
+| `tree.close`        | `node`                                                                                            |
+| `tree.move`         | `moveInfo` with `movedNode`, `targetNode`, `position`, `previousParent`, `doMove`, `originalEvent` |
+| `tree.refresh`      |                                                                                                   |
+| `tree.set_data`     | `treeData`, `node`                                                                                |
+| `tree.loading_data` | `node`, `element`                                                                                 |
+| `tree.loaded_data`  | `node`, `element`                                                                                 |
 
 `tree.click` and `tree.move` act on `event.preventDefault()`: it stops the node
 from being selected, and stops the move. For `tree.move`, call
-`e.detail.move_info.do_move()` later to perform the move yourself. The other
+`e.detail.moveInfo.doMove()` later to perform the move yourself. The other
 events are dispatched as cancelable, but nothing acts on it.
 
 ## Methods
@@ -154,11 +154,11 @@ events are dispatched as cancelable, but nothing acts on it.
 Nodes are `Node` instances. Get one with `getNodeById`, `getNodeByName`,
 `getNodeByCallback`, `getNodesByProperty` or `getNode` (from a dom element).
 
-**Data**: `loadData(data, parentNode?)`, `loadDataFromUrl(url?, parentNode?, onFinished?)`, `toJson()`, `refresh()`
+**Data**: `loadData(data, node?)`, `loadDataFromUrl(url?, parentNode?)`, `toJson()`, `refresh()`
 
 **Nodes**: `appendNode(data, parentNode)`, `prependNode(data, parentNode)`, `addNodeAfter(data, node)`, `addNodeBefore(data, node)`, `addParentNode(data, node)`, `updateNode(node, data)`, `removeNode(node)`, `moveNode(node, targetNode, position)`
 
-**Opening**: `openNode(node, slide?, onFinished?)`, `closeNode(node, slide?)`, `toggle(node, slide?)`
+**Opening**: `openNode(node, slide?)`, `closeNode(node, slide?)`, `toggle(node, slide?)`
 
 **Selection**: `selectNode(node, options?)`, `getSelectedNode()`, `getSelectedNodes()`, `isNodeSelected(node)`, `addToSelection(node, mustSetFocus?)`, `removeFromSelection(node)`, `moveUp()`, `moveDown()`
 

@@ -25,7 +25,7 @@ const EVENT_NAMES = [
   "tree.open",
   "tree.close",
   "tree.move",
-  "tree.load_data",
+  "tree.set_data",
   "tree.loading_data",
   "tree.loaded_data",
   "tree.refresh",
@@ -58,7 +58,7 @@ const describe = (name: string, detail: unknown): string => {
   }
 
   if (name === "tree.select") {
-    const deselected = values.deselected_node;
+    const deselected = values.deselectedNode;
     return deselected
       ? `node: ${values.node.name}, was: ${deselected.name}`
       : `node: ${values.node.name}`;
@@ -68,9 +68,9 @@ const describe = (name: string, detail: unknown): string => {
     return values.node ? values.node.name : "tree";
   }
 
-  if (name === "tree.load_data") {
+  if (name === "tree.set_data") {
     const count = Array.isArray(values.treeData) ? values.treeData.length : 0;
-    const target = values.parentNode ? values.parentNode.name : "tree";
+    const target = values.node ? values.node.name : "tree";
     return `${target}: ${count} node(s)`;
   }
 
