@@ -27,6 +27,7 @@ const EVENT_NAMES = [
   "tree.move",
   "tree.load_data",
   "tree.loading_data",
+  "tree.loaded_data",
   "tree.refresh",
 ];
 
@@ -63,9 +64,8 @@ const describe = (name: string, detail: unknown): string => {
       : `node: ${values.node.name}`;
   }
 
-  if (name === "tree.loading_data") {
-    const target = values.node ? values.node.name : "tree";
-    return `${target}: ${values.isLoading ? "loading" : "done"}`;
+  if (name === "tree.loading_data" || name === "tree.loaded_data") {
+    return values.node ? values.node.name : "tree";
   }
 
   if (name === "tree.load_data") {

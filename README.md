@@ -116,7 +116,6 @@ new HtmlTree({
 | `onSetStateFromStorage` | `(data) => void`                          | Write saved state yourself                                                |
 | `onIsMoveHandle`        | `(element) => boolean`                    | Is this element a drag handle?                                            |
 | `onLoadFailed`          | `(response) => void`                      | An ajax request failed                                                    |
-| `onLoading`             | `(isLoading, node, element) => void`      | Loading state changed                                                     |
 
 ## Events
 
@@ -142,7 +141,8 @@ element.addEventListener("tree.select", (e) => {
 | `tree.move`         | `move_info` with `moved_node`, `target_node`, `position`, `previous_parent`, `do_move`, `original_event` |
 | `tree.refresh`      |                                                                                                          |
 | `tree.load_data`    | `tree_data`, `parent_node`                                                                               |
-| `tree.loading_data` | `isLoading`, `node`, `element`                                                                           |
+| `tree.loading_data` | `node`, `element`                                                                                        |
+| `tree.loaded_data`  | `node`, `element`                                                                                        |
 
 `tree.click` and `tree.move` act on `event.preventDefault()`: it stops the node
 from being selected, and stops the move. For `tree.move`, call

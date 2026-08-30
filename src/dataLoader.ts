@@ -45,16 +45,22 @@ export default class DataLoader {
 
     public async loadFromUrl(
         url: RequestUrl,
-        parentNode?: Node,
+        node?: Node,
     ): Promise<void> {
-        const element = parentNode?.element ?? this.treeElement;
+        const element = node?.element ?? this.treeElement;
         element.classList.add(this.classNames.loading);
 
-        this.notifyLoading(true, element, parentNode);
+        this.triggerEvent("tree.loading_data", {
+            element,
+            node,
+        });
 
         const stopLoading = (): void => {
             element.classList.remove(this.classNames.loading);
-            this.notifyLoading(false, element, parentNode);
+            this.triggerEvent("tree.loaded_data", {
+                element,
+                node,
+            });
         };
 
         const handleResponse = async (response: Response): Promise<void> => {
@@ -64,7 +70,7 @@ export default class DataLoader {
                 stopLoading();
                 this.loadData(
                     this.dataFilter ? this.dataFilter(data) : data,
-                    parentNode
+                    node
                 );
             } else {
                 stopLoading();
@@ -88,17 +94,5 @@ export default class DataLoader {
 
                 throw error;
             });
-    }
-
-    private notifyLoading(
-        isLoading: boolean,
-        element: HTMLElement,
-        node?: Node,
-    ): void {
-        this.triggerEvent("tree.loading_data", {
-            element,
-            isLoading,
-            node: node ?? null,
-        });
     }
 }

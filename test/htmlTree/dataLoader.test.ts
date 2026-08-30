@@ -110,7 +110,7 @@ describe("loadFromUrl", () => {
         );
     });
 
-    it("triggers tree.loading_data events", async () => {
+    it("triggers tree.loading_data and tree.loaded_data events", async () => {
         setupResponse();
 
         const { dataLoader, treeElement, triggerEvent } = createDataLoader();
@@ -121,17 +121,15 @@ describe("loadFromUrl", () => {
             "tree.loading_data",
             {
                 element: treeElement,
-                isLoading: true,
-                node: null
+                node: undefined
             }
         );
         expect(triggerEvent).toHaveBeenNthCalledWith(
             2,
-            "tree.loading_data",
+            "tree.loaded_data",
             {
                 element: treeElement,
-                isLoading: false,
-                node: null
+                node: undefined
             }
         );
     });

@@ -42,10 +42,13 @@ export interface TreeEvents {
         parentNode: Node | undefined;
         treeData: NodeData[] | null;
     };
+    "tree.loaded_data": {
+        element: HTMLElement;
+        node?: Node;
+    };
     "tree.loading_data": {
         element: HTMLElement;
-        isLoading: boolean;
-        node: Node | null;
+        node?: Node;
     };
     "tree.move": {
         moveInfo: MoveInfo;
