@@ -145,24 +145,32 @@ Dispatched when a node is dropped after a drag.
 Call `preventDefault()` to keep the tree as it is, and `moveInfo.doMove()` to apply the move later.
 See [Drag and drop](../guide/drag-and-drop#reacting-to-a-move).
 
-## tree.load_data
+## tree.set_data
 
-Dispatched when data is loaded into the tree, both from the `data` option and from a url.
+Dispatched when data is set on the tree, both from the `data` option and from a url.
 
-| `detail`     | Type                 | Notes                                                       |
-| ------------ | -------------------- | ----------------------------------------------------------- |
-| `treeData`   | `NodeData[] \| null` |                                                             |
-| `parentNode` | `Node \| undefined`  | The node whose children were replaced, if it was a subtree. |
+| `detail`   | Type                      | Notes                                                       |
+| ---------- | ------------------------- | ----------------------------------------------------------- |
+| `treeData` | `NodeData[] \| undefined` |                                                             |
+| `node`     | `Node \| undefined`       | The node whose children were replaced, if it was a subtree. |
 
 ## tree.loading_data
 
-Dispatched when a request starts and when it finishes.
+Dispatched when a request starts.
 
-| `detail`    | Type           |
-| ----------- | -------------- |
-| `isLoading` | `boolean`      |
-| `node`      | `Node \| null` |
-| `element`   | `HTMLElement`  |
+| `detail`  | Type                | Description                                              |
+| --------- | ------------------- | -------------------------------------------------------- |
+| `node`    | `Node \| undefined` | The node whose children are loading, if it is a subtree. |
+| `element` | `HTMLElement`       |                                                          |
+
+## tree.loaded_data
+
+Dispatched when a request finishes.
+
+| `detail`  | Type                | Description                                                |
+| --------- | ------------------- | ---------------------------------------------------------- |
+| `node`    | `Node \| undefined` | The node whose children were loaded, if it was a subtree.  |
+| `element` | `HTMLElement`       |                                                            |
 
 ## tree.refresh
 

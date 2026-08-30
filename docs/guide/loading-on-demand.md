@@ -89,15 +89,17 @@ yourself:
 }
 ```
 
-You can also react in javascript, with the `tree.loading_data` event:
+You can also react in javascript, with the `tree.loading_data` and `tree.loaded_data` events:
 
 ```js
 element.addEventListener("tree.loading_data", (e) => {
-  const { isLoading, node } = e.detail;
-  console.log(
-    node ? node.name : "the tree",
-    isLoading ? "is loading" : "is done",
-  );
+  const { node } = e.detail;
+  console.log(node ? node.name : "the tree", "is loading");
+});
+
+element.addEventListener("tree.loaded_data", (e) => {
+  const { node } = e.detail;
+  console.log(node ? node.name : "the tree", "is done");
 });
 ```
 
