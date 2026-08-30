@@ -117,7 +117,7 @@ export default class KeyHandler {
                 return this.selectNode(selectedNode.getNextVisibleNode());
             } else {
                 // Right expands a closed node
-                this.openNode(selectedNode);
+                void this.openNode(selectedNode);
                 return true;
             }
         }

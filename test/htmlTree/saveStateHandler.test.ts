@@ -3,7 +3,6 @@ import type {
     GetNodeById,
     GetSelectedNodes,
     GetTree,
-    OnFinishOpenNode,
     OpenNode,
     RefreshElements,
     RemoveFromSelection,
@@ -15,7 +14,6 @@ import type {
 
 import { Node } from "htmlTree/node";
 import SaveStateHandler from "htmlTree/saveStateHandler";
-import { vi } from "vitest";
 
 interface CreateSaveStateHandlerParams {
     addToSelection?: AddToSelection;
@@ -209,16 +207,16 @@ describe("setInitialState", () => {
 });
 
 describe("setInitialStateOnDemand", () => {
-    it("doesn't open a node when open_nodes in the state is empty", () => {
+    it("doesn't open a node when open_nodes in the state is empty", async () => {
         const openNode = vi.fn();
 
         const saveStateHandler = createSaveStateHandler({ openNode });
-        saveStateHandler.setInitialStateOnDemand({}, vi.fn());
+        await saveStateHandler.setInitialStateOnDemand({});
 
         expect(openNode).not.toHaveBeenCalled();
     });
 
-    it("opens a node when the node id is in open_nodes in the state", () => {
+    it("opens a node when the node id is in open_nodes in the state", async () => {
         const node = new Node({ id: 123 });
         const getNodeById = vi.fn((nodeId) => {
             if (nodeId === 123) {
@@ -233,15 +231,14 @@ describe("setInitialStateOnDemand", () => {
             getNodeById,
             openNode,
         });
-        saveStateHandler.setInitialStateOnDemand(
+        await saveStateHandler.setInitialStateOnDemand(
             { open_nodes: [123] },
-            vi.fn(),
         );
 
         expect(openNode).toHaveBeenCalledExactlyOnceWith(node, false);
     });
 
-    it("selects a node and redraws the tree when the node id is in selected_node in the state", () => {
+    it("selects a node and redraws the tree when the node id is in selected_node in the state", async () => {
         const node = new Node({ id: 123 });
         const getNodeById = vi.fn((nodeId) => {
             if (nodeId === 123) {
@@ -259,16 +256,15 @@ describe("setInitialStateOnDemand", () => {
             refreshElements,
         });
 
-        saveStateHandler.setInitialStateOnDemand(
+        await saveStateHandler.setInitialStateOnDemand(
             { open_nodes: [123], selected_node: [123] },
-            vi.fn(),
         );
 
         expect(addToSelection).toHaveBeenCalledExactlyOnceWith(node);
         expect(refreshElements).toHaveBeenCalledExactlyOnceWith(null);
     });
 
-    it("opens nodes recursively", () => {
+    it("opens nodes recursively", async () => {
         const node1 = new Node({ id: 1, load_on_demand: true });
         const node2 = new Node({ id: 2 });
         let calledGetNodeByIdForNode2 = false;
@@ -292,12 +288,11 @@ describe("setInitialStateOnDemand", () => {
         });
 
         const openNode = vi.fn<OpenNode>(
-            (node: Node, _slide?: boolean, onFinished?: OnFinishOpenNode) => {
+            (node: Node, _slide?: boolean) => {
                 node.load_on_demand = false;
+                node.is_open = true;
 
-                if (onFinished) {
-                    onFinished(node);
-                }
+                return Promise.resolve();
             },
         );
 
@@ -306,16 +301,14 @@ describe("setInitialStateOnDemand", () => {
             openNode,
         });
 
-        saveStateHandler.setInitialStateOnDemand(
+        await saveStateHandler.setInitialStateOnDemand(
             { open_nodes: [1, 2] },
-            vi.fn(),
         );
 
         expect(openNode).toHaveBeenNthCalledWith(
             1,
             node1,
             false,
-            expect.any(Function),
         );
         expect(openNode).toHaveBeenNthCalledWith(2, node1, false);
         expect(openNode).toHaveBeenNthCalledWith(3, node2, false);

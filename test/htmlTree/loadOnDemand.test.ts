@@ -213,7 +213,7 @@ describe("load on demand", () => {
     const tree = createHtmlTree({ autoOpen: false });
 
     const node = tree.getNodeByNameMustExist("parent-node");
-    tree.openNode(node, false);
+    await tree.openNode(node, false);
 
     await screen.findByRole("treeitem", { name: "loaded-on-demand" });
 
@@ -230,20 +230,5 @@ describe("load on demand", () => {
         }),
       ]);
     });
-  });
-
-  it("calls onFinished after loading the children on demand", async () => {
-    const tree = createHtmlTree({ autoOpen: false });
-
-    const node = tree.getNodeByNameMustExist("parent-node");
-    const onFinished = vi.fn();
-
-    tree.openNode(node, false, onFinished);
-
-    await waitFor(() => {
-      expect(onFinished).toHaveBeenCalledExactlyOnceWith(node);
-    });
-
-    await screen.findByRole("treeitem", { name: "loaded-on-demand" });
   });
 });

@@ -512,12 +512,12 @@ describe("options", () => {
             savedState = "";
         });
 
-        it("saves the state with an open and a selected node", () => {
+        it("saves the state with an open and a selected node", async () => {
             const tree = createTree();
             const node1 = tree.getNodeByNameMustExist("node1");
 
             tree.selectNode(node1);
-            tree.openNode(node1);
+            await tree.openNode(node1);
 
             expect(savedState).toBe(
                 '{"open_nodes":[123],"selected_node":[123]}',
@@ -640,7 +640,7 @@ describe("options", () => {
     });
 
     describe("saveState", () => {
-        const createTreeWithOpenSelectedNode = (
+        const createTreeWithOpenSelectedNode = async (
             saveState: boolean | string,
         ) => {
             const tree = createHtmlTree({
@@ -652,29 +652,29 @@ describe("options", () => {
 
             const node1 = tree.getNodeByNameMustExist("node1");
             tree.selectNode(node1);
-            tree.openNode(node1);
+            await tree.openNode(node1);
 
             return tree;
         };
 
-        it("saves the state to local storage when saveState is true", () => {
-            createTreeWithOpenSelectedNode(true);
+        it("saves the state to local storage when saveState is true", async () => {
+            await createTreeWithOpenSelectedNode(true);
 
             expect(localStorage.getItem("tree")).toBe(
                 '{"open_nodes":[123],"selected_node":[123]}',
             );
         });
 
-        it("uses the string as a key when saveState is a string", () => {
-            createTreeWithOpenSelectedNode("my-state");
+        it("uses the string as a key when saveState is a string", async () => {
+            await createTreeWithOpenSelectedNode("my-state");
 
             expect(localStorage.getItem("my-state")).toBe(
                 '{"open_nodes":[123],"selected_node":[123]}',
             );
         });
 
-        it("doesn't save to local storage when saveState is false", () => {
-            createTreeWithOpenSelectedNode(false);
+        it("doesn't save to local storage when saveState is false", async () => {
+            await createTreeWithOpenSelectedNode(false);
 
             expect(localStorage.getItem("tree")).toBeNull();
         });

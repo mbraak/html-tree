@@ -165,7 +165,7 @@ describe("open", () => {
         document.body.innerHTML = "";
     });
 
-    it("opens a closed node without animation", () => {
+    it("opens a closed node without animation", async () => {
         const { folderElement, folderNode } = createFolderElement({
             isOpen: false,
         });
@@ -173,7 +173,7 @@ describe("open", () => {
 
         expect(treeItem).not.toBeAriaExpanded();
 
-        folderElement.open(undefined, false, 0);
+        await folderElement.open(false, 0);
 
         expect(folderNode.is_open).toBeTrue();
         expect(treeItem).toBeAriaExpanded();
@@ -190,45 +190,34 @@ describe("open", () => {
         expect(treeItem).toHaveAttribute("aria-expanded", "true");
     });
 
-    it("triggers the tree.open event", () => {
+    it("triggers the tree.open event", async () => {
         const { folderElement, folderNode, triggerEvent } = createFolderElement(
             {
                 isOpen: false,
             },
         );
 
-        folderElement.open(undefined, false, 0);
+        await folderElement.open(false, 0);
 
         expect(triggerEvent).toHaveBeenCalledExactlyOnceWith("tree.open", {
             node: folderNode,
         });
     });
 
-    it("does nothing when the node is already open", () => {
+    it("does nothing when the node is already open", async () => {
         const { folderElement, folderNode, triggerEvent } = createFolderElement(
             {
                 isOpen: true,
             },
         );
 
-        folderElement.open(undefined, false, 0);
+        await folderElement.open(false, 0);
 
         expect(folderNode.is_open).toBeTrue();
         expect(triggerEvent).not.toHaveBeenCalled();
     });
 
-    it("calls onFinished with the node", () => {
-        const { folderElement, folderNode } = createFolderElement({
-            isOpen: false,
-        });
-
-        const onFinished = vi.fn();
-        folderElement.open(onFinished, false, 0);
-
-        expect(onFinished).toHaveBeenCalledExactlyOnceWith(folderNode);
-    });
-
-    it("renders the opened icon in the button", () => {
+    it("renders the opened icon in the button", async () => {
         const openedIconElement = document.createElement("span");
         openedIconElement.classList.add("opened-icon");
 
@@ -237,7 +226,7 @@ describe("open", () => {
             openedIconElement,
         });
 
-        folderElement.open(undefined, false, 0);
+        await folderElement.open(false, 0);
 
         const treeItem = screen.getByRole("treeitem", { name: "node1" });
         const button = getTreeButton(treeItem);
@@ -258,7 +247,7 @@ describe("open", () => {
         const ul = getTreeListElement(treeItem).querySelector(":scope > ul[role=group]") as HTMLElement;
         const animate = vi.spyOn(ul, "animate");
 
-        folderElement.open(undefined, true, 456);
+        await folderElement.open(true, 456);
 
         expect(animate).toHaveBeenCalledExactlyOnceWith(expect.any(Array), {
             duration: 456,
