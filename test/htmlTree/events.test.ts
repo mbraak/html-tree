@@ -199,21 +199,21 @@ describe("events", () => {
     });
   });
 
-  describe("tree.load_data", () => {
+  describe("tree.set_data", () => {
     it("fires tree.load_data when the tree is initialized with data", () => {
-      const onLoadData = listenToEvent("tree.load_data");
+      const onLoadData = listenToEvent("tree.set_data");
 
       createHtmlTree({ data: exampleData });
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ parentNode: undefined, treeData: exampleData }),
+        expect.objectContaining({ node: undefined, treeData: exampleData }),
       );
     });
 
     it("fires tree.load_data with the parent node when data is loaded in a node", () => {
       const tree = createHtmlTree({ data: exampleData });
 
-      const onLoadData = listenToEvent("tree.load_data");
+      const onLoadData = listenToEvent("tree.set_data");
 
       const node1 = tree.getNodeByNameMustExist("node1");
       const childData = [{ id: 200, name: "child4" }];
@@ -221,7 +221,7 @@ describe("events", () => {
       tree.loadData(childData, node1);
 
       expect(onLoadData).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ parentNode: node1, treeData: childData }),
+        expect.objectContaining({ node: node1, treeData: childData }),
       );
     });
   });
@@ -399,51 +399,46 @@ describe("events", () => {
       server.close();
     });
 
-    it("fires tree.loading_data when the data is loading from an url", async () => {
+    it("fires tree.loading_data and tree.loaded_data when the data is loading from an url", async () => {
       const onLoading = listenToEvent("tree.loading_data");
+      const onLoaded = listenToEvent("tree.loaded_data");
 
       createHtmlTree({ dataUrl: "/tree/" });
 
       await waitFor(() => {
-        expect(onLoading).toHaveBeenNthCalledWith(
-          1,
+        expect(onLoading).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
             element: htmlElement,
-            isLoading: true,
-            node: null,
           }),
         );
       });
 
       await waitFor(() => {
-        expect(onLoading).toHaveBeenNthCalledWith(
-          2,
+        expect(onLoaded).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
             element: htmlElement,
-            isLoading: false,
-            node: null,
           }),
         );
       });
     });
 
-    it("doesn't fire tree.loading_data when deinit is called while the data is loading", async () => {
+    it("doesn't fire tree.loaded_data when deinit is called while the data is loading", async () => {
       const onLoading = listenToEvent("tree.loading_data");
+      const onLoaded = listenToEvent("tree.loaded_data");
 
       const tree = createHtmlTree({ dataUrl: "/tree/" });
 
-      expect(onLoading).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ isLoading: true }),
-      );
+      expect(onLoading).toHaveBeenCalledExactlyOnceWith({
+        element: htmlElement,
+        node: undefined
+      });
 
       tree.deinit();
 
       // Wait for the pending request to settle.
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      expect(onLoading).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ isLoading: true }),
-      );
+      expect(onLoaded).not.toHaveBeenCalled();
     });
   });
 });

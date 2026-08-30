@@ -38,14 +38,13 @@ export interface TreeEvents {
         node: Node;
     };
     "tree.init": undefined;
-    "tree.load_data": {
-        parentNode: Node | undefined;
-        treeData: NodeData[] | null;
+    "tree.loaded_data": {
+        element: HTMLElement;
+        node?: Node;
     };
     "tree.loading_data": {
         element: HTMLElement;
-        isLoading: boolean;
-        node: Node | null;
+        node?: Node;
     };
     "tree.move": {
         moveInfo: MoveInfo;
@@ -58,6 +57,11 @@ export interface TreeEvents {
         deselectedNode: Node | null;
         node: Node;
     };
+    "tree.set_data": {
+        node?: Node;
+        treeData?: NodeData[];
+    };
+
 }
 
 type TreeEventMap = {
