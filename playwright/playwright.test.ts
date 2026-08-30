@@ -135,6 +135,55 @@ test.describe("without dragAndDrop", () => {
 
 });
 
+test.describe("multiple selection", () => {
+    test.beforeEach(async ({ baseURL, page }) => {
+        await initPage(page, baseURL);
+        await initTree(page, { dragAndDrop: false });
+    });
+
+    test("selects multiple nodes with addToSelection", async ({ page }) => {
+        await page.evaluate(`
+            htmlTree.addToSelection(htmlTree.getNodeByName("Herrerasaurians"));
+            htmlTree.addToSelection(htmlTree.getNodeByName("Ceratopsians"));
+        `);
+
+        await expect(
+            page.getByRole("treeitem", { name: "Herrerasaurians" }),
+        ).toHaveAttribute("aria-selected", "true");
+        await expect(
+            page.getByRole("treeitem", { name: "Ceratopsians" }),
+        ).toHaveAttribute("aria-selected", "true");
+
+        const selectedNamesJson = await page.evaluate<string>(`
+            JSON.stringify(htmlTree.getSelectedNodes().map((node) => node.name));
+        `);
+        expect(JSON.parse(selectedNamesJson)).toEqual([
+            "Herrerasaurians",
+            "Ceratopsians",
+        ]);
+    });
+
+    test("removes a node from the selection", async ({ page }) => {
+        await page.evaluate(`
+            htmlTree.addToSelection(htmlTree.getNodeByName("Herrerasaurians"));
+            htmlTree.addToSelection(htmlTree.getNodeByName("Ceratopsians"));
+            htmlTree.removeFromSelection(htmlTree.getNodeByName("Herrerasaurians"));
+        `);
+
+        await expect(
+            page.getByRole("treeitem", { name: "Herrerasaurians" }),
+        ).toHaveAttribute("aria-selected", "false");
+        await expect(
+            page.getByRole("treeitem", { name: "Ceratopsians" }),
+        ).toHaveAttribute("aria-selected", "true");
+
+        const selectedNamesJson = await page.evaluate<string>(`
+            JSON.stringify(htmlTree.getSelectedNodes().map((node) => node.name));
+        `);
+        expect(JSON.parse(selectedNamesJson)).toEqual(["Ceratopsians"]);
+    });
+});
+
 test.describe("with dragAndDrop", () => {
     test("moves a node", async ({ baseURL, page }) => {
         await initPage(page, baseURL);
