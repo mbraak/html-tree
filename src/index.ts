@@ -4,6 +4,7 @@ import type { PositionInfo } from "./mouseUtils";
 import type { NodeData, NodeId, Position } from "./node";
 import type { HtmlTreeOptions } from "./options";
 import type { SavedState } from "./saveStateHandler";
+import type { SelectNodeOptions } from "./selectNodeHandler";
 
 import createClassNames from "./classNames";
 import DataLoader from "./dataLoader";
@@ -35,15 +36,11 @@ export type {
   NodeId,
   Position,
   SavedState,
+  SelectNodeOptions,
   TreeEvent,
   TreeEventName,
   TreeEvents,
 };
-
-export interface SelectNodeOptions {
-  mustSetFocus?: boolean;
-  mustToggle?: boolean;
-}
 
 export type TriggerEventProvider = (
   element: HTMLElement,
@@ -103,7 +100,7 @@ export default class HtmlTree {
       openedIcon,
       openFolderDelay,
       rtl,
-      saveState,
+      saveState: saveStateOption,
       showEmptyFolder,
       slide,
       tabIndex,
@@ -119,15 +116,25 @@ export default class HtmlTree {
     const isFocusOnTree = this.isFocusOnTree.bind(this);
     const loadData = this.loadData.bind(this);
     const openNode = this.openNode.bind(this);
+    const openParents = this.openParents.bind(this);
     const refreshElements = this.refreshElements.bind(this);
     const refreshHitAreas = this.refreshHitAreas.bind(this);
-    const selectNode = this.selectNode.bind(this);
     const setNodeElement = this.setNodeElement.bind(this);
     const treeElement = this.htmlElement;
     const triggerEvent = this.triggerEvent.bind(this);
 
+    const saveState = () => {
+      saveStateHandler.saveState();
+    }
+
     const selectNodeHandler = new SelectNodeHandler({
       getNodeById,
+      getNodeElementForNode,
+      getOnCanSelectNode: () => this.options.onCanSelectNode,
+      getSelectable: () => this.options.selectable,
+      openParents,
+      saveState,
+      triggerEvent
     });
 
     const addToSelection =
@@ -138,6 +145,8 @@ export default class HtmlTree {
       selectNodeHandler.isNodeSelected.bind(selectNodeHandler);
     const removeFromSelection =
       selectNodeHandler.removeFromSelection.bind(selectNodeHandler);
+    const selectNode = selectNodeHandler.selectSingleNode.bind(selectNodeHandler);
+
     const getMouseDelay = () => this.options.startDndDelay ?? 0;
 
     const dataLoader = new DataLoader({
@@ -159,7 +168,7 @@ export default class HtmlTree {
       openNode,
       refreshElements,
       removeFromSelection,
-      saveState,
+      saveState: saveStateOption,
     });
 
     const scrollHandler = new ScrollHandler({
@@ -227,7 +236,7 @@ export default class HtmlTree {
       getMouseDelay,
       getNode,
       onClickButton: this.toggle.bind(this),
-      onClickTitle: this.selectNode.bind(this),
+      onClickTitle: selectNode,
       onMouseCapture,
       onMouseDrag,
       onMouseStart,
@@ -540,7 +549,7 @@ export default class HtmlTree {
 
   public selectNode(
     node: Node | null,
-    optionsParam?: SelectNodeOptions,
+    options?: SelectNodeOptions,
   ): void {
     if (!node) {
       // Called with empty node -> deselect current node
@@ -548,42 +557,8 @@ export default class HtmlTree {
       this.saveStateHandler.saveState();
       return;
     }
-    const defaultOptions = { mustSetFocus: true, mustToggle: true };
-    const selectOptions = { ...defaultOptions, ...(optionsParam ?? {}) };
 
-    const canSelect = (): boolean => {
-      if (this.options.onCanSelectNode) {
-        return (
-          this.options.selectable &&
-          this.options.onCanSelectNode(node)
-        );
-      } else {
-        return this.options.selectable;
-      }
-    };
-
-    if (!canSelect()) {
-      return;
-    }
-
-    if (this.selectNodeHandler.isNodeSelected(node)) {
-      if (selectOptions.mustToggle) {
-        this.deselectCurrentNode();
-        this.triggerEvent("tree.deselect", { node });
-      }
-    } else {
-      const deselectedNode = this.getSelectedNode() || null;
-      this.deselectCurrentNode();
-      this.addToSelection(node, selectOptions.mustSetFocus);
-
-      this.triggerEvent("tree.select", {
-        deselectedNode: deselectedNode,
-        node,
-      });
-      this.openParents(node);
-    }
-
-    this.saveStateHandler.saveState();
+    this.selectNodeHandler.selectSingleNode(node, options);
   }
 
   public setOption(option: string, value: unknown) {
