@@ -78,33 +78,30 @@ The root node. It is not rendered; its `children` are the top-level nodes. Also 
 
 ## Opening and closing
 
-### openNode(node, slide?, onFinished?)
+### async openNode(node, slide?)
+
+- Returns: `Promise`
 
 - `node`: `Node`
 - `slide`: `boolean` — override the `slide` option for this call
-- `onFinished`: `(node: Node) => void`
 
-Opens a folder, and the folders above it. A node marked `load_on_demand` is fetched first, so use
-`onFinished` when you need to know it is really open:
+Opens a folder, and the folders above it. A node marked `load_on_demand` is fetched first, so await
+the promise when you need to know it is really open:
 
 ```js
-tree.openNode(node, () => {
-  console.log("open");
-});
+await tree.openNode(node);
+console.log("open");
 ```
-
-`slide` may be omitted, so both `openNode(node, onFinished)` and `openNode(node, false, onFinished)`
-work.
 
 ### closeNode(node, slide?)
 
 - `node`: `Node`
-- `slide`: `boolean`
+- `slide`: `boolean` — override the `slide` option for this call
 
 ### toggle(node, slide?)
 
 - `node`: `Node`
-- `slide`: `boolean`
+- `slide`: `boolean` — override the `slide` option for this call
 
 Closes an open node and opens a closed one.
 

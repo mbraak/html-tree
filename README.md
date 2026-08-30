@@ -154,11 +154,11 @@ events are dispatched as cancelable, but nothing acts on it.
 Nodes are `Node` instances. Get one with `getNodeById`, `getNodeByName`,
 `getNodeByCallback`, `getNodesByProperty` or `getNode` (from a dom element).
 
-**Data**: `loadData(data, parentNode?)`, `loadDataFromUrl(url?, parentNode?, onFinished?)`, `toJson()`, `refresh()`
+**Data**: `loadData(data, parentNode?)`, `loadDataFromUrl(url?, parentNode?)`, `toJson()`, `refresh()`
 
 **Nodes**: `appendNode(data, parentNode)`, `prependNode(data, parentNode)`, `addNodeAfter(data, node)`, `addNodeBefore(data, node)`, `addParentNode(data, node)`, `updateNode(node, data)`, `removeNode(node)`, `moveNode(node, targetNode, position)`
 
-**Opening**: `openNode(node, slide?, onFinished?)`, `closeNode(node, slide?)`, `toggle(node, slide?)`
+**Opening**: `openNode(node, slide?)`, `closeNode(node, slide?)`, `toggle(node, slide?)`
 
 **Selection**: `selectNode(node, options?)`, `getSelectedNode()`, `getSelectedNodes()`, `isNodeSelected(node)`, `addToSelection(node, mustSetFocus?)`, `removeFromSelection(node)`, `moveUp()`, `moveDown()`
 

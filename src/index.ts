@@ -317,7 +317,7 @@ export default class HtmlTree {
     return node;
   }
 
-  public closeNode(node: Node, slideParam?: boolean | null): void {
+  public closeNode(node: Node, slideParam?: boolean): void {
     const slide = slideParam ?? this.options.slide;
 
     if (node.isFolder() || node.isEmptyFolder) {
@@ -463,11 +463,13 @@ export default class HtmlTree {
 
   public async openNode(
     inputNode: Node,
-    inputSlide = false
+    inputSlide?: boolean
   ): Promise<void> {
+    const slide = inputSlide ?? this.options.slide;
+
     const doOpenNode = async (
       node: Node,
-      slide: boolean
+      slideOption: boolean
     ): Promise<void> => {
       if (!inputNode.children.length) {
         return;
@@ -476,14 +478,14 @@ export default class HtmlTree {
       const folderElement = this.createFolderElement(node);
 
       await folderElement.open(
-        slide,
+        slideOption,
         this.options.animationSpeed,
       );
     };
 
     if (inputNode.isFolder() || inputNode.isEmptyFolder) {
       if (inputNode.load_on_demand) {
-        await this.loadFolderOnDemand(inputNode, inputSlide);
+        await this.loadFolderOnDemand(inputNode, slide);
       } else {
         let parent = inputNode.parent;
 
@@ -495,7 +497,7 @@ export default class HtmlTree {
           parent = parent.parent;
         }
 
-        await doOpenNode(inputNode, inputSlide);
+        await doOpenNode(inputNode, slide);
 
         this.saveState();
       }
