@@ -1,11 +1,14 @@
 import type { TreeEventName, TreeEvents } from "./events";
 import type { Node, NodeData, NodeId } from "./node";
+import type NodeElement from "./nodeElement";
 
 export type AddToSelection = (node: Node) => void;
 
 export type CloseNode = (node: Node) => void;
 
 export type GetNodeById = (nodeId: NodeId) => Node | null;
+
+export type GetNodeElementForNode = (node: Node) => NodeElement;
 
 export type GetScrollLeft = () => number;
 
@@ -25,6 +28,8 @@ export type OpenNode = (
     node: Node,
     slide?: boolean,
 ) => Promise<void>;
+
+export type OpenParents = (node: Node) => void;
 
 export type RefreshElements = (fromNode: Node | null) => void;
 

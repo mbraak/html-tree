@@ -23,7 +23,7 @@ export interface HtmlTreeOptions {
   nodeClass: typeof Node;
   onCanMove?: OnCanMove;
   onCanMoveTo?: OnCanMoveTo;
-  onCanSelectNode?: (node: Node) => boolean;
+  onCanSelectNode?: OnCanSelectNode;
   onCreateLi?: OnCreateLi;
   onDragMove?: DragMethod;
   onDragStop?: DragMethod;
@@ -53,6 +53,8 @@ export type OnCanMoveTo = (
   targetNode: Node,
   positionName: string,
 ) => boolean;
+
+export type OnCanSelectNode = (node: Node) => boolean
 
 export type OnCreateLi = (node: Node, el: HTMLElement, isSelected: boolean) => void;
 
