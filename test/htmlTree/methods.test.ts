@@ -1002,6 +1002,63 @@ describe("methods", () => {
 
       await tree.openNode(child1, false);
     });
+
+    it("slides when the slide parameter is omitted and the slide option is true", async () => {
+      const tree = createHtmlTree({
+        animationSpeed: 0,
+        autoOpen: false,
+        data: exampleData,
+        slide: true,
+      });
+
+      const animate = vi.spyOn(HTMLElement.prototype, "animate");
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      await tree.openNode(node1);
+
+      expect(animate).toHaveBeenCalledExactlyOnceWith(expect.any(Array), {
+        duration: 0,
+      });
+      expect(screen.getByRole("treeitem", { name: "node1" })).toBeAriaExpanded();
+
+      animate.mockRestore();
+    });
+
+    it("doesn't slide when the slide parameter is omitted and the slide option is false", async () => {
+      const tree = createHtmlTree({
+        autoOpen: false,
+        data: exampleData,
+        slide: false,
+      });
+
+      const animate = vi.spyOn(HTMLElement.prototype, "animate");
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      await tree.openNode(node1);
+
+      expect(animate).not.toHaveBeenCalled();
+      expect(screen.getByRole("treeitem", { name: "node1" })).toBeAriaExpanded();
+
+      animate.mockRestore();
+    });
+
+    it("overrides the slide option when the slide parameter is false", async () => {
+      const tree = createHtmlTree({
+        autoOpen: false,
+        data: exampleData,
+        slide: true,
+      });
+
+      const animate = vi.spyOn(HTMLElement.prototype, "animate");
+
+      const node1 = tree.getNodeByNameMustExist("node1");
+      await tree.openNode(node1, false);
+
+      expect(animate).not.toHaveBeenCalled();
+      expect(screen.getByRole("treeitem", { name: "node1" })).toBeAriaExpanded();
+
+      animate.mockRestore();
+    });
   });
 
   describe("prependNode", () => {

@@ -83,7 +83,7 @@ The root node. It is not rendered; its `children` are the top-level nodes. Also 
 - Returns: `Promise`
 
 - `node`: `Node`
-- `slide`: `boolean` — animate with a slide; default `false`
+- `slide`: `boolean` — override the `slide` option for this call
 
 Opens a folder, and the folders above it. A node marked `load_on_demand` is fetched first, so await
 the promise when you need to know it is really open:
@@ -96,12 +96,12 @@ console.log("open");
 ### closeNode(node, slide?)
 
 - `node`: `Node`
-- `slide`: `boolean`
+- `slide`: `boolean` — override the `slide` option for this call
 
 ### toggle(node, slide?)
 
 - `node`: `Node`
-- `slide`: `boolean`
+- `slide`: `boolean` — override the `slide` option for this call
 
 Closes an open node and opens a closed one.
 

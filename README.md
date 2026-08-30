@@ -128,21 +128,21 @@ element.addEventListener("tree.select", (e) => {
 });
 ```
 
-| Event               | `detail`                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------- |
-| `tree.init`         |                                                                                                   |
-| `tree.click`        | `node`, `originalEvent`                                                                           |
-| `tree.dblclick`     | `node`, `originalEvent`                                                                           |
-| `tree.contextmenu`  | `node`, `originalEvent`                                                                           |
-| `tree.select`       | `node`, `deselectedNode`                                                                          |
-| `tree.deselect`     | `node`                                                                                            |
-| `tree.open`         | `node`                                                                                            |
-| `tree.close`        | `node`                                                                                            |
+| Event               | `detail`                                                                                           |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| `tree.init`         |                                                                                                    |
+| `tree.click`        | `node`, `originalEvent`                                                                            |
+| `tree.dblclick`     | `node`, `originalEvent`                                                                            |
+| `tree.contextmenu`  | `node`, `originalEvent`                                                                            |
+| `tree.select`       | `node`, `deselectedNode`                                                                           |
+| `tree.deselect`     | `node`                                                                                             |
+| `tree.open`         | `node`                                                                                             |
+| `tree.close`        | `node`                                                                                             |
 | `tree.move`         | `moveInfo` with `movedNode`, `targetNode`, `position`, `previousParent`, `doMove`, `originalEvent` |
-| `tree.refresh`      |                                                                                                   |
-| `tree.set_data`     | `treeData`, `node`                                                                                |
-| `tree.loading_data` | `node`, `element`                                                                                 |
-| `tree.loaded_data`  | `node`, `element`                                                                                 |
+| `tree.refresh`      |                                                                                                    |
+| `tree.set_data`     | `treeData`, `node`                                                                                 |
+| `tree.loading_data` | `node`, `element`                                                                                  |
+| `tree.loaded_data`  | `node`, `element`                                                                                  |
 
 `tree.click` and `tree.move` act on `event.preventDefault()`: it stops the node
 from being selected, and stops the move. For `tree.move`, call
