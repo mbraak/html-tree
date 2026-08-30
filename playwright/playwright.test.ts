@@ -161,6 +161,9 @@ test.describe("multiple selection", () => {
             "Herrerasaurians",
             "Ceratopsians",
         ]);
+
+        const screenshot = await page.screenshot();
+        expect(screenshot).toMatchSnapshot();
     });
 
     test("removes a node from the selection", async ({ page }) => {
