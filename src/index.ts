@@ -119,7 +119,6 @@ export default class HtmlTree {
     const openParents = this.openParents.bind(this);
     const refreshElements = this.refreshElements.bind(this);
     const refreshHitAreas = this.refreshHitAreas.bind(this);
-    const selectNode = this.selectNode.bind(this);
     const setNodeElement = this.setNodeElement.bind(this);
     const treeElement = this.htmlElement;
     const triggerEvent = this.triggerEvent.bind(this);
@@ -146,6 +145,8 @@ export default class HtmlTree {
       selectNodeHandler.isNodeSelected.bind(selectNodeHandler);
     const removeFromSelection =
       selectNodeHandler.removeFromSelection.bind(selectNodeHandler);
+    const selectNode = selectNodeHandler.selectSingleNode.bind(selectNodeHandler);
+
     const getMouseDelay = () => this.options.startDndDelay ?? 0;
 
     const dataLoader = new DataLoader({
@@ -235,7 +236,7 @@ export default class HtmlTree {
       getMouseDelay,
       getNode,
       onClickButton: this.toggle.bind(this),
-      onClickTitle: this.selectNode.bind(this),
+      onClickTitle: selectNode,
       onMouseCapture,
       onMouseDrag,
       onMouseStart,
