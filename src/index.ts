@@ -406,11 +406,11 @@ export default class HtmlTree {
     return this.selectNodeHandler.isNodeSelected(node);
   }
 
-  public loadData(data: NodeData[] | null, node?: Node): void {
+  public loadData(data: NodeData[] | null, parentNode?: Node): void {
     if (data) {
-      if (node) {
-        this.deselectNodes(node);
-        this.loadSubtree(data, node);
+      if (parentNode) {
+        this.deselectNodes(parentNode);
+        this.loadSubtree(data, parentNode);
       } else {
         this.initTree(data);
       }
@@ -421,7 +421,7 @@ export default class HtmlTree {
     }
 
     this.triggerEvent("tree.set_data", {
-      node,
+      node: parentNode,
       treeData: data ?? undefined,
     });
   }

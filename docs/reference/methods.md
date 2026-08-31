@@ -229,10 +229,10 @@ methods.
 
 ## Loading data
 
-### loadData(data, node?)
+### loadData(data, parentNode?)
 
 - `data`: `NodeData[] | null`
-- `node`: `Node` — replace this node's children instead of the whole tree
+- `parentNode`: `Node` — replace this node's children instead of the whole tree
 
 ### async loadDataFromUrl(url?, parentNode?)
 
