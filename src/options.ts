@@ -29,7 +29,6 @@ export interface HtmlTreeOptions {
   onDragStop?: DragMethod;
   onGetStateFromStorage?: OnGetStateFromStorage;
   onIsMoveHandle?: OnIsMoveHandle;
-  onLoadFailed?: OnLoadFailed;
   onSetStateFromStorage?: OnSetStateFromStorage;
   openedIcon?: IconElement;
   openFolderDelay: false | number;
@@ -61,8 +60,6 @@ export type OnCreateLi = (node: Node, el: HTMLElement, isSelected: boolean) => v
 export type OnGetStateFromStorage = (() => string) | undefined;
 
 export type OnIsMoveHandle = (el: HTMLElement) => boolean;
-
-export type OnLoadFailed = (response: Response) => void;
 
 export type OnSetStateFromStorage = ((data: string) => void) | undefined;
 

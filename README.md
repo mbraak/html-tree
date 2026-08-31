@@ -115,7 +115,6 @@ new HtmlTree({
 | `onGetStateFromStorage` | `() => string`                            | Read saved state yourself                                                 |
 | `onSetStateFromStorage` | `(data) => void`                          | Write saved state yourself                                                |
 | `onIsMoveHandle`        | `(element) => boolean`                    | Is this element a drag handle?                                            |
-| `onLoadFailed`          | `(response) => void`                      | An ajax request failed                                                    |
 
 ## Events
 
@@ -143,6 +142,7 @@ element.addEventListener("tree.select", (e) => {
 | `tree.set_data`     | `treeData`, `node`                                                                                 |
 | `tree.loading_data` | `node`, `element`                                                                                  |
 | `tree.loaded_data`  | `node`, `element`                                                                                  |
+| `tree.load_failed`  | `response`                                                                                         |
 
 `tree.click` and `tree.move` act on `event.preventDefault()`: it stops the node
 from being selected, and stops the move. For `tree.move`, call
@@ -154,7 +154,7 @@ events are dispatched as cancelable, but nothing acts on it.
 Nodes are `Node` instances. Get one with `getNodeById`, `getNodeByName`,
 `getNodeByCallback`, `getNodesByProperty` or `getNode` (from a dom element).
 
-**Data**: `loadData(data, node?)`, `loadDataFromUrl(url?, parentNode?)`, `toJson()`, `refresh()`
+**Data**: `loadData(data, parentNode?)`, `loadDataFromUrl(url?, parentNode?)`, `toJson()`, `refresh()`
 
 **Nodes**: `appendNode(data, parentNode)`, `prependNode(data, parentNode)`, `addNodeAfter(data, node)`, `addNodeBefore(data, node)`, `addParentNode(data, node)`, `updateNode(node, data)`, `removeNode(node)`, `moveNode(node, targetNode, position)`
 

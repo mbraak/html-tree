@@ -95,7 +95,6 @@ export default class HtmlTree {
       onDragStop,
       onGetStateFromStorage,
       onIsMoveHandle,
-      onLoadFailed,
       onSetStateFromStorage,
       openedIcon,
       openFolderDelay,
@@ -153,7 +152,6 @@ export default class HtmlTree {
       classNames,
       dataFilter,
       loadData,
-      onLoadFailed,
       treeElement,
       triggerEvent,
     });

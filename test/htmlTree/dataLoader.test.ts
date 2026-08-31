@@ -50,7 +50,6 @@ describe("loadFromUrl", () => {
 
     const createDataLoader = (dataFilter?: DataFilter) => {
         const loadData = vi.fn();
-        const onLoadFailed = vi.fn();
         const treeElement = document.createElement("div");
         const triggerEvent = vi.fn<TriggerEvent>();
 
@@ -58,12 +57,11 @@ describe("loadFromUrl", () => {
             classNames: defaultClassNames,
             dataFilter,
             loadData,
-            onLoadFailed,
             treeElement,
             triggerEvent,
         });
 
-        return { dataLoader, loadData, onLoadFailed, treeElement, triggerEvent };
+        return { dataLoader, loadData, treeElement, triggerEvent };
     }
 
     it("calls loadData with the parsed json data", async () => {
@@ -88,26 +86,26 @@ describe("loadFromUrl", () => {
         expect(loadData).toHaveBeenCalledExactlyOnceWith({ key1: "value1" }, undefined);
     });
 
-    it("calls onLoadFailed with a 404 error", async () => {
+    it("triggers tree.load_failed with a 404 error", async () => {
         setupErrorResponse(404);
 
-        const { dataLoader, onLoadFailed } = createDataLoader();
+        const { dataLoader, triggerEvent } = createDataLoader();
         await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ status: 404 })
-        );
+        expect(triggerEvent).toHaveBeenCalledWith("tree.load_failed", {
+            response: expect.objectContaining({ status: 404 }) as Response,
+        });
     });
 
-    it("calls onLoadFailed with a 500 error", async () => {
+    it("triggers tree.load_failed with a 500 error", async () => {
         setupErrorResponse(500);
 
-        const { dataLoader, onLoadFailed } = createDataLoader();
+        const { dataLoader, triggerEvent } = createDataLoader();
         await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
-        expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ status: 500 })
-        );
+        expect(triggerEvent).toHaveBeenCalledWith("tree.load_failed", {
+            response: expect.objectContaining({ status: 500 }) as Response,
+        });
     });
 
     it("triggers tree.loading_data and tree.loaded_data events", async () => {
