@@ -267,15 +267,6 @@ Read the saved state, as a json string, from somewhere other than `localStorage`
 
 Write the state, as a json string, to somewhere other than `localStorage`.
 
-## Loading
-
-### onLoadFailed
-
-- Type: `(response: Response) => void`
-- Default: `undefined`
-
-Called with the `Response` when a request fails.
-
 ## Advanced
 
 ### nodeClass

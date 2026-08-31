@@ -38,6 +38,9 @@ export interface TreeEvents {
         node: Node;
     };
     "tree.init": undefined;
+    "tree.load_failed": {
+        response: Response;
+    };
     "tree.loaded_data": {
         element: HTMLElement;
         node?: Node;

@@ -172,6 +172,22 @@ Dispatched when a request finishes.
 | `node`    | `Node \| undefined` | The node whose children were loaded, if it was a subtree.  |
 | `element` | `HTMLElement`       |                                                            |
 
+It is dispatched when the request fails too; a [`tree.load_failed`](#tree-load-failed) follows it.
+
+## tree.load_failed
+
+Dispatched when a request returns an error status, after `tree.loaded_data`.
+
+| `detail`   | Type       |
+| ---------- | ---------- |
+| `response` | `Response` |
+
+```js
+element.addEventListener("tree.load_failed", (e) => {
+  console.error("loading the tree failed", e.detail.response.status);
+});
+```
+
 ## tree.refresh
 
 Dispatched after the tree has been re-rendered. No `detail`.

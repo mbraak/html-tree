@@ -1,14 +1,13 @@
 import type { ClassNames } from "./classNames";
 import type { LoadData, TriggerEvent } from "./methodTypes";
 import type { Node, NodeData } from "./node";
-import type { DataFilter, OnLoadFailed } from "./options";
+import type { DataFilter } from "./options";
 import type RequestUrl from "./requestUrl";
 
 interface DataLoaderParams {
     classNames: ClassNames;
     dataFilter?: DataFilter;
     loadData: LoadData;
-    onLoadFailed?: OnLoadFailed;
     treeElement: HTMLElement;
     triggerEvent: TriggerEvent;
 }
@@ -18,7 +17,6 @@ export default class DataLoader {
     private classNames: ClassNames;
     private dataFilter?: DataFilter;
     private loadData: LoadData;
-    private onLoadFailed?: OnLoadFailed;
     private treeElement: HTMLElement;
     private triggerEvent: TriggerEvent;
 
@@ -26,7 +24,6 @@ export default class DataLoader {
         classNames,
         dataFilter,
         loadData,
-        onLoadFailed,
         treeElement,
         triggerEvent,
     }: DataLoaderParams) {
@@ -34,7 +31,6 @@ export default class DataLoader {
         this.classNames = classNames;
         this.dataFilter = dataFilter;
         this.loadData = loadData;
-        this.onLoadFailed = onLoadFailed;
         this.treeElement = treeElement;
         this.triggerEvent = triggerEvent;
     }
@@ -75,9 +71,7 @@ export default class DataLoader {
             } else {
                 stopLoading();
 
-                if (this.onLoadFailed) {
-                    this.onLoadFailed(response);
-                }
+                this.triggerEvent("tree.load_failed", { response });
             }
         };
 

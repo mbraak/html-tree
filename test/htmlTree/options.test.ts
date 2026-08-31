@@ -1,7 +1,7 @@
 import type { Node, NodeData } from "htmlTree/node";
 import type { HtmlTreeOptions } from "htmlTree/options";
 
-import { screen, waitFor } from "@testing-library/dom";
+import { screen } from "@testing-library/dom";
 import { userEvent } from "@testing-library/user-event";
 import HtmlTree from "htmlTree";
 import { http, HttpResponse } from "msw";
@@ -559,33 +559,6 @@ describe("options", () => {
             );
 
             expect(onIsMoveHandle).toHaveBeenCalledExactlyOnceWith(treeItem);
-        });
-    });
-
-    describe("onLoadFailed", () => {
-        it("calls onLoadFailed when the loading fails", async () => {
-            server.use(
-                http.get(
-                    "/tree/",
-                    () =>
-                        new HttpResponse("Internal server error", {
-                            status: 500,
-                        }),
-                ),
-            );
-
-            const onLoadFailed = vi.fn();
-
-            createHtmlTree({
-                dataUrl: "/tree/",
-                onLoadFailed,
-            });
-
-            await waitFor(() => {
-                expect(onLoadFailed).toHaveBeenCalledExactlyOnceWith(
-                    expect.objectContaining({ status: 500 }),
-                );
-            });
         });
     });
 

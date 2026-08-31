@@ -121,15 +121,12 @@ new HtmlTree({
 });
 ```
 
-`onLoadFailed` is called with the `Response` when the request fails:
+When the request fails, the tree dispatches a [`tree.load_failed`](../reference/events#tree-load-failed)
+event with the `Response`:
 
 ```js
-new HtmlTree({
-  dataUrl: "/my-tree/",
-  htmlElement,
-  onLoadFailed: (response) => {
-    console.error("loading the tree failed", response.status);
-  },
+element.addEventListener("tree.load_failed", (e) => {
+  console.error("loading the tree failed", e.detail.response.status);
 });
 ```
 

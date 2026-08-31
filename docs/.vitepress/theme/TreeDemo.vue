@@ -28,6 +28,7 @@ const EVENT_NAMES = [
   "tree.set_data",
   "tree.loading_data",
   "tree.loaded_data",
+  "tree.load_failed",
   "tree.refresh",
 ];
 
@@ -66,6 +67,10 @@ const describe = (name: string, detail: unknown): string => {
 
   if (name === "tree.loading_data" || name === "tree.loaded_data") {
     return values.node ? values.node.name : "tree";
+  }
+
+  if (name === "tree.load_failed") {
+    return `status: ${values.response.status}`;
   }
 
   if (name === "tree.set_data") {

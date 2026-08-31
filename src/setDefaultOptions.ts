@@ -27,7 +27,6 @@ const defaults: HtmlTreeOptions = {
   onDragStop: undefined,
   onGetStateFromStorage: undefined,
   onIsMoveHandle: undefined,
-  onLoadFailed: undefined,
   onSetStateFromStorage: undefined,
   openedIcon: undefined,
   openFolderDelay: 500, // The delay for opening a folder during drag and drop; the value is in milliseconds
