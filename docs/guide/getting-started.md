@@ -6,7 +6,7 @@ Build the distribution files from a checkout:
 
 ```sh
 npm install
-npm production
+npm run production
 ```
 
 That produces:
@@ -102,7 +102,7 @@ The repository contains a dev server with a working example
 (`devserver/index.html` and `devserver/devserver.js`):
 
 ```sh
-nnpm run devserver
+npm run devserver
 ```
 
 It builds the bundle, watches `src`, and serves the example on `http://localhost:8080`.

@@ -47,7 +47,7 @@ node is a bug.
 The first node for which the callback returns `true`.
 
 ```js
-const node = tree.getNodeByCallback((node) => node.id > 10);
+const node = tree.getNodeByCallback((node) => node.children.length > 3);
 ```
 
 ### getNodesByProperty(key, value)
