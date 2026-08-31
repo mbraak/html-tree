@@ -93,7 +93,7 @@ describe("loadFromUrl", () => {
         await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
         expect(triggerEvent).toHaveBeenCalledWith("tree.load_failed", {
-            response: expect.objectContaining({ status: 404 }),
+            response: expect.objectContaining({ status: 404 }) as Response,
         });
     });
 
@@ -104,7 +104,7 @@ describe("loadFromUrl", () => {
         await dataLoader.loadFromUrl(new RequestUrl("/test"));
 
         expect(triggerEvent).toHaveBeenCalledWith("tree.load_failed", {
-            response: expect.objectContaining({ status: 500 }),
+            response: expect.objectContaining({ status: 500 }) as Response,
         });
     });
 
