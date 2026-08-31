@@ -209,7 +209,7 @@ new HtmlTree({
     if (node.count) {
       const badge = document.createElement("span");
       badge.className = "count";
-      badge.textContent = node.count;
+      badge.textContent = String(node.count);
       title.after(badge);
     }
   },
