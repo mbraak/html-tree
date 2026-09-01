@@ -50,6 +50,9 @@ export default defineConfig({
     ],
   },
   lang: "en-US",
+  // The typedoc output is included into reference/methods.md, so it must not
+  // become a page of its own.
+  srcExclude: ["reference/generated/**"],
   title: "html-tree",
   // The live demos import the widget from src, which imports itself through the
   // "htmlTree" alias from tsconfig.json.

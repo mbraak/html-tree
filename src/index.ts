@@ -54,6 +54,7 @@ interface HtmlTreeParams extends Partial<HtmlTreeOptions> {
 }
 
 export default class HtmlTree {
+  /** @hidden */
   public tree: Node;
 
   private classNames: ClassNames;
@@ -71,6 +72,7 @@ export default class HtmlTree {
   private selectNodeHandler: SelectNodeHandler;
   private triggerEventProvider: TriggerEventProvider;
 
+  /** @hidden */
   constructor({ htmlElement, overrideTriggerEventProvider, ...options }: HtmlTreeParams) {
     this.htmlElement = htmlElement;
     this.options = setDefaultOptions(htmlElement, options);
@@ -255,12 +257,17 @@ export default class HtmlTree {
     this.initData();
   }
 
-  // Add a node after an existing node.
+  /**
+   * Adds a sibling after a node.
+   *
+   * @returns The new node, or `null` when the node has no parent.
+   * @group Changing the tree
+   */
   public addNodeAfter(
-    newNodeInfo: NodeData,
+    nodeData: NodeData,
     existingNode: Node,
   ): Node | null {
-    const newNode = existingNode.addAfter(newNodeInfo);
+    const newNode = existingNode.addAfter(nodeData);
 
     if (newNode) {
       this.refreshElements(existingNode.parent);
@@ -269,12 +276,17 @@ export default class HtmlTree {
     return newNode;
   }
 
-  // Add a node before another node.
+  /**
+   * Adds a sibling before a node.
+   *
+   * @returns The new node, or `null` when the node has no parent.
+   * @group Changing the tree
+   */
   public addNodeBefore(
-    newNodeInfo: NodeData,
+    nodeData: NodeData,
     existingNode: Node,
   ): Node | null {
-    const newNode = existingNode.addBefore(newNodeInfo);
+    const newNode = existingNode.addBefore(nodeData);
 
     if (newNode) {
       this.refreshElements(existingNode.parent);
@@ -283,12 +295,18 @@ export default class HtmlTree {
     return newNode;
   }
 
-  // Add a node as parent node of an existing node.
+  /**
+   * Inserts a new node between a node and its parent, taking the node as its
+   * child.
+   *
+   * @returns The new node, or `null` when the node has no parent.
+   * @group Changing the tree
+   */
   public addParentNode(
-    newNodeInfo: NodeData,
+    nodeData: NodeData,
     existingNode: Node,
   ): Node | null {
-    const newNode = existingNode.addParent(newNodeInfo);
+    const newNode = existingNode.addParent(nodeData);
 
     if (newNode) {
       this.refreshElements(newNode.parent);
@@ -297,6 +315,12 @@ export default class HtmlTree {
     return newNode;
   }
 
+  /**
+   * Adds a node to the selection instead of replacing it.
+   *
+   * @param mustSetFocus - Move the focus to the node. Default `true`.
+   * @group Selection
+   */
   public addToSelection(node: Node, mustSetFocus?: boolean) {
     this.selectNodeHandler.addToSelection(node);
     this.openParents(node);
@@ -306,21 +330,35 @@ export default class HtmlTree {
     this.saveState();
   }
 
-  // Add a node as child of another node.
-  public appendNode(newNodeInfo: NodeData, parentNode: Node): Node {
-    const node = parentNode.append(newNodeInfo);
+  /**
+   * Adds a node as the last child of a parent.
+   *
+   * @example
+   * ```js
+   * tree.appendNode({ name: "child", id: 5 }, tree.getNodeById(1));
+   * ```
+   *
+   * @returns The new node.
+   * @group Changing the tree
+   */
+  public appendNode(nodeData: NodeData, parentNode: Node): Node {
+    const node = parentNode.append(nodeData);
 
     this.refreshElements(parentNode);
 
     return node;
   }
 
-  public closeNode(node: Node, slideParam?: boolean): void {
-    const slide = slideParam ?? this.options.slide;
-
+  /**
+   * Closes a folder.
+   *
+   * @param slide - Override the `slide` option for this call.
+   * @group Opening and closing
+   */
+  public closeNode(node: Node, slide?: boolean): void {
     if (node.isFolder() || node.isEmptyFolder) {
       this.createFolderElement(node).close(
-        slide,
+        slide ?? this.options.slide,
         this.options.animationSpeed,
       );
 
@@ -328,6 +366,12 @@ export default class HtmlTree {
     }
   }
 
+  /**
+   * Empties the element and removes the tree's document-level keyboard
+   * listener. Call it when you remove the tree from the page.
+   *
+   * @group Other
+   */
   public deinit(): void {
     this.htmlElement.textContent = '';
 
@@ -338,7 +382,11 @@ export default class HtmlTree {
     this.tree = new Node({}, true);
   }
 
-  // Return the tree node for an HTMl element.
+  /**
+   * Returns the node that belongs to a `li` element the tree rendered.
+   *
+   * @group Finding nodes
+   */
   public getNode(element: HTMLElement): Node | null {
     const liElement = element.closest<HTMLElement>(
       `li.${this.classNames.common}`,
@@ -351,59 +399,148 @@ export default class HtmlTree {
     }
   }
 
+  /**
+   * Returns the first node for which the callback returns `true`.
+   *
+   * @example
+   * ```js
+   * const node = tree.getNodeByCallback((node) => node.children.length > 3);
+   * ```
+   *
+   * @group Finding nodes
+   */
   public getNodeByCallback(callback: (node: Node) => boolean): Node | null {
     return this.tree.getNodeByCallback(callback);
   }
 
-  public getNodeById(nodeId: NodeId): Node | null {
-    return this.tree.getNodeById(nodeId);
+  /**
+   * Returns the node with this id.
+   *
+   * @example
+   * ```js
+   * const node = tree.getNodeById(1);
+   * ```
+   *
+   * @group Finding nodes
+   */
+  public getNodeById(id: NodeId): Node | null {
+    return this.tree.getNodeById(id);
   }
 
+  /**
+   * Returns the first node with this name.
+   *
+   * @group Finding nodes
+   */
   public getNodeByName(name: string): Node | null {
     return this.tree.getNodeByName(name);
   }
 
+  /**
+   * Like `getNodeByName`, but throws when there is no such node. Convenient
+   * in tests and when a missing node is a bug.
+   *
+   * @group Finding nodes
+   */
   public getNodeByNameMustExist(name: string): Node {
     return this.tree.getNodeByNameMustExist(name);
   }
 
+  /**
+   * Returns all nodes with this property value.
+   *
+   * @example
+   * ```js
+   * tree.getNodesByProperty("color", "green");
+   * ```
+   *
+   * @group Finding nodes
+   */
   public getNodesByProperty(key: string, value: unknown): Node[] {
     return this.tree.getNodesByProperty(key, value);
   }
 
-  // Return the node that is selected.
+  /**
+   * Returns the selected node, or `false` when nothing is selected.
+   *
+   * @group Selection
+   */
   public getSelectedNode(): false | Node {
     return this.selectNodeHandler.getSelectedNode();
   }
 
+  /**
+   * Returns the selected nodes.
+   *
+   * @group Selection
+   */
   public getSelectedNodes(): Node[] {
     return this.selectNodeHandler.getSelectedNodes();
   }
 
+  /**
+   * Returns the current state — `open_nodes` and `selected_node` — whether or
+   * not `saveState` is enabled.
+   *
+   * @group State
+   */
   public getState(): null | SavedState {
     return this.saveStateHandler.getState();
   }
 
+  /**
+   * Returns the state as it is stored.
+   *
+   * @group State
+   */
   public getStateFromStorage(): null | SavedState {
     return this.saveStateHandler.getStateFromStorage();
   }
 
+  /**
+   * Returns the root node. It is not rendered; its `children` are the
+   * top-level nodes. Also available as the `tree` property.
+   *
+   * @group Finding nodes
+   */
   public getTree(): Node {
     return this.tree;
   }
 
+  /**
+   * Returns the version of html-tree.
+   *
+   * @group Other
+   */
   public getVersion(): string {
     return __version__;
   }
 
+  /**
+   * Returns whether the user is dragging a node.
+   *
+   * @group Other
+   */
   public isDragging(): boolean {
     return this.dndHandler.isDragging;
   }
 
+  /**
+   * Returns whether the node is selected.
+   *
+   * @group Selection
+   */
   public isNodeSelected(node: Node): boolean {
     return this.selectNodeHandler.isNodeSelected(node);
   }
 
+  /**
+   * Loads data into the tree.
+   *
+   * @param parentNode - Replace this node's children instead of the whole
+   * tree.
+   * @group Loading data
+   */
   public loadData(data: NodeData[] | null, parentNode?: Node): void {
     if (data) {
       if (parentNode) {
@@ -424,17 +561,28 @@ export default class HtmlTree {
     });
   }
 
+  /**
+   * Fetches data and loads it into the tree, or into `parentNode`.
+   *
+   * @param url - Defaults to the `dataUrl` option.
+   * @group Loading data
+   */
   public async loadDataFromUrl(
-    inputUrl?: string,
+    url?: string,
     parentNode?: Node
   ): Promise<void> {
-    const url = inputUrl ? new RequestUrl(inputUrl) : this.createRequestUrl(parentNode);
+    const requestUrl = url ? new RequestUrl(url) : this.createRequestUrl(parentNode);
 
-    if (url) {
-      await this.dataLoader.loadFromUrl(url, parentNode);
+    if (requestUrl) {
+      await this.dataLoader.loadFromUrl(requestUrl, parentNode);
     }
   }
 
+  /**
+   * Selects the next visible node, like the down arrow key.
+   *
+   * @group Selection
+   */
   public moveDown() {
     const selectedNode = this.getSelectedNode();
     if (selectedNode) {
@@ -442,7 +590,17 @@ export default class HtmlTree {
     }
   }
 
-  // Move a node inside the tree.
+  /**
+   * Moves a node inside the tree.
+   *
+   * @example
+   * ```js
+   * tree.moveNode(tree.getNodeById(2), tree.getNodeById(1), "inside");
+   * ```
+   *
+   * @param position - `"before"`, `"after"` or `"inside"`.
+   * @group Changing the tree
+   */
   public moveNode(
     node: Node,
     targetNode: Node,
@@ -452,6 +610,11 @@ export default class HtmlTree {
     this.refreshElements(null);
   }
 
+  /**
+   * Selects the previous visible node, like the up arrow key.
+   *
+   * @group Selection
+   */
   public moveUp() {
     const selectedNode = this.getSelectedNode();
     if (selectedNode) {
@@ -459,21 +622,35 @@ export default class HtmlTree {
     }
   }
 
+  /**
+   * Opens a folder, and the folders above it. A node marked `load_on_demand`
+   * is fetched first, so await the promise when you need to know it is really
+   * open.
+   *
+   * @example
+   * ```js
+   * await tree.openNode(node);
+   * console.log("open");
+   * ```
+   *
+   * @param slide - Override the `slide` option for this call.
+   * @group Opening and closing
+   */
   public async openNode(
-    inputNode: Node,
-    inputSlide?: boolean
+    node: Node,
+    slide?: boolean
   ): Promise<void> {
-    const slide = inputSlide ?? this.options.slide;
+    const mustSlide = slide ?? this.options.slide;
 
     const doOpenNode = async (
-      node: Node,
+      openedNode: Node,
       slideOption: boolean
     ): Promise<void> => {
-      if (!inputNode.children.length) {
+      if (!node.children.length) {
         return;
       }
 
-      const folderElement = this.createFolderElement(node);
+      const folderElement = this.createFolderElement(openedNode);
 
       await folderElement.open(
         slideOption,
@@ -481,11 +658,11 @@ export default class HtmlTree {
       );
     };
 
-    if (inputNode.isFolder() || inputNode.isEmptyFolder) {
-      if (inputNode.load_on_demand) {
-        await this.loadFolderOnDemand(inputNode, slide);
+    if (node.isFolder() || node.isEmptyFolder) {
+      if (node.load_on_demand) {
+        await this.loadFolderOnDemand(node, mustSlide);
       } else {
-        let parent = inputNode.parent;
+        let parent = node.parent;
 
         while (parent) {
           // nb: do not open root element
@@ -495,30 +672,52 @@ export default class HtmlTree {
           parent = parent.parent;
         }
 
-        await doOpenNode(inputNode, slide);
+        await doOpenNode(node, mustSlide);
 
         this.saveState();
       }
     }
   }
 
-  // Add a node before another node.
-  public prependNode(newNodeInfo: NodeData, parentNode: Node): Node {
-    const node = parentNode.prepend(newNodeInfo);
+  /**
+   * Adds a node as the first child of a parent.
+   *
+   * @returns The new node.
+   * @group Changing the tree
+   */
+  public prependNode(nodeData: NodeData, parentNode: Node): Node {
+    const node = parentNode.prepend(nodeData);
 
     this.refreshElements(parentNode);
 
     return node;
   }
 
+  /**
+   * Re-renders the whole tree. Needed after changing node data directly
+   * instead of through these methods.
+   *
+   * @group Changing the tree
+   */
   public refresh() {
     this.refreshElements(null);
   }
 
+  /**
+   * Recomputes the drop targets. Call this if the layout changes during a
+   * drag.
+   *
+   * @group Other
+   */
   public refreshHitAreas() {
     this.dndHandler.refresh();
   }
 
+  /**
+   * Removes a node from the selection.
+   *
+   * @group Selection
+   */
   public removeFromSelection(node: Node) {
     this.selectNodeHandler.removeFromSelection(node);
 
@@ -526,7 +725,11 @@ export default class HtmlTree {
     this.saveState();
   }
 
-  // Remove the node from the tree.
+  /**
+   * Removes a node and its children.
+   *
+   * @group Changing the tree
+   */
   public removeNode(node: Node): void {
     this.selectNodeHandler.removeFromSelection(node, true); // including children
 
@@ -535,6 +738,11 @@ export default class HtmlTree {
     this.refreshElements(parent);
   }
 
+  /**
+   * Scrolls the node into view.
+   *
+   * @group Selection
+   */
   public scrollToNode(node: Node) {
     if (!node.element) {
       return;
@@ -547,6 +755,15 @@ export default class HtmlTree {
     this.scrollHandler.scrollToY(top);
   }
 
+  /**
+   * Replaces the selection, and opens the parents of the node.
+   *
+   * @param node - `null` clears the selection.
+   * @param options - `mustSetFocus`: move focus to the node, default `true`.
+   * `mustToggle`: deselect the node if it is already selected, default
+   * `false`.
+   * @group Selection
+   */
   public selectNode(
     node: Node | null,
     options?: SelectNodeOptions,
@@ -561,31 +778,67 @@ export default class HtmlTree {
     this.selectNodeHandler.selectSingleNode(node, options);
   }
 
+  /**
+   * Changes an option after construction. See
+   * [Options](/reference/options#changing-an-option-later) for the caveats.
+   *
+   * @group Other
+   */
   public setOption(option: string, value: unknown) {
     (this.options as unknown as Record<string, unknown>)[option] = value;
   }
 
+  /**
+   * Applies a state to the tree.
+   *
+   * @group State
+   */
   public setState(state: SavedState) {
     this.saveStateHandler.setInitialState(state);
     this.refreshElements(null);
   }
 
-  public toggle(node: Node, slideParam: boolean | null = null) {
-    const slide = slideParam ?? this.options.slide;
+  /**
+   * Closes an open node and opens a closed one.
+   *
+   * @param slide - Override the `slide` option for this call.
+   * @group Opening and closing
+   */
+  public toggle(node: Node, slide: boolean | null = null) {
+    const mustSlide = slide ?? this.options.slide;
 
     if (node.is_open) {
-      this.closeNode(node, slide);
+      this.closeNode(node, mustSlide);
     } else {
-      void this.openNode(node, slide);
+      void this.openNode(node, mustSlide);
     }
   }
 
-  // Return tree as json string.
+  /**
+   * Returns the tree as a json string, including changes made through the
+   * api.
+   *
+   * @group Other
+   */
   public toJson(): string {
     return JSON.stringify(this.tree.getData());
   }
 
-  // Update the data of a node in the tree.
+  /**
+   * Updates the data of a node and re-renders it. A string updates just the
+   * name.
+   *
+   * Changing the `id` re-indexes the node. `children` and `parent` are
+   * ignored — use `loadData` or `moveNode` for those.
+   *
+   * @example
+   * ```js
+   * tree.updateNode(node, "new name");
+   * tree.updateNode(node, { name: "new name", color: "red" });
+   * ```
+   *
+   * @group Changing the tree
+   */
   public updateNode(node: Node, data: NodeData): void {
     const idIsChanged =
       typeof data === "object" && data.id && data.id !== node.id;
