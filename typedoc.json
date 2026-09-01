@@ -10,16 +10,21 @@
     "hidePageHeader": true,
     "hidePageTitle": true,
     "parametersFormat": "table",
+    "interfacePropertiesFormat": "list",
     "useCodeBlocks": true,
     "expandParameters": false,
     "groupOrder": [
         "Finding nodes",
         "Opening and closing",
+        "Data",
+        "Appearance",
         "Selection",
         "Changing the tree",
         "Loading data",
+        "Drag and drop",
         "State",
-        "Other"
+        "Other",
+        "Advanced"
     ],
     "validation": {
         "notExported": false

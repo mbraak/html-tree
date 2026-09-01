@@ -49,7 +49,11 @@ export type TriggerEventProvider = (
 ) => boolean;
 
 interface HtmlTreeParams extends Partial<HtmlTreeOptions> {
+  /** The element the tree is rendered into. Its content is replaced. */
   htmlElement: HTMLElement;
+  /** Replaces how events are dispatched. It must return whether the event
+   * was not cancelled. This exists for tests and for integrating with
+   * another event system. */
   overrideTriggerEventProvider?: TriggerEventProvider,
 }
 
