@@ -61,8 +61,10 @@ element.addEventListener("tree.deselect", (e) => {
 
 The types are also exported, for a listener that is written separately:
 
-```ts
+```ts fixture=standalone
 import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "html-tree";
+
+const element = document.getElementById("tree1")!;
 
 // TreeEvent<Name> is the CustomEvent, TreeEvents[Name] is its detail.
 const onMove = (e: TreeEvent<"tree.move">): void => {

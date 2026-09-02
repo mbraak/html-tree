@@ -48,6 +48,9 @@ jobs:
       - name: Check types
         run: |
           pnpm run tsc
+      - name: Check the code snippets in the docs
+        run: |
+          pnpm run docs-check
       - name: Clean coverage
         run: rm -rf .nyc_output && rm -rf node_modules/.vite
       - name: Run vitest tests

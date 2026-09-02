@@ -84,13 +84,13 @@ an api become an html injection route.
 `loadData` replaces the whole tree:
 
 ```js
-tree.loadData(newData);
+tree.loadData([{ name: "node1" }, { name: "node2" }]);
 ```
 
 Pass a parent node to replace just that node's children:
 
 ```js
-tree.loadData(newChildren, tree.getNodeById(1));
+tree.loadData([{ name: "child1" }, { name: "child2" }], tree.getNodeById(1));
 ```
 
 ## Loading from a url
@@ -113,7 +113,7 @@ You can also put the url on the element:
 
 Use `dataFilter` when the server returns the nodes wrapped in something else:
 
-```js
+```js ignore
 new HtmlTree({
   dataFilter: (response) => response.nodes,
   dataUrl: "/my-tree/",
