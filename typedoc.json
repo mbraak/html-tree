@@ -1,0 +1,45 @@
+{
+    "$schema": "https://typedoc-plugin-markdown.org/schema.json",
+    "entryPoints": ["config/typedocEntry.ts"],
+    "plugin": ["typedoc-plugin-markdown"],
+    "out": "docs/reference/generated",
+    "readme": "none",
+    "disableSources": true,
+    "excludePrivate": true,
+    "hideBreadcrumbs": true,
+    "hidePageHeader": true,
+    "hidePageTitle": true,
+    "parametersFormat": "table",
+    "interfacePropertiesFormat": "list",
+    "classPropertiesFormat": "table",
+    "tableColumnSettings": {
+        "hideModifiers": true
+    },
+    "propertyMembersFormat": "table",
+    "useCodeBlocks": true,
+    "expandParameters": false,
+    "sort": ["source-order"],
+    "groupOrder": [
+        "Lifecycle",
+        "Finding nodes",
+        "Mouse",
+        "Data",
+        "Appearance",
+        "Opening and closing",
+        "Properties",
+        "Inspecting a node",
+        "Moving around the tree",
+        "Searching",
+        "Selection",
+        "Changing the tree",
+        "Reading data back",
+        "Drag and drop",
+        "Loading data",
+        "State",
+        "Other",
+        "Advanced"
+    ],
+    "validation": {
+        "notExported": false
+    }
+}

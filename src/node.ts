@@ -21,22 +21,54 @@ export type Position = "after" | "before" | "inside";
 
 type IterateCallback = (node: Node, level: number) => boolean;
 
+/**
+ * @groupDescription Properties
+ * Any other key in the node data is copied onto the node, so
+ * `{ name: "node1", color: "green" }` gives you `node.color`.
+ *
+ * @groupDescription Searching
+ * These work on any node, and search that node's subtree. Called on the root
+ * node, they search the whole tree — which is what the tree's own methods of
+ * the same name do.
+ *
+ * @groupDescription Changing the tree
+ * ::: warning
+ * These methods change the data without re-rendering. The tree's
+ * [methods](/reference/methods) — `appendNode`, `removeNode`, `moveNode` and
+ * friends — do the same and refresh the display, so prefer those. If you do
+ * use these, call `tree.refresh()` afterwards.
+ * :::
+ */
 export class Node {
+    /** @hidden */
     [key: string]: unknown;
 
+    /** The child nodes. */
     public children: Node[];
+    /** The `li` element, once the node is rendered. */
     public element?: HTMLElement;
+    /** The id from the node data. */
     public id?: NodeId;
+    /** @hidden */
     public idMapping?: Map<NodeId, Node>;
+    /** Whether the node's children are being fetched. */
     public is_loading?: boolean;
+    /** Whether the folder is open. */
     public is_open?: boolean;
+    /** Whether the node data had an empty `children` array. */
     public isEmptyFolder: boolean;
+    /** Whether the children still have to be fetched. */
     public load_on_demand: boolean;
+    /** The label. Also settable from the `label` key in node data. */
     public name: string;
+    /** @hidden */
     public nodeClass?: typeof Node;
+    /** The parent; `null` for the root node. */
     public parent: Node | null;
+    /** The root node. */
     public tree?: Node;
 
+    /** @hidden */
     constructor(
         nodeData: NodeData | null = null,
         isRoot = false,
@@ -66,6 +98,12 @@ export class Node {
         }
     }
 
+    /**
+     * Adds a sibling after this node.
+     *
+     * @returns The new node, or `null` when the node has no parent.
+     * @group Changing the tree
+     */
     public addAfter(nodeInfo: NodeData): Node | null {
         if (!this.parent) {
             return null;
@@ -80,6 +118,12 @@ export class Node {
         }
     }
 
+    /**
+     * Adds a sibling before this node.
+     *
+     * @returns The new node, or `null` when the node has no parent.
+     * @group Changing the tree
+     */
     public addBefore(nodeInfo: NodeData): Node | null {
         if (!this.parent) {
             return null;
@@ -94,37 +138,40 @@ export class Node {
         }
     }
 
-    /*
-    Add child.
-
-    tree.addChild(
-        new Node('child1')
-    );
-    */
+    /**
+     * Adds an existing `Node` object as the last child.
+     *
+     * @group Changing the tree
+     */
     public addChild(node: Node): void {
         this.children.push(node);
         node.setParent(this);
     }
 
-    /*
-    Add child at position. Index starts at 0.
-
-    tree.addChildAtPosition(
-        new Node('abc'),
-        1
-    );
-    */
+    /**
+     * Adds an existing `Node` object as a child, at this position in
+     * `children`. The index starts at `0`.
+     *
+     * @group Changing the tree
+     */
     public addChildAtPosition(node: Node, index: number): void {
         this.children.splice(index, 0, node);
         node.setParent(this);
     }
 
+    /** @hidden */
     public addNodeToIndex(node: Node): void {
         if (node.id != null) {
             this.idMapping?.set(node.id, node);
         }
     }
 
+    /**
+     * Inserts a new parent between this node and its current parent.
+     *
+     * @returns The new node, or `null` when the node has no parent.
+     * @group Changing the tree
+     */
     public addParent(nodeInfo: NodeData): Node | null {
         if (!this.parent) {
             return null;
@@ -146,6 +193,12 @@ export class Node {
         }
     }
 
+    /**
+     * Adds a child at the end.
+     *
+     * @returns The new node.
+     * @group Changing the tree
+     */
     public append(nodeInfo: NodeData): Node {
         const node = this.createNode(nodeInfo);
         this.addChild(node);
@@ -154,6 +207,17 @@ export class Node {
         return node;
     }
 
+    /**
+     * Returns all nodes in the subtree for which the callback returns
+     * `true`.
+     *
+     * @example
+     * ```js
+     * const folders = tree.getTree().filter((node) => node.isFolder());
+     * ```
+     *
+     * @group Searching
+     */
     public filter(f: (node: Node) => boolean): Node[] {
         const result: Node[] = [];
 
@@ -168,18 +232,30 @@ export class Node {
         return result;
     }
 
-    /*
-    Get child index.
-
-    var index = getChildIndex(node);
-    */
+    /**
+     * Returns the position of a child in `children`, or `-1`.
+     *
+     * @group Inspecting a node
+     */
     public getChildIndex(node: Node): number {
         return this.children.indexOf(node);
     }
 
-    /*
-    Get the tree as data.
-    */
+    /**
+     * Returns the subtree as plain data, ready for `JSON.stringify`.
+     * Internal properties (`parent`, `children`, `element`, `tree`,
+     * `idMapping`, `nodeClass`, `load_on_demand`, `isEmptyFolder`) are left
+     * out; your own properties are kept.
+     *
+     * ```js
+     * tree.getTree().getData();
+     * // [{ name: "node1", id: 1, children: [{ name: "child1", id: 2 }] }]
+     * ```
+     *
+     * @param includeParent - Make the result the node itself rather than its
+     * children. Default `false`.
+     * @group Reading data back
+     */
     public getData(includeParent = false): NodeRecord[] {
         const getDataFromNodes = (nodes: Node[]): Record<string, unknown>[] => {
             return nodes.map((node) => {
@@ -219,6 +295,12 @@ export class Node {
         }
     }
 
+    /**
+     * Returns the last child, or `null`. When that child is an open folder,
+     * its own last child, and so on.
+     *
+     * @group Moving around the tree
+     */
     public getLastChild(): Node | null {
         if (!this.hasChildren()) {
             return null;
@@ -233,6 +315,11 @@ export class Node {
         }
     }
 
+    /**
+     * Returns the depth of the node, counting the top level as `1`.
+     *
+     * @group Inspecting a node
+     */
     public getLevel(): number {
         let level = 0;
         let node: Node = this; // eslint-disable-line @typescript-eslint/no-this-alias
@@ -245,6 +332,12 @@ export class Node {
         return level;
     }
 
+    /**
+     * Returns the next node in the tree, regardless of whether it is
+     * visible. `getNextNode(false)` skips the node's own children.
+     *
+     * @group Moving around the tree
+     */
     public getNextNode(includeChildren = true): Node | null {
         if (includeChildren && this.hasChildren()) {
             return this.children[0] ?? null;
@@ -261,6 +354,11 @@ export class Node {
         }
     }
 
+    /**
+     * Returns the next sibling, or `null`.
+     *
+     * @group Moving around the tree
+     */
     public getNextSibling(): Node | null {
         if (!this.parent) {
             return null;
@@ -274,6 +372,12 @@ export class Node {
         }
     }
 
+    /**
+     * Like `getNextNode`, but skipping nodes inside closed folders — this is
+     * what the arrow keys use.
+     *
+     * @group Moving around the tree
+     */
     public getNextVisibleNode(): Node | null {
         if (this.hasChildren() && this.is_open) {
             // First child
@@ -294,6 +398,11 @@ export class Node {
         }
     }
 
+    /**
+     * Returns the first node for which the callback returns `true`.
+     *
+     * @group Searching
+     */
     public getNodeByCallback(callback: (node: Node) => boolean): Node | null {
         let result: Node | null = null;
 
@@ -311,14 +420,30 @@ export class Node {
         return result;
     }
 
+    /**
+     * Returns the node with this id. Only available on the root node, which
+     * keeps the id index.
+     *
+     * @group Searching
+     */
     public getNodeById(nodeId: NodeId): Node | null {
         return this.idMapping?.get(nodeId) ?? null;
     }
 
+    /**
+     * Returns the first node with this name.
+     *
+     * @group Searching
+     */
     public getNodeByName(name: string): Node | null {
         return this.getNodeByCallback((node: Node) => node.name === name);
     }
 
+    /**
+     * Like `getNodeByName`, but throws when there is no such node.
+     *
+     * @group Searching
+     */
     public getNodeByNameMustExist(name: string): Node {
         const node = this.getNodeByCallback((n: Node) => n.name === name);
 
@@ -329,10 +454,21 @@ export class Node {
         return node;
     }
 
+    /**
+     * Returns all nodes with this property value.
+     *
+     * @group Searching
+     */
     public getNodesByProperty(key: string, value: unknown): Node[] {
         return this.filter((node: Node) => node[key] === value);
     }
 
+    /**
+     * Returns the parent: `null` for a top-level node — the root node is not
+     * returned.
+     *
+     * @group Moving around the tree
+     */
     public getParent(): Node | null {
         // Return parent except if it is the root node
         if (!this.parent) {
@@ -345,6 +481,12 @@ export class Node {
         }
     }
 
+    /**
+     * Returns the previous node in the tree, regardless of whether it is
+     * visible.
+     *
+     * @group Moving around the tree
+     */
     public getPreviousNode(): Node | null {
         if (!this.parent) {
             return null;
@@ -361,6 +503,11 @@ export class Node {
         }
     }
 
+    /**
+     * Returns the previous sibling, or `null`.
+     *
+     * @group Moving around the tree
+     */
     public getPreviousSibling(): Node | null {
         if (!this.parent) {
             return null;
@@ -374,6 +521,12 @@ export class Node {
         }
     }
 
+    /**
+     * Like `getPreviousNode`, but skipping nodes inside closed folders —
+     * this is what the arrow keys use.
+     *
+     * @group Moving around the tree
+     */
     public getPreviousVisibleNode(): Node | null {
         if (!this.parent) {
             return null;
@@ -395,18 +548,20 @@ export class Node {
         }
     }
 
-    /*
-    Does the tree have children?
-
-    if (tree.hasChildren()) {
-        //
-    }
-    */
+    /**
+     * Whether the node has children.
+     *
+     * @group Inspecting a node
+     */
     public hasChildren(): boolean {
         return this.children.length !== 0;
     }
 
-    // Init Node from data without making it the root of the tree
+    /**
+     * Init Node from data without making it the root of the tree.
+     *
+     * @hidden
+     */
     public initFromData(data: NodeData): void {
         const addNode = (nodeData: NodeData): void => {
             this.setData(nodeData);
@@ -430,10 +585,20 @@ export class Node {
         addNode(data);
     }
 
+    /**
+     * `true` when the node has children, or is marked `load_on_demand`.
+     *
+     * @group Inspecting a node
+     */
     public isFolder(): boolean {
         return this.hasChildren() || this.load_on_demand;
     }
 
+    /**
+     * Whether this node is an ancestor of the other node.
+     *
+     * @group Inspecting a node
+     */
     public isParentOf(node: Node): boolean {
         let parent = node.parent;
 
@@ -448,23 +613,19 @@ export class Node {
         return false;
     }
 
-    /*
-    Iterate over all the nodes in the tree.
-
-    Calls callback with (node, level).
-
-    The callback must return true to continue the iteration on current node.
-
-    tree.iterate(
-        function(node, level) {
-           console.log(node.name);
-
-           // stop iteration after level 2
-           return (level <= 2);
-        }
-    );
-
-    */
+    /**
+     * Walks the subtree, calling the callback with `(node, level)`. Return
+     * `false` from the callback to stop descending into that node:
+     *
+     * ```js
+     * tree.getTree().iterate((node, level) => {
+     *   console.log(" ".repeat(level) + node.name);
+     *   return level <= 2; // don't go deeper than level 2
+     * });
+     * ```
+     *
+     * @group Searching
+     */
     public iterate(callback: IterateCallback): void {
         const _iterate = (node: Node, level: number): void => {
             for (const child of node.children) {
@@ -479,23 +640,11 @@ export class Node {
         _iterate(this, 0);
     }
 
-    /*
-    Create tree from data.
-
-    Structure of data is:
-    [
-        {
-            name: 'node1',
-            children: [
-                { name: 'child1' },
-                { name: 'child2' }
-            ]
-        },
-        {
-            name: 'node2'
-        }
-    ]
-    */
+    /**
+     * Replaces the children with new node data.
+     *
+     * @group Changing the tree
+     */
     public loadFromData(data: NodeData[]): this {
         this.removeChildren();
 
@@ -511,14 +660,14 @@ export class Node {
         return this;
     }
 
-    /*
-    Move node relative to another node.
-
-    Argument position: Position.BEFORE, Position.AFTER or Position.Inside
-
-    // move node1 after node2
-    tree.moveNode(node1, node2, Position.AFTER);
-    */
+    /**
+     * Moves a node relative to another node. Called on the root node.
+     *
+     * @param position - `"before"`, `"after"` or `"inside"`.
+     * @returns `false` when the move is impossible, for instance moving a
+     * node into its own subtree.
+     * @group Changing the tree
+     */
     public moveNode(
         movedNode: Node,
         targetNode: Node,
@@ -563,6 +712,12 @@ export class Node {
         }
     }
 
+    /**
+     * Adds a child at the start.
+     *
+     * @returns The new node.
+     * @group Changing the tree
+     */
     public prepend(nodeInfo: NodeData): Node {
         const node = this.createNode(nodeInfo);
         this.addChildAtPosition(node, 0);
@@ -571,6 +726,11 @@ export class Node {
         return node;
     }
 
+    /**
+     * Removes this node from its parent.
+     *
+     * @group Changing the tree
+     */
     public remove(): void {
         if (this.parent) {
             this.parent.removeChild(this);
@@ -578,11 +738,11 @@ export class Node {
         }
     }
 
-    /*
-    Remove child. This also removes the children of the node.
-
-    tree.removeChild(tree.children[0]);
-    */
+    /**
+     * Removes a child and its children.
+     *
+     * @group Changing the tree
+     */
     public removeChild(node: Node): void {
         // remove children from the index
         node.removeChildren();
@@ -590,6 +750,11 @@ export class Node {
         this.doRemoveChild(node);
     }
 
+    /**
+     * Removes all children.
+     *
+     * @group Changing the tree
+     */
     public removeChildren(): void {
         this.iterate((child: Node) => {
             this.tree?.removeNodeFromIndex(child);
@@ -599,28 +764,20 @@ export class Node {
         this.children = [];
     }
 
+    /** @hidden */
     public removeNodeFromIndex(node: Node): void {
         if (node.id != null) {
             this.idMapping?.delete(node.id);
         }
     }
 
-    /*
-    Set the data of this node.
-
-    setData(string): set the name of the node
-    setData(object): set attributes of the node
-
-    Examples:
-        setData('node1')
-
-        setData({ name: 'node1', id: 1});
-
-        setData({ name: 'node2', id: 2, color: 'green'});
-
-    * This is an internal function; it is not in the docs
-    * Does not remove existing node values
-    */
+    /**
+     * Updates the node's properties from node data. `children` and `parent`
+     * are ignored. A string sets the name. Existing node values are not
+     * removed.
+     *
+     * @group Changing the tree
+     */
     public setData(o: NodeData | null): void {
         if (!o) {
             return;
