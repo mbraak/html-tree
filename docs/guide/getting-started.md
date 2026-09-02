@@ -81,7 +81,7 @@ from what a page says, the page is wrong — please
 `html_tree.js` is an IIFE, so importing it does not give you the class. Import from the `lib`
 build instead, which is the source compiled to ES modules:
 
-```js
+```js fixture=standalone
 import HtmlTree from "html-tree/lib/index.js";
 
 const tree = new HtmlTree({
@@ -92,7 +92,7 @@ const tree = new HtmlTree({
 
 The stylesheet can be imported the same way:
 
-```js
+```js fixture=standalone
 import "html-tree/html_tree.css";
 ```
 

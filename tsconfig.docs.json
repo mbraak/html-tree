@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "checkJs": true,
+        "paths": {
+            "html-tree": ["./src/index"],
+            "html-tree/lib/*": ["./src/*"]
+        },
+        // The examples are mostly plain JavaScript, which has no way to tell the
+        // compiler that getElementById or getNodeByName does not return null.
+        "strictNullChecks": false,
+        "types": []
+    }
+}

@@ -108,7 +108,7 @@ element.addEventListener("tree.loaded_data", (e) => {
 `loadDataFromUrl` fetches into a node on demand, and returns a promise that is resolved when the
 data has arrived:
 
-```js
+```js group=loading-on-demand
 const node = tree.getNodeById(1);
 
 await tree.loadDataFromUrl("/my-tree/?node=1", node);
@@ -117,7 +117,7 @@ tree.openNode(node);
 
 `loadData` does the same with data you already have:
 
-```js
+```js group=loading-on-demand
 tree.loadData([{ name: "child1", id: 3 }], node);
 ```
 

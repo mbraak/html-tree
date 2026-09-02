@@ -20,7 +20,7 @@ new HtmlTree({
 
 ## From code
 
-```js
+```js group=selection
 const node = tree.getNodeById(1);
 
 tree.selectNode(node);
@@ -33,7 +33,7 @@ visible.
 By default `selectNode` moves focus to the node. Pass `mustSetFocus: false` to leave focus where it
 is, and `mustToggle: true` to deselect the node when it is already selected:
 
-```js
+```js group=selection
 tree.selectNode(node, { mustSetFocus: false });
 tree.selectNode(node, { mustToggle: true });
 ```

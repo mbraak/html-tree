@@ -26,7 +26,7 @@ Or use the bundle directly with a script tag; it exposes a global `HtmlTree`:
 
 ## Usage
 
-```js
+```js fixture=standalone
 import HtmlTree from "html-tree";
 import "html-tree/html_tree.css";
 
@@ -170,7 +170,7 @@ Nodes are `Node` instances. Get one with `getNodeById`, `getNodeByName`,
 
 The public types are exported from the package entry point:
 
-```ts
+```ts fixture=standalone
 import HtmlTree from "html-tree";
 import type {
   HtmlTreeOptions,
@@ -200,7 +200,7 @@ The es modules in `lib` are minified by your own bundler. Private members are
 prefixed with `_`, so add the same terser setting the bundled build uses to get
 the same size:
 
-```js
+```js ignore
 terser({ mangle: { properties: { regex: /^_/ } } });
 ```
 
@@ -210,7 +210,8 @@ terser({ mangle: { properties: { regex: /^_/ } } });
 pnpm install
 pnpm devserver     # http://localhost:8080
 pnpm production    # build the bundles, lib and the css
-pnpm ci            # lint, typecheck and test
+pnpm docs-check    # type-check the code snippets in the docs
+pnpm ci            # lint, typecheck, check the docs and test
 ```
 
 `pnpm test` runs the vitest unit tests and the playwright browser tests.
