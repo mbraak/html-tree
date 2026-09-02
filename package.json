@@ -83,7 +83,7 @@
     "eslint-plugin-playwright": "^2.11.0",
     "eslint-plugin-testing-library": "^7.16.2",
     "jest-extended": "^7.0.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30",
     "jsdom-testing-mocks": "^1.16.0",
     "jsonfile": "^6.2.1",
     "kiira": "^0.6.0",
