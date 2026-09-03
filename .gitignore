@@ -1,6 +1,6 @@
 node_modules/
 
-# Build output. The bundles in the project root (html_tree.js and friends) are
+# Build output. The bundles in the project root (tree_element.js and friends) are
 # checked in on purpose, so they are not ignored here.
 lib/
 

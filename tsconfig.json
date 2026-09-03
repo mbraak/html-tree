@@ -18,8 +18,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "htmlTree": ["./src/index"],
-      "htmlTree/*": ["./src/*"]
+      "treeElement": ["./src/index"],
+      "treeElement/*": ["./src/*"]
     },
     "rootDir": "./",
     "skipLibCheck": true,

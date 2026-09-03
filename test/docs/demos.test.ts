@@ -1,10 +1,10 @@
 import { screen, waitFor } from "@testing-library/dom";
 import { userEvent } from "@testing-library/user-event";
-import HtmlTree from "htmlTree";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import fs from "node:fs/promises";
 import path from "node:path";
+import TreeElement from "treeElement";
 
 import type { DemoNodeData } from "../../docs/.vitepress/theme/exampleData";
 
@@ -32,15 +32,15 @@ describe("docs demos", () => {
     );
 
     let htmlElement: HTMLElement;
-    let htmlTree: HtmlTree | undefined;
+    let treeElement: TreeElement | undefined;
 
-    const createTree = (demo: string): HtmlTree => {
-        htmlTree = new HtmlTree({
+    const createTree = (demo: string): TreeElement => {
+        treeElement = new TreeElement({
             htmlElement,
             ...getDemoOptions(demo),
         });
 
-        return htmlTree;
+        return treeElement;
     };
 
     beforeAll(() => {
@@ -68,8 +68,8 @@ describe("docs demos", () => {
     afterEach(() => {
         server.resetHandlers();
 
-        htmlTree?.deinit();
-        htmlTree = undefined;
+        treeElement?.deinit();
+        treeElement = undefined;
 
         document.body.innerHTML = "";
         localStorage.clear();
@@ -179,7 +179,7 @@ describe("docs demos", () => {
 
         tree.selectNode(tree.getNodeByNameMustExist("Saurischia"));
 
-        expect(localStorage.getItem("html-tree-docs-demo")).toContain(
+        expect(localStorage.getItem("tree-element-docs-demo")).toContain(
             '"selected_node":[1]',
         );
     });

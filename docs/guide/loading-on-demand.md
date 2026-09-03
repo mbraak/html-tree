@@ -9,7 +9,7 @@ the network tab:
 <TreeDemo demo="loadOnDemand" events />
 
 ```js
-new HtmlTree({
+new TreeElement({
   dataUrl: (node) => (node ? `/demo/node-${node.id}.json` : "/demo/root.json"),
   htmlElement,
 });
@@ -60,7 +60,7 @@ After the children arrive, `load_on_demand` is cleared on the node and the folde
 Set `dataUrl` and let the tree do the requests:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dataUrl: "/my-tree/",
   htmlElement,
 });
@@ -70,7 +70,7 @@ Use a function when the url depends on the node — it is called with the node t
 loaded, and with no argument for the initial load:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dataUrl: (node) => (node ? `/my-tree/${node.id}/children/` : "/my-tree/"),
   htmlElement,
 });
@@ -78,12 +78,12 @@ new HtmlTree({
 
 ## Loading indicator
 
-While a request is in flight, the node gets the `html-tree-loading` class and its
+While a request is in flight, the node gets the `tree-element-loading` class and its
 `is_loading` property is `true`. The default stylesheet does not draw a spinner, so add one
 yourself:
 
 ```css
-.html-tree-loading > .html-tree-element .html-tree-title {
+.tree-element-loading > .tree-element-element .tree-element-title {
   background: url(spinner.gif) right center no-repeat;
   padding-right: 20px;
 }

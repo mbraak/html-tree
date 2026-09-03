@@ -46,7 +46,7 @@ export interface TreeEvents {
      *   // ...
      * });
      *
-     * const tree = new HtmlTree({ data, htmlElement: element });
+     * const tree = new TreeElement({ data, htmlElement: element });
      * ```
      *
      * @group Lifecycle

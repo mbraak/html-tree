@@ -3,7 +3,7 @@
 Methods are called on the object returned by the constructor:
 
 ```js
-const tree = new HtmlTree({ data, htmlElement });
+const tree = new TreeElement({ data, htmlElement });
 
 tree.openNode(tree.getNodeById(1));
 ```
@@ -17,4 +17,4 @@ Select a node and try them here — the buttons call `appendNode`, `updateNode`,
 src/index.ts. Run `pnpm docs-api` to regenerate it; `docs-dev` and `docs-build`
 do so automatically. -->
 
-<!--@include: ./generated/classes/HtmlTree.md-->
+<!--@include: ./generated/classes/TreeElement.md-->

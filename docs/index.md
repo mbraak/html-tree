@@ -1,7 +1,7 @@
 ---
 layout: home
 hero:
-  name: html-tree
+  name: tree-element
   text: Tree widget in plain javascript
   tagline: A dependency-free tree view with drag and drop, keyboard navigation, lazy loading and state persistence.
   actions:
@@ -13,7 +13,7 @@ hero:
       link: /reference/options
     - theme: alt
       text: GitHub
-      link: https://github.com/mbraak/html-tree
+      link: https://github.com/mbraak/tree-element
 features:
   - title: No dependencies
     details: Plain javascript and plain css. Drop in a script tag or import it from your bundler.
@@ -33,7 +33,7 @@ through it with the arrow keys, and drag a node somewhere else.
 <TreeDemo demo="dragAndDrop" />
 
 ```js
-new HtmlTree({
+new TreeElement({
   autoOpen: 1,
   data,
   dragAndDrop: true,

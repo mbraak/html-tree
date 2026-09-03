@@ -16,12 +16,12 @@ interface TreeFolder {
 }
 
 const getTreeNode = (li: HTMLElement): TreeNode => {
-    const span = li.querySelector(":scope > .html-tree-element > .html-tree-title") as HTMLElement;
+    const span = li.querySelector(":scope > .tree-element-element > .tree-element-title") as HTMLElement;
     const name = span.innerHTML;
-    const selected = li.classList.contains("html-tree-selected");
+    const selected = li.classList.contains("tree-element-selected");
 
-    if (li.classList.contains("html-tree-folder")) {
-        const ulChildren = li.querySelectorAll(":scope > ul.html-tree-common");
+    if (li.classList.contains("tree-element-folder")) {
+        const ulChildren = li.querySelectorAll(":scope > ul.tree-element-common");
 
         const children =
             ulChildren.length === 1
@@ -32,7 +32,7 @@ const getTreeNode = (li: HTMLElement): TreeNode => {
             children,
             name,
             nodeType: "folder",
-            open: !li.classList.contains("html-tree-closed"),
+            open: !li.classList.contains("tree-element-closed"),
             selected,
         };
     } else {
@@ -44,10 +44,10 @@ const getTreeNode = (li: HTMLElement): TreeNode => {
     }
 };
 
-const getChildNodes = (ul: HTMLElement) => Array.from(ul.querySelectorAll<HTMLElement>(":scope > li.html-tree-common")).map((li) => getTreeNode(li))
+const getChildNodes = (ul: HTMLElement) => Array.from(ul.querySelectorAll<HTMLElement>(":scope > li.tree-element-common")).map((li) => getTreeNode(li))
 
 const treeStructure = (el: HTMLElement): TreeStructure => {
-    const element = el.querySelector<HTMLElement>(":scope > ul.html-tree") as HTMLElement;
+    const element = el.querySelector<HTMLElement>(":scope > ul.tree-element") as HTMLElement;
     return getChildNodes(element);
 };
 

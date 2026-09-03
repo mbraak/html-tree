@@ -1,37 +1,37 @@
 {
-  "name": "html-tree",
+  "name": "tree-element",
   "version": "0.1.0",
   "description": "Tree widget in plain javascript",
   "keywords": [
     "tree"
   ],
   "license": "Apache-2.0",
-  "browser": "./html_tree.js",
-  "main": "./html_tree.js",
+  "browser": "./tree_element.js",
+  "main": "./tree_element.js",
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
       "import": "./lib/index.js",
-      "default": "./html_tree.js"
+      "default": "./tree_element.js"
     },
-    "./html_tree.css": "./html_tree.css",
+    "./tree_element.css": "./tree_element.css",
     "./package.json": "./package.json"
   },
   "sideEffects": false,
   "files": [
-    "html_tree.css",
-    "html_tree.debug.js",
-    "html_tree.debug.js.map",
-    "html_tree.js",
-    "html_tree.js.map",
+    "tree_element.css",
+    "tree_element.debug.js",
+    "tree_element.debug.js.map",
+    "tree_element.js",
+    "tree_element.js.map",
     "lib",
     "src"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mbraak/html-tree.git"
+    "url": "git+https://github.com/mbraak/tree-element.git"
   },
   "scripts": {
     "ci": "pnpm lint && pnpm tsc && pnpm docs-check && pnpm test",

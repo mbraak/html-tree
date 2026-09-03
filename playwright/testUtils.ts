@@ -17,16 +17,16 @@ export const getTreeStructure = async (page: Page) => {
     const structure = await page.evaluate<string>(`
     ;
     function getTreeNode(li) {
-        if (li.classList.contains("html-tree-ghost") || li.classList.contains("html-tree-border")) {
+        if (li.classList.contains("tree-element-ghost") || li.classList.contains("tree-element-border")) {
             return null;
         }
 
-        const span = li.querySelector(":scope > .html-tree-element > .html-tree-title");
+        const span = li.querySelector(":scope > .tree-element-element > .tree-element-title");
         const name = span.innerHTML;
-        const selected = li.classList.contains("html-tree-selected");
+        const selected = li.classList.contains("tree-element-selected");
 
-        if (li.classList.contains("html-tree-folder")) {
-            const ulChildren = li.querySelectorAll(":scope > ul.html-tree-common");
+        if (li.classList.contains("tree-element-folder")) {
+            const ulChildren = li.querySelectorAll(":scope > ul.tree-element-common");
 
             const children =
                 ulChildren.length === 1
@@ -37,7 +37,7 @@ export const getTreeStructure = async (page: Page) => {
                 children,
                 name,
                 nodeType: "folder",
-                open: !li.classList.contains("html-tree-closed"),
+                open: !li.classList.contains("tree-element-closed"),
                 selected,
             };
         } else {
@@ -51,13 +51,13 @@ export const getTreeStructure = async (page: Page) => {
 
     function getChildren(ul) {
         return Array.from(
-            ul.querySelectorAll(":scope > li.html-tree-common")
+            ul.querySelectorAll(":scope > li.tree-element-common")
         )
             .map((li) => getTreeNode(li))
             .filter(node => node);
     }
 
-    const treeElement = document.querySelector("ul.html-tree");
+    const treeElement = document.querySelector("ul.tree-element");
 
     JSON.stringify(
         window.getChildren(treeElement)

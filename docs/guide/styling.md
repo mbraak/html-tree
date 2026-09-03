@@ -1,31 +1,31 @@
 # Styling
 
-The widget needs `html_tree.css` to look like a tree: it removes the list bullets, indents the
+The widget needs `tree_element.css` to look like a tree: it removes the list bullets, indents the
 levels, hides closed folders and draws the drag-and-drop hints. Everything else — colors, fonts,
 spacing — is meant to be overridden.
 
-The stylesheet is generated from `css/html_tree.postcss` by `npm run production`.
+The stylesheet is generated from `css/tree_element.postcss` by `npm run production`.
 
 ## Markup
 
 A tree renders as nested lists:
 
 ```html
-<ul class="html-tree-common html-tree" role="tree">
-  <li class="html-tree-common html-tree-folder" role="none">
-    <div class="html-tree-element html-tree-common" role="none">
-      <a class="html-tree-toggler html-tree-common html-tree-toggler-left">►</a>
+<ul class="tree-element-common tree-element" role="tree">
+  <li class="tree-element-common tree-element-folder" role="none">
+    <div class="tree-element-element tree-element-common" role="none">
+      <a class="tree-element-toggler tree-element-common tree-element-toggler-left">►</a>
       <span
-        class="html-tree-title html-tree-common html-tree-title-folder html-tree-title-button-left"
+        class="tree-element-title tree-element-common tree-element-title-folder tree-element-title-button-left"
         role="treeitem"
         >parent</span
       >
     </div>
-    <ul class="html-tree-common" role="group">
-      <li class="html-tree-common" role="none">
-        <div class="html-tree-element html-tree-common" role="none">
+    <ul class="tree-element-common" role="group">
+      <li class="tree-element-common" role="none">
+        <div class="tree-element-element tree-element-common" role="none">
           <span
-            class="html-tree-title html-tree-common html-tree-title-button-left"
+            class="tree-element-title tree-element-common tree-element-title-button-left"
             >child</span
           >
         </div>
@@ -35,38 +35,38 @@ A tree renders as nested lists:
 </ul>
 ```
 
-Note that all selectors in the stylesheet are nested under `ul.html-tree`, so your own rules should
+Note that all selectors in the stylesheet are nested under `ul.tree-element`, so your own rules should
 be too — or be specific enough to win.
 
 ## Class names
 
 | Class                     | Applied to                                                   |
 | ------------------------- | ------------------------------------------------------------ |
-| `html-tree`               | The root `ul`.                                               |
-| `html-tree-common`        | Every element the widget creates.                            |
-| `html-tree-element`       | The `div` that wraps a node's toggler and title.             |
-| `html-tree-title`         | The `span` with the node name.                               |
-| `html-tree-folder`        | An `li` for a node that has children.                        |
-| `html-tree-closed`        | A closed folder — on the `li` and on its toggler.            |
-| `html-tree-toggler`       | The open/close button.                                       |
-| `html-tree-toggler-left`  | The toggler when `buttonLeft` is true (the default).         |
-| `html-tree-toggler-right` | The toggler when `buttonLeft` is false.                      |
-| `html-tree-title-folder`  | The title of a folder node.                                  |
-| `html-tree-selected`      | The `li` of a selected node.                                 |
-| `html-tree-loading`       | A node — or the tree — that is fetching data.                |
-| `html-tree-rtl`           | The root `ul` when `rtl` is true.                            |
-| `html-tree-dnd`           | The root `ul` when `dragAndDrop` is true.                    |
-| `html-tree-ghost`         | The drop hint while dragging.                                |
-| `html-tree-inside`        | The drop hint for a drop _inside_ a folder.                  |
-| `html-tree-moving`        | The node that is being dragged.                              |
-| `html-tree-border`        | The border drawn around a folder that is being dropped into. |
+| `tree-element`               | The root `ul`.                                               |
+| `tree-element-common`        | Every element the widget creates.                            |
+| `tree-element-element`       | The `div` that wraps a node's toggler and title.             |
+| `tree-element-title`         | The `span` with the node name.                               |
+| `tree-element-folder`        | An `li` for a node that has children.                        |
+| `tree-element-closed`        | A closed folder — on the `li` and on its toggler.            |
+| `tree-element-toggler`       | The open/close button.                                       |
+| `tree-element-toggler-left`  | The toggler when `buttonLeft` is true (the default).         |
+| `tree-element-toggler-right` | The toggler when `buttonLeft` is false.                      |
+| `tree-element-title-folder`  | The title of a folder node.                                  |
+| `tree-element-selected`      | The `li` of a selected node.                                 |
+| `tree-element-loading`       | A node — or the tree — that is fetching data.                |
+| `tree-element-rtl`           | The root `ul` when `rtl` is true.                            |
+| `tree-element-dnd`           | The root `ul` when `dragAndDrop` is true.                    |
+| `tree-element-ghost`         | The drop hint while dragging.                                |
+| `tree-element-inside`        | The drop hint for a drop _inside_ a folder.                  |
+| `tree-element-moving`        | The node that is being dragged.                              |
+| `tree-element-border`        | The border drawn around a folder that is being dropped into. |
 
 ## Changing the class names
 
-All classes start with `html-tree`. The `classPrefix` option changes that prefix:
+All classes start with `tree-element`. The `classPrefix` option changes that prefix:
 
 ```js
-new HtmlTree({
+new TreeElement({
   classPrefix: "my-tree",
   data,
   htmlElement,
@@ -104,7 +104,7 @@ Two of the classes are not `<prefix>-<something>`, so they have an option of the
 the class that every element gets — `<classPrefix>-common` by default.
 
 ```js
-new HtmlTree({
+new TreeElement({
   commonClassName: "tree-node",
   data,
   htmlElement,
@@ -112,17 +112,17 @@ new HtmlTree({
 });
 ```
 
-Note that `html_tree.css` has the default prefix baked in: a tree with another prefix is unstyled
-until you provide your own css. Take `css/html_tree.postcss` as the starting point — replacing
-`html-tree` in it with your prefix gives you the same stylesheet for your class names.
+Note that `tree_element.css` has the default prefix baked in: a tree with another prefix is unstyled
+until you provide your own css. Take `css/tree_element.postcss` as the starting point — replacing
+`tree-element` in it with your prefix gives you the same stylesheet for your class names.
 
 ## Overriding styles
 
 Selection colors, for example:
 
 ```css
-ul.html-tree li.html-tree-selected > .html-tree-element,
-ul.html-tree li.html-tree-selected > .html-tree-element:hover {
+ul.tree-element li.tree-element-selected > .tree-element-element,
+ul.tree-element li.tree-element-selected > .tree-element-element:hover {
   background: #1c4257;
   color: #fff;
   text-shadow: none;
@@ -132,7 +132,7 @@ ul.html-tree li.html-tree-selected > .html-tree-element:hover {
 Indentation:
 
 ```css
-ul.html-tree ul.html-tree-common {
+ul.tree-element ul.tree-element-common {
   margin-left: 24px;
 }
 ```
@@ -143,7 +143,7 @@ The togglers are text by default: `►` for a closed folder and `▼` for an ope
 `closedIcon` and `openedIcon`, which take an html string or an element:
 
 ```js
-new HtmlTree({
+new TreeElement({
   closedIcon: "+",
   data,
   htmlElement,
@@ -159,7 +159,7 @@ An element works too, which is how you use an svg or an icon font:
 const icon = document.createElement("i");
 icon.className = "fa fa-folder";
 
-new HtmlTree({
+new TreeElement({
   closedIcon: icon,
   data,
   htmlElement,
@@ -176,7 +176,7 @@ Put the toggler after the title instead of before it with `buttonLeft: false`:
 the other side — and flips the default closed icon to `◀`:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   rtl: true,
@@ -191,8 +191,8 @@ You can also set it on the element:
 <div id="tree1" data-rtl="true"></div>
 ```
 
-The mirroring comes from the `html-tree-rtl` class that the option adds to the root `ul`, so it is
-all in `html_tree.css`: if you replace the stylesheet, carry those rules over.
+The mirroring comes from the `tree-element-rtl` class that the option adds to the root `ul`, so it is
+all in `tree_element.css`: if you replace the stylesheet, carry those rules over.
 
 ## Customizing the markup
 
@@ -200,11 +200,11 @@ all in `html_tree.css`: if you replace the stylesheet, carry those rules over.
 Use it to add your own content:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   onCreateLi: (node, li, isSelected) => {
-    const title = li.querySelector(".html-tree-title");
+    const title = li.querySelector(".tree-element-title");
 
     if (node.count) {
       const badge = document.createElement("span");
@@ -225,7 +225,7 @@ A node with `children: []` is rendered as a leaf. Set `showEmptyFolder: true` to
 folder that can be opened and closed:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data: [
     { name: "empty folder", id: 1, children: [] },
     { name: "leaf", id: 2 },
@@ -243,7 +243,7 @@ Opening and closing folders slides by default. Turn it off with `slide: false`, 
 with `animationSpeed`, which takes `"fast"`, `"slow"` or a number of milliseconds:
 
 ```js
-new HtmlTree({
+new TreeElement({
   animationSpeed: 200,
   data,
   htmlElement,

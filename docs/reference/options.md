@@ -3,7 +3,7 @@
 All options are passed to the constructor:
 
 ```js
-const tree = new HtmlTree({
+const tree = new TreeElement({
   autoOpen: 0,
   data,
   dragAndDrop: true,
@@ -18,7 +18,7 @@ replaced. All other options are optional.
 src/options.ts. Run `pnpm docs-api` to regenerate it; `docs-dev` and
 `docs-build` do so automatically. -->
 
-<!--@include: ./generated/interfaces/HtmlTreeOptions.md-->
+<!--@include: ./generated/interfaces/TreeElementOptions.md-->
 
 ### overrideTriggerEventProvider
 

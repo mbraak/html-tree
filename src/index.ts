@@ -2,7 +2,7 @@ import type { ClassNames } from "./classNames";
 import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "./events";
 import type { PositionInfo } from "./mouseUtils";
 import type { NodeData, NodeId, Position } from "./node";
-import type { HtmlTreeOptions } from "./options";
+import type { TreeElementOptions } from "./options";
 import type { SavedState } from "./saveStateHandler";
 import type { SelectNodeOptions } from "./selectNodeHandler";
 
@@ -26,10 +26,9 @@ import __version__ from "./version";
 
 // The types that appear in the public api. Consumers cannot import them from
 // the submodules directly, because those are not exposed in package.json.
-// Type only, so that the iife build keeps exposing the HtmlTree class itself
+// Type only, so that the iife build keeps exposing the TreeElement class itself
 // as its global, instead of an object of named exports.
 export type {
-  HtmlTreeOptions,
   MoveInfo,
   Node,
   NodeData,
@@ -37,6 +36,7 @@ export type {
   Position,
   SavedState,
   SelectNodeOptions,
+  TreeElementOptions,
   TreeEvent,
   TreeEventName,
   TreeEvents,
@@ -48,7 +48,7 @@ export type TriggerEventProvider = (
   values?: TreeEvents[TreeEventName],
 ) => boolean;
 
-interface HtmlTreeParams extends Partial<HtmlTreeOptions> {
+interface TreeElementParams extends Partial<TreeElementOptions> {
   /** The element the tree is rendered into. Its content is replaced. */
   htmlElement: HTMLElement;
   /** Replaces how events are dispatched. It must return whether the event
@@ -57,7 +57,7 @@ interface HtmlTreeParams extends Partial<HtmlTreeOptions> {
   overrideTriggerEventProvider?: TriggerEventProvider,
 }
 
-export default class HtmlTree {
+export default class TreeElement {
   /** @hidden */
   public tree: Node;
 
@@ -69,7 +69,7 @@ export default class HtmlTree {
   private keyHandler: KeyHandler;
   private mouseHandler: MouseHandler;
   private nodeMap: WeakMap<HTMLElement, Node>;
-  private options: HtmlTreeOptions;
+  private options: TreeElementOptions;
   private renderer: ElementsRenderer;
   private saveStateHandler: SaveStateHandler;
   private scrollHandler: ScrollHandler;
@@ -77,7 +77,7 @@ export default class HtmlTree {
   private triggerEventProvider: TriggerEventProvider;
 
   /** @hidden */
-  constructor({ htmlElement, overrideTriggerEventProvider, ...options }: HtmlTreeParams) {
+  constructor({ htmlElement, overrideTriggerEventProvider, ...options }: TreeElementParams) {
     this.htmlElement = htmlElement;
     this.options = setDefaultOptions(htmlElement, options);
     this.classNames = createClassNames(this.options);
@@ -512,7 +512,7 @@ export default class HtmlTree {
   }
 
   /**
-   * Returns the version of html-tree.
+   * Returns the version of tree-element.
    *
    * @group Other
    */

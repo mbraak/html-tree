@@ -1,6 +1,6 @@
 # Selection
 
-Clicking a node selects it. The selected node gets the `html-tree-selected` class, and the tree
+Clicking a node selects it. The selected node gets the `tree-element-selected` class, and the tree
 dispatches [`tree.select`](../reference/events#tree-select). Clicking the selected node deselects it,
 which dispatches [`tree.deselect`](../reference/events#tree-deselect).
 
@@ -11,7 +11,7 @@ Click a node to select it, then use the arrow keys — the event log shows what 
 Set `selectable: false` to turn selection off entirely:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   selectable: false,
@@ -76,7 +76,7 @@ element.addEventListener("tree.click", (e) => {
 `onCanSelectNode` is called before a node is selected. Return `false` to refuse:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   onCanSelectNode: (node) => node.isFolder(),

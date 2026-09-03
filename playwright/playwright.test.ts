@@ -80,7 +80,7 @@ const initTree = async (
 
         const htmlElement = document.getElementById("tree1");
 
-        window.htmlTree = new HtmlTree({
+        window.treeElement = new TreeElement({
             animationSpeed: 0,
             autoOpen: ${autoOpen ?? 0},
             data: ExampleData.exampleData,
@@ -145,8 +145,8 @@ test.describe("multiple selection", () => {
 
     test("selects multiple nodes with addToSelection", async ({ page }) => {
         await page.evaluate(`
-            htmlTree.addToSelection(htmlTree.getNodeByName("Herrerasaurians"));
-            htmlTree.addToSelection(htmlTree.getNodeByName("Ceratopsians"));
+            treeElement.addToSelection(treeElement.getNodeByName("Herrerasaurians"));
+            treeElement.addToSelection(treeElement.getNodeByName("Ceratopsians"));
         `);
 
         await expect(
@@ -157,7 +157,7 @@ test.describe("multiple selection", () => {
         ).toHaveAttribute("aria-selected", "true");
 
         const selectedNamesJson = await page.evaluate<string>(`
-            JSON.stringify(htmlTree.getSelectedNodes().map((node) => node.name));
+            JSON.stringify(treeElement.getSelectedNodes().map((node) => node.name));
         `);
         expect(JSON.parse(selectedNamesJson)).toEqual([
             "Herrerasaurians",
@@ -170,9 +170,9 @@ test.describe("multiple selection", () => {
 
     test("removes a node from the selection", async ({ page }) => {
         await page.evaluate(`
-            htmlTree.addToSelection(htmlTree.getNodeByName("Herrerasaurians"));
-            htmlTree.addToSelection(htmlTree.getNodeByName("Ceratopsians"));
-            htmlTree.removeFromSelection(htmlTree.getNodeByName("Herrerasaurians"));
+            treeElement.addToSelection(treeElement.getNodeByName("Herrerasaurians"));
+            treeElement.addToSelection(treeElement.getNodeByName("Ceratopsians"));
+            treeElement.removeFromSelection(treeElement.getNodeByName("Herrerasaurians"));
         `);
 
         await expect(
@@ -183,7 +183,7 @@ test.describe("multiple selection", () => {
         ).toHaveAttribute("aria-selected", "true");
 
         const selectedNamesJson = await page.evaluate<string>(`
-            JSON.stringify(htmlTree.getSelectedNodes().map((node) => node.name));
+            JSON.stringify(treeElement.getSelectedNodes().map((node) => node.name));
         `);
         expect(JSON.parse(selectedNamesJson)).toEqual(["Ceratopsians"]);
     });
@@ -195,7 +195,7 @@ test.describe("with rtl", () => {
         await initTree(page, { rtl: true });
 
         const tree = page.getByRole("tree");
-        await expect(tree).toHaveClass(/html-tree-rtl/);
+        await expect(tree).toHaveClass(/tree-element-rtl/);
         await expect(tree).toHaveCSS("direction", "rtl");
 
         const structure = await getTreeStructure(page);
@@ -534,8 +534,8 @@ test.describe("autoscroll when the window is scrollable", () => {
         ).toEqual(0);
 
         await page.evaluate(`
-            const node = htmlTree.getNodeByName("Sauropodomorphs");
-            htmlTree.scrollToNode(node);
+            const node = treeElement.getNodeByName("Sauropodomorphs");
+            treeElement.scrollToNode(node);
         `);
 
         expect(
@@ -598,8 +598,8 @@ test.describe("autoscroll when the container is scrollable vertically", () => {
         ).toEqual(0);
 
         await page.evaluate(`
-            const node = htmlTree.getNodeByName("Sauropodomorphs");
-            htmlTree.scrollToNode(node);
+            const node = treeElement.getNodeByName("Sauropodomorphs");
+            treeElement.scrollToNode(node);
         `);
 
         expect(
@@ -699,7 +699,7 @@ test.describe("autoscroll when the container is scrollable horizontally", () => 
         await sleep(page, 200);
 
         const childrenJson = await page.evaluate<string>(`
-            const node = htmlTree.getNodeByName("Tyrannosauroids");
+            const node = treeElement.getNodeByName("Tyrannosauroids");
             const children = node.children.map(child => child.name)
             JSON.stringify(children);
         `);

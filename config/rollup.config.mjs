@@ -50,9 +50,9 @@ export default {
   input: "src/index.ts",
   output: {
     banner: getBanner(),
-    file: debugBuild ? "html_tree.debug.js" : "html_tree.js",
+    file: debugBuild ? "tree_element.debug.js" : "tree_element.js",
     format: "iife",
-    name: "HtmlTree",
+    name: "TreeElement",
     sourcemap: true,
   },
   plugins,
