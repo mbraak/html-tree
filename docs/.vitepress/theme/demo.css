@@ -1,4 +1,4 @@
-/* The frame around a live demo, and the overrides that keep html_tree.css legible
+/* The frame around a live demo, and the overrides that keep tree_element.css legible
    in the dark theme of the docs. */
 
 .tree-demo {
@@ -96,55 +96,55 @@
   padding: 0 12px 12px;
 }
 
-/* html_tree.css picks its own colors. Map them onto the theme of the docs, so the
+/* tree_element.css picks its own colors. Map them onto the theme of the docs, so the
    demos work in light and in dark mode. The extra .tree-demo makes these win. */
-.tree-demo ul.html-tree .html-tree-title {
+.tree-demo ul.tree-element .tree-element-title {
   color: var(--vp-c-text-1);
 }
 
-.tree-demo ul.html-tree .html-tree-toggler {
+.tree-demo ul.tree-element .tree-element-toggler {
   color: var(--vp-c-text-3);
 }
 
-.tree-demo ul.html-tree .html-tree-toggler:hover {
+.tree-demo ul.tree-element .tree-element-toggler:hover {
   color: var(--vp-c-text-1);
 }
 
-.tree-demo ul.html-tree .html-tree-element:hover {
+.tree-demo ul.tree-element .tree-element-element:hover {
   background-color: var(--vp-c-default-soft);
 }
 
-.tree-demo ul.html-tree li.html-tree-selected > .html-tree-element,
-.tree-demo ul.html-tree li.html-tree-selected > .html-tree-element:hover {
+.tree-demo ul.tree-element li.tree-element-selected > .tree-element-element,
+.tree-demo ul.tree-element li.tree-element-selected > .tree-element-element:hover {
   background: var(--vp-c-brand-soft);
   text-shadow: none;
 }
 
-.tree-demo ul.html-tree .html-tree-title:focus-visible {
+.tree-demo ul.tree-element .tree-element-title:focus-visible {
   border-radius: 3px;
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 1px;
 }
 
-.tree-demo ul.html-tree li.html-tree-ghost span.html-tree-circle {
+.tree-demo ul.tree-element li.tree-element-ghost span.tree-element-circle {
   border-color: var(--vp-c-brand-1);
 }
 
-.tree-demo ul.html-tree li.html-tree-ghost span.html-tree-line {
+.tree-demo ul.tree-element li.tree-element-ghost span.tree-element-line {
   background-color: var(--vp-c-brand-1);
 }
 
-.tree-demo ul.html-tree span.html-tree-border {
+.tree-demo ul.tree-element span.tree-element-border {
   border-color: var(--vp-c-brand-1);
 }
 
-.tree-demo ul.html-tree .html-tree-moving > .html-tree-element .html-tree-title {
+.tree-demo ul.tree-element .tree-element-moving > .tree-element-element .tree-element-title {
   outline-color: var(--vp-c-brand-1);
 }
 
 /* The dragged node follows the cursor in an element that is appended to the body,
    so it is outside .tree-demo. */
-span.html-tree-dragging {
+span.tree-element-dragging {
   background-color: var(--vp-c-bg-elv);
   border: 1px solid var(--vp-c-divider);
   border-radius: 4px;

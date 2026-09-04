@@ -34,7 +34,7 @@ export default {
   },
   plugins: [
     emitModuleType(),
-    // Rewrites the "htmlTree/..." path aliases to relative imports.
+    // Rewrites the "treeElement/..." path aliases to relative imports.
     tsConfigPaths(),
     resolve({ extensions: [".ts"] }),
     babel({

@@ -28,7 +28,7 @@ Options
                     in that same file.
     aliases         object, default {}: import prefix -> directory, for the
                     non-relative imports that are project files
-                    ({ "htmlTree/": "./src/" }). Used to find base classes.
+                    ({ "treeElement/": "./src/" }). Used to find base classes.
     root            string, default process.cwd(): what `aliases` are relative
                     to.
 

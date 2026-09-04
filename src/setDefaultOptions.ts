@@ -1,9 +1,9 @@
-import type { HtmlTreeOptions } from "./options";
+import type { TreeElementOptions } from "./options";
 
 import { DEFAULT_CLASS_PREFIX } from "./classNames";
 import { Node } from "./node";
 
-const defaults: HtmlTreeOptions = {
+const defaults: TreeElementOptions = {
   animationSpeed: "fast",
   autoEscape: true,
   autoOpen: false, // true / false / int (open n levels starting at 0)
@@ -43,7 +43,7 @@ const defaults: HtmlTreeOptions = {
   useContextMenu: true,
 };
 
-const setDefaultOptions = (htmlElement: HTMLElement, inputOptions: Partial<HtmlTreeOptions>): HtmlTreeOptions => {
+const setDefaultOptions = (htmlElement: HTMLElement, inputOptions: Partial<TreeElementOptions>): TreeElementOptions => {
   const options = { ...defaults, ...inputOptions };
 
   options.dataUrl ??= htmlElement.dataset.url;
@@ -54,7 +54,7 @@ const setDefaultOptions = (htmlElement: HTMLElement, inputOptions: Partial<HtmlT
   return options;
 }
 
-const getDefaultClosedIcon = (options: HtmlTreeOptions): string => {
+const getDefaultClosedIcon = (options: TreeElementOptions): string => {
   if (options.rtl) {
     // triangle to the left
     return "&#x25c0;";

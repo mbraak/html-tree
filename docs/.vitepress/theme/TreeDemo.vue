@@ -164,7 +164,7 @@ onMounted(async () => {
 
   // Imported here, and not at the top of the file, because the tree needs a dom:
   // this component is also rendered on the server when the site is built.
-  const { default: HtmlTree } = await import("../../../src/index");
+  const { default: TreeElement } = await import("../../../src/index");
 
   if (props.events) {
     for (const name of EVENT_NAMES) {
@@ -173,7 +173,7 @@ onMounted(async () => {
   }
 
   try {
-    tree.value = new HtmlTree({
+    tree.value = new TreeElement({
       htmlElement: element,
       ...getDemoOptions(props.demo),
     }) as unknown as Record<string, any>;

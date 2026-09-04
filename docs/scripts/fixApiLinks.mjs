@@ -14,9 +14,9 @@ const generatedDirectory = path.join(
 );
 
 const files = {
-    "classes/HtmlTree.md": "/reference/methods",
+    "classes/TreeElement.md": "/reference/methods",
     "classes/Node.md": "/reference/node",
-    "interfaces/HtmlTreeOptions.md": "/reference/options",
+    "interfaces/TreeElementOptions.md": "/reference/options",
     "interfaces/TreeEvents.md": "/reference/events",
 };
 

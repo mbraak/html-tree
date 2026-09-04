@@ -18,7 +18,7 @@ export const getTreeButton = (treeElement: HTMLElement) => {
     throw new Error("Tree element must have a parent");
   }
 
-  const elements = parent.querySelectorAll(":scope > a.html-tree-toggler"); // eslint-disable-line testing-library/no-node-access
+  const elements = parent.querySelectorAll(":scope > a.tree-element-toggler"); // eslint-disable-line testing-library/no-node-access
   assertSingleElement(parent, elements, 'tree button');
   return elements[0] as HTMLElement;
 };

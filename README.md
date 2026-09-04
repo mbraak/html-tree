@@ -9,28 +9,28 @@ Tree widget in plain javascript. No jQuery, no framework, no runtime dependencie
 - Right-to-left support
 - Written in Typescript, ships with type declarations
 
-Full documentation: https://mbraak.github.io/html-tree/
+Full documentation: https://mbraak.github.io/tree-element/
 
 ## Install
 
 ```sh
-npm install html-tree
+npm install tree-element
 ```
 
-Or use the bundle directly with a script tag; it exposes a global `HtmlTree`:
+Or use the bundle directly with a script tag; it exposes a global `TreeElement`:
 
 ```html
-<link rel="stylesheet" href="html_tree.css" />
-<script src="html_tree.js"></script>
+<link rel="stylesheet" href="tree_element.css" />
+<script src="tree_element.js"></script>
 ```
 
 ## Usage
 
 ```js fixture=standalone
-import HtmlTree from "html-tree";
-import "html-tree/html_tree.css";
+import TreeElement from "tree-element";
+import "tree-element/tree_element.css";
 
-const tree = new HtmlTree({
+const tree = new TreeElement({
   htmlElement: document.getElementById("tree"),
   data: [
     {
@@ -56,7 +56,7 @@ set is kept on the node and can be read back with `getNodesByProperty`.
 ### Loading from a url
 
 ```js
-new HtmlTree({
+new TreeElement({
   htmlElement: document.getElementById("tree"),
   dataUrl: "/nodes/",
 });
@@ -67,7 +67,7 @@ function to compute it per node, which is how load-on-demand works: set
 `load_on_demand: true` on a node and its children are fetched when it opens.
 
 ```js
-new HtmlTree({
+new TreeElement({
   htmlElement: document.getElementById("tree"),
   dataUrl: (node) => (node ? `/nodes/?node=${node.id}` : "/nodes/"),
 });
@@ -81,9 +81,9 @@ new HtmlTree({
 | `autoEscape`      | `true`               | Escape node names. Set to `false` to render html in a name                        |
 | `autoOpen`        | `false`              | `true` opens everything, a number opens that many levels (`0` is the first level) |
 | `buttonLeft`      | `true`               | Put the open/close button left of the title                                       |
-| `classPrefix`     | `"html-tree"`        | The prefix of all css classes                                                     |
+| `classPrefix`     | `"tree-element"`        | The prefix of all css classes                                                     |
 | `closedIcon`      | `►` (`◄` in rtl)     | Html string or element                                                            |
-| `commonClassName` | `"html-tree-common"` | The class that every element gets                                                 |
+| `commonClassName` | `"tree-element-common"` | The class that every element gets                                                 |
 | `data`            |                      | The nodes to display                                                              |
 | `dataFilter`      |                      | Transforms the response of `dataUrl` into node data                               |
 | `dataUrl`         | `data-url` attribute | Url, or a function returning a url                                                |
@@ -99,7 +99,7 @@ new HtmlTree({
 | `slide`           | `true`               | Animate opening and closing                                                       |
 | `startDndDelay`   | `300`                | Milliseconds to hold before a drag starts                                         |
 | `tabIndex`        | `0`                  | Tab index of the tree element                                                     |
-| `treeClassName`   | `"html-tree"`        | The class of the root `ul`                                                        |
+| `treeClassName`   | `"tree-element"`        | The class of the root `ul`                                                        |
 | `useContextMenu`  | `true`               | Fire `tree.contextmenu` on right click                                            |
 
 ### Callbacks
@@ -171,16 +171,16 @@ Nodes are `Node` instances. Get one with `getNodeById`, `getNodeByName`,
 The public types are exported from the package entry point:
 
 ```ts fixture=standalone
-import HtmlTree from "html-tree";
+import TreeElement from "tree-element";
 import type {
-  HtmlTreeOptions,
+  TreeElementOptions,
   Node,
   NodeData,
   NodeId,
   SavedState,
-} from "html-tree";
+} from "tree-element";
 
-const options: Partial<HtmlTreeOptions> = { dragAndDrop: true };
+const options: Partial<TreeElementOptions> = { dragAndDrop: true };
 const data: NodeData[] = [{ name: "root", id: 1 }];
 ```
 
@@ -190,11 +190,11 @@ const data: NodeData[] = [{ name: "root", id: 1 }];
 
 |                           |                                                              |
 | ------------------------- | ------------------------------------------------------------ |
-| `import "html-tree"`      | `lib/index.js`, unbundled es modules                         |
-| `require`, script tag     | `html_tree.js`, minified iife exposing the global `HtmlTree` |
-| `html-tree/html_tree.css` | The stylesheet                                               |
+| `import "tree-element"`      | `lib/index.js`, unbundled es modules                         |
+| `require`, script tag     | `tree_element.js`, minified iife exposing the global `TreeElement` |
+| `tree-element/tree_element.css` | The stylesheet                                               |
 
-`html_tree.debug.js` is the same bundle without minification.
+`tree_element.debug.js` is the same bundle without minification.
 
 The es modules in `lib` are minified by your own bundler. Private members are
 prefixed with `_`, so add the same terser setting the bundled build uses to get

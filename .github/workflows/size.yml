@@ -43,7 +43,7 @@ jobs:
         uses: preactjs/compressed-size-action@v3
         with:
           build-script: pnpm run production
-          pattern: "./html_tree.js"
+          pattern: "./tree_element.js"
           exclude: "{./lib/**/*.d.js,./lib/playwright/**,./lib/test/**}"
           comment-key: bundle
           compression: "none"

@@ -69,7 +69,7 @@ Node names are escaped by default, so html in a name is displayed literally rath
 rendered. Set `autoEscape: false` if you want names to be treated as html:
 
 ```js
-new HtmlTree({
+new TreeElement({
   autoEscape: false,
   data: [{ name: "<b>node1</b>" }],
   htmlElement,
@@ -99,7 +99,7 @@ tree.loadData([{ name: "child1" }, { name: "child2" }], tree.getNodeById(1));
 format as `data`:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dataUrl: "/my-tree/",
   htmlElement,
 });
@@ -114,7 +114,7 @@ You can also put the url on the element:
 Use `dataFilter` when the server returns the nodes wrapped in something else:
 
 ```js ignore
-new HtmlTree({
+new TreeElement({
   dataFilter: (response) => response.nodes,
   dataUrl: "/my-tree/",
   htmlElement,

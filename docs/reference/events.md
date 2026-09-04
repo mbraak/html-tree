@@ -40,7 +40,7 @@ element.addEventListener("tree.click", (e) => {
 });
 ```
 
-This works on elements, on `document` and on `window`, in any file that imports `html-tree`.
+This works on elements, on `document` and on `window`, in any file that imports `tree-element`.
 
 Each event has its own `detail`, so a listener only sees the properties of the event it listens to:
 
@@ -62,7 +62,7 @@ element.addEventListener("tree.deselect", (e) => {
 The types are also exported, for a listener that is written separately:
 
 ```ts fixture=standalone
-import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "html-tree";
+import type { MoveInfo, TreeEvent, TreeEventName, TreeEvents } from "tree-element";
 
 const element = document.getElementById("tree1")!;
 

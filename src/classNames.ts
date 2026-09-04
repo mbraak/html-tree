@@ -30,7 +30,7 @@ export interface ClassNamesOptions {
     treeClassName?: string;
 }
 
-export const DEFAULT_CLASS_PREFIX = "html-tree";
+export const DEFAULT_CLASS_PREFIX = "tree-element";
 
 /* Create the class names that the widget puts on the elements it creates.
  * They are all derived from classPrefix, except for the class of the root

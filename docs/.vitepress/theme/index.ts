@@ -4,7 +4,7 @@ import type { Theme } from "vitepress";
 
 import TreeDemo from "./TreeDemo.vue";
 
-import "../../../html_tree.css";
+import "../../../tree_element.css";
 import "./demo.css";
 
 export default {

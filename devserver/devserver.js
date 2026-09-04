@@ -1,6 +1,6 @@
 const htmlElement = document.getElementById("tree1");
 
-new HtmlTree({
+new TreeElement({
   autoOpen: 0,
   data: ExampleData.exampleData,
   dragAndDrop: true,

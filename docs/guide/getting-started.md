@@ -13,27 +13,27 @@ That produces:
 
 | File                 | What it is                                                                                                      |
 | -------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `html_tree.js`       | The bundle: an [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) that defines a global `HtmlTree`. |
-| `html_tree.debug.js` | The same bundle, unminified.                                                                                    |
-| `html_tree.css`      | The stylesheet.                                                                                                 |
+| `tree_element.js`       | The bundle: an [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) that defines a global `TreeElement`. |
+| `tree_element.debug.js` | The same bundle, unminified.                                                                                    |
+| `tree_element.css`      | The stylesheet.                                                                                                 |
 | `lib/`               | The source compiled to ES modules, for bundlers.                                                                |
 
 ::: info
-`html-tree` is not published on npm yet, so there is no `npm install html-tree`. Copy the built
+`tree-element` is not published on npm yet, so there is no `npm install tree-element`. Copy the built
 files into your project, or point your bundler at a checkout.
 :::
 
 ## Create a tree
 
-`html-tree` renders into an element that you pass to the constructor. That element does not have
+`tree-element` renders into an element that you pass to the constructor. That element does not have
 to contain anything; the tree fills it.
 
 ```html
-<link rel="stylesheet" href="html_tree.css" />
+<link rel="stylesheet" href="tree_element.css" />
 
 <div id="tree1"></div>
 
-<script src="html_tree.js"></script>
+<script src="tree_element.js"></script>
 <script>
   const data = [
     {
@@ -54,7 +54,7 @@ to contain anything; the tree fills it.
     { name: "Ornithischia", id: 6 },
   ];
 
-  const tree = new HtmlTree({
+  const tree = new TreeElement({
     autoOpen: 0,
     data,
     htmlElement: document.getElementById("tree1"),
@@ -73,18 +73,18 @@ the stylesheet uses.
 ::: tip
 Every tree on this site is the real widget, compiled from `src`. If a demo behaves differently
 from what a page says, the page is wrong — please
-[open an issue](https://github.com/mbraak/html-tree/issues).
+[open an issue](https://github.com/mbraak/tree-element/issues).
 :::
 
 ## With a bundler
 
-`html_tree.js` is an IIFE, so importing it does not give you the class. Import from the `lib`
+`tree_element.js` is an IIFE, so importing it does not give you the class. Import from the `lib`
 build instead, which is the source compiled to ES modules:
 
 ```js fixture=standalone
-import HtmlTree from "html-tree/lib/index.js";
+import TreeElement from "tree-element/lib/index.js";
 
-const tree = new HtmlTree({
+const tree = new TreeElement({
   data: [{ name: "node1" }, { name: "node2" }],
   htmlElement: document.getElementById("tree1"),
 });
@@ -93,7 +93,7 @@ const tree = new HtmlTree({
 The stylesheet can be imported the same way:
 
 ```js fixture=standalone
-import "html-tree/html_tree.css";
+import "tree-element/tree_element.css";
 ```
 
 ## Try it in this repository

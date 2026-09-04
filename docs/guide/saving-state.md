@@ -4,7 +4,7 @@ With `saveState`, the tree remembers which nodes are open and which node is sele
 them the next time the page is loaded:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   saveState: true,
@@ -17,15 +17,15 @@ it:
 <TreeDemo demo="saveState" />
 
 ::: info
-This demo stores its state under the key `html-tree-docs-demo`, so it does not collide with anything
-else on the page. Clear it with `localStorage.removeItem("html-tree-docs-demo")`.
+This demo stores its state under the key `tree-element-docs-demo`, so it does not collide with anything
+else on the page. Clear it with `localStorage.removeItem("tree-element-docs-demo")`.
 :::
 
 The state is stored in `localStorage` under the key `tree`. Pass a string to choose the key
 yourself — do that when there is more than one tree on the page:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   saveState: "my-tree",
@@ -62,7 +62,7 @@ Override where the state is kept with `onSetStateFromStorage` and `onGetStateFro
 with the state as a json string:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   htmlElement,
   onGetStateFromStorage: () => sessionStorage.getItem("my-tree"),
@@ -92,7 +92,7 @@ The server can use it to return the branches needed to reveal that node.
 If you only want the first levels open on every page load, use `autoOpen` instead of saving state:
 
 ```js
-new HtmlTree({
+new TreeElement({
   autoOpen: 1, // open the first two levels
   data,
   htmlElement,

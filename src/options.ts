@@ -7,7 +7,27 @@ export type DataUrl = DataUrlFunction | string;
 
 export type DragMethod = (node: Node, event: Event | Touch) => void;
 
-export interface HtmlTreeOptions {
+export type IconElement = HTMLElement | string;
+
+export type OnCanMove = ((node: Node) => boolean) | undefined;
+
+export type OnCanMoveTo = (
+  node: Node,
+  targetNode: Node,
+  positionName: string,
+) => boolean;
+
+export type OnCanSelectNode = (node: Node) => boolean
+
+export type OnCreateLi = (node: Node, el: HTMLElement, isSelected: boolean) => void;
+
+export type OnGetStateFromStorage = (() => string) | undefined;
+
+export type OnIsMoveHandle = (el: HTMLElement) => boolean;
+
+export type OnSetStateFromStorage = ((data: string) => void) | undefined;
+
+export interface TreeElementOptions {
   /**
    * The duration of the slide animation: `"fast"` is 200ms, `"slow"` is
    * 600ms, a number is milliseconds.
@@ -44,11 +64,11 @@ export interface HtmlTreeOptions {
   /**
    * The prefix of the css classes the widget puts on the elements it
    * creates: with `"my-tree"` a title gets `my-tree-title` instead of
-   * `html-tree-title`. The bundled stylesheet uses the default prefix, so
+   * `tree-element-title`. The bundled stylesheet uses the default prefix, so
    * change it only if you bring your own css. See
    * [Styling](/guide/styling#changing-the-class-names).
    *
-   * @defaultValue `"html-tree"`
+   * @defaultValue `"tree-element"`
    * @group Appearance
    */
   classPrefix: string;
@@ -115,12 +135,12 @@ export interface HtmlTreeOptions {
   /**
    * The class used to create nodes. Subclass [`Node`](/reference/node) to
    * add your own methods. The `Node` class is not exposed on the global
-   * `HtmlTree`, so this option needs the `lib` build.
+   * `TreeElement`, so this option needs the `lib` build.
    *
    * @example
    * ```js
-   * import HtmlTree from "html-tree/lib/index.js";
-   * import { Node } from "html-tree/lib/node.js";
+   * import TreeElement from "tree-element/lib/index.js";
+   * import { Node } from "tree-element/lib/node.js";
    *
    * class MyNode extends Node {
    *   fullName() {
@@ -130,7 +150,7 @@ export interface HtmlTreeOptions {
    *   }
    * }
    *
-   * new HtmlTree({ data, htmlElement, nodeClass: MyNode });
+   * new TreeElement({ data, htmlElement, nodeClass: MyNode });
    * ```
    *
    * @defaultValue `Node`
@@ -301,25 +321,5 @@ export interface HtmlTreeOptions {
    */
   useContextMenu: boolean;
 }
-
-export type IconElement = HTMLElement | string;
-
-export type OnCanMove = ((node: Node) => boolean) | undefined;
-
-export type OnCanMoveTo = (
-  node: Node,
-  targetNode: Node,
-  positionName: string,
-) => boolean;
-
-export type OnCanSelectNode = (node: Node) => boolean
-
-export type OnCreateLi = (node: Node, el: HTMLElement, isSelected: boolean) => void;
-
-export type OnGetStateFromStorage = (() => string) | undefined;
-
-export type OnIsMoveHandle = (el: HTMLElement) => boolean;
-
-export type OnSetStateFromStorage = ((data: string) => void) | undefined;
 
 type DataUrlFunction = (node?: Node) => string;

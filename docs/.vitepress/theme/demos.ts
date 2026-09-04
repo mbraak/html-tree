@@ -77,7 +77,7 @@ export const demos: Record<string, () => DemoOptions> = {
   saveState: () => ({
     autoOpen: 0,
     data: copyData(exampleData),
-    saveState: "html-tree-docs-demo",
+    saveState: "tree-element-docs-demo",
   }),
 
   // A node with an empty children array, rendered as a folder.

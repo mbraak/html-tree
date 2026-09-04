@@ -3,7 +3,7 @@
 Set `dragAndDrop: true` to let the user move nodes with the mouse or by touch:
 
 ```js
-new HtmlTree({
+new TreeElement({
   data,
   dragAndDrop: true,
   htmlElement,
@@ -26,7 +26,7 @@ instead of starting a drag.
 `onCanMove` decides whether a node may be dragged at all:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dragAndDrop: true,
   htmlElement,
   onCanMove: (node) => node.name !== "locked",
@@ -37,7 +37,7 @@ new HtmlTree({
 dropped on and the position (`"before"`, `"after"` or `"inside"`):
 
 ```js
-new HtmlTree({
+new TreeElement({
   dragAndDrop: true,
   htmlElement,
   onCanMoveTo: (movedNode, targetNode, position) => {
@@ -109,7 +109,7 @@ By default the whole node title is a drag handle. `onIsMoveHandle` narrows that 
 elements:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dragAndDrop: true,
   htmlElement,
   onIsMoveHandle: (element) => element.classList.contains("drag-handle"),
@@ -119,14 +119,14 @@ new HtmlTree({
 Combine it with `onCreateLi` to render the handle:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dragAndDrop: true,
   htmlElement,
   onCreateLi: (node, li) => {
     const handle = document.createElement("span");
     handle.className = "drag-handle";
     handle.textContent = "☰";
-    li.querySelector(".html-tree-element")?.prepend(handle);
+    li.querySelector(".tree-element-element")?.prepend(handle);
   },
   onIsMoveHandle: (element) => element.classList.contains("drag-handle"),
 });
@@ -138,7 +138,7 @@ new HtmlTree({
 node and the underlying event:
 
 ```js
-new HtmlTree({
+new TreeElement({
   dragAndDrop: true,
   htmlElement,
   onDragMove: (node, event) => {

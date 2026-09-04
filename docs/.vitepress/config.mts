@@ -4,11 +4,11 @@ import { defineConfig } from "vitepress";
 const srcDir = fileURLToPath(new URL("../../src", import.meta.url));
 
 export default defineConfig({
-  base: "/html-tree/",
+  base: "/tree-element/",
   description: "Tree widget in plain javascript",
   themeConfig: {
     editLink: {
-      pattern: "https://github.com/mbraak/html-tree/edit/master/docs/:path",
+      pattern: "https://github.com/mbraak/tree-element/edit/master/docs/:path",
       text: "Edit this page on GitHub",
     },
     footer: {
@@ -17,7 +17,7 @@ export default defineConfig({
     nav: [
       { link: "/guide/getting-started", text: "Guide" },
       { link: "/reference/options", text: "Reference" },
-      { link: "https://github.com/mbraak/html-tree", text: "GitHub" },
+      { link: "https://github.com/mbraak/tree-element", text: "GitHub" },
     ],
     search: {
       provider: "local",
@@ -46,21 +46,21 @@ export default defineConfig({
       },
     ],
     socialLinks: [
-      { icon: "github", link: "https://github.com/mbraak/html-tree" },
+      { icon: "github", link: "https://github.com/mbraak/tree-element" },
     ],
   },
   lang: "en-US",
   // The typedoc output is included into reference/methods.md, so it must not
   // become a page of its own.
   srcExclude: ["reference/generated/**"],
-  title: "html-tree",
+  title: "tree-element",
   // The live demos import the widget from src, which imports itself through the
-  // "htmlTree" alias from tsconfig.json.
+  // "treeElement" alias from tsconfig.json.
   vite: {
     resolve: {
       alias: [
-        { find: /^htmlTree$/, replacement: `${srcDir}/index.ts` },
-        { find: /^htmlTree\//, replacement: `${srcDir}/` },
+        { find: /^treeElement$/, replacement: `${srcDir}/index.ts` },
+        { find: /^treeElement\//, replacement: `${srcDir}/` },
       ],
     },
   },

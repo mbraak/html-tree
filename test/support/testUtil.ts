@@ -1,4 +1,4 @@
-import type { Node } from "htmlTree/node";
+import type { Node } from "treeElement/node";
 
 import { mockElementBoundingClientRect } from "jsdom-testing-mocks";
 import { vi } from "vitest";
@@ -28,16 +28,16 @@ export const generateHtmlElementsForTree = (tree: Node) => {
 
         if (isTree) {
             const element = document.createElement("ul");
-            element.className = "html-tree";
+            element.className = "tree-element";
             return element;
         } else {
             const li = document.createElement("li");
 
             if (node.isFolder()) {
-                li.className = "html-tree-folder";
+                li.className = "tree-element-folder";
 
                 if (!node.is_open) {
-                    li.classList.add("html-tree-closed");
+                    li.classList.add("tree-element-closed");
                 }
             }
 
@@ -57,7 +57,7 @@ export const generateHtmlElementsForTree = (tree: Node) => {
 
         if (!isTree) {
             const divElement = document.createElement("div");
-            divElement.className = "html-tree-element";
+            divElement.className = "tree-element-element";
             nodeElement.append(divElement);
 
             mockLayout(nodeElement, { height: 20, width: 100 - x, x, y });

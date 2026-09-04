@@ -3,7 +3,7 @@
     "plugins": [
         [
             "./babel-plugin-prefix-private-members.ts",
-            { "aliases": { "htmlTree/": "./src/" } }
+            { "aliases": { "treeElement/": "./src/" } }
         ]
     ],
     "env": {

@@ -3,19 +3,19 @@ import { getTreeButton, getTreeListElement } from "./support/queries";
 // Create the html for a tree node:
 //
 //   <li>
-//     <div class="html-tree-element">
-//       <span class="html-tree-title" role="treeitem"></span>
+//     <div class="tree-element-element">
+//       <span class="tree-element-title" role="treeitem"></span>
 //     </div>
 //   </li>
 const createNode = () => {
     const li = document.createElement("li");
 
     const nodeElement = document.createElement("div");
-    nodeElement.className = "html-tree-element";
+    nodeElement.className = "tree-element-element";
     li.append(nodeElement);
 
     const treeElement = document.createElement("span");
-    treeElement.className = "html-tree-title";
+    treeElement.className = "tree-element-title";
     treeElement.setAttribute("role", "treeitem");
     nodeElement.append(treeElement);
 
@@ -24,7 +24,7 @@ const createNode = () => {
 
 const createTogglerElement = () => {
     const toggler = document.createElement("a");
-    toggler.className = "html-tree-toggler";
+    toggler.className = "tree-element-toggler";
     return toggler;
 };
 
