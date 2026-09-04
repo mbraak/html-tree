@@ -1,5 +1,0 @@
-pnpm run production
-pnpm pack
-cd ~/upload/html-tree/
-./update
-cd ~/html-tree/
